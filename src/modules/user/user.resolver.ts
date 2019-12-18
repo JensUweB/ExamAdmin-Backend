@@ -1,6 +1,7 @@
 import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { UserSchema } from './user.schema';
-import { UserService } from "./user.service";import { CreateUserDto } from "./dto/create-user.dto";
+import { UserService } from "./user.service";
+import { CreateUserDto } from "./dto/create-user.dto";
 import { UserInput } from "./input/user.input";
 
 
@@ -13,14 +14,10 @@ export class UserResolver {
   // Queries
   // ===========================================================================
 
-    @Query(() => String)
-    async getUser() {
-        return 'Hello World!';
-    }
-
     @Query(() => [CreateUserDto])
-    async getUsers() {
-        return this.usersService.findAll();
+    async getUser(@Args('email') email: string) {
+        console.log('Received email: '+email);
+        return this.usersService.findByEmail(email);
     }
 
   // ===========================================================================

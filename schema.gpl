@@ -16,8 +16,7 @@ type Mutation {
 }
 
 type Query {
-  getUser: String!
-  getUsers: [CreateUserDto!]!
+  getUser(email: String!): [CreateUserDto!]!
 }
 
 input UserInput {

@@ -15,7 +15,18 @@ export class UserService {
         return await createdUser.save();
     }
 
-    async findAll(): Promise<User[]> {
-        return await this.userModel.find().exec();
+    async findByEmail(email: string): Promise<User | undefined> {
+        return this.userModel.find(user => {
+            console.log(user);
+            return user.email === email;
+        });
     }
+
+    async findById(id: string): Promise<User | undefined> {
+        return this.userModel.find(user => user.id === id);
+    }
+
+    /* async findAll(): Promise<User[]> {
+        return await this.userModel.find().exec();
+    } */
 }
