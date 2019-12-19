@@ -18,3 +18,5 @@ import { AuthModule } from './modules/auth/auth.module';
   providers: [AppService],
 })
 export class AppModule {}
+
+// 1 ERROR IN user.service

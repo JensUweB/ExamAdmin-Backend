@@ -3,6 +3,13 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+"""Auth"""
+type AuthModel {
+  token: String!
+  tokenExpireDate: DateTime!
+  user: CreateUserDto!
+}
+
 type CreateUserDto {
   id: ID!
   firstName: String!
@@ -11,8 +18,15 @@ type CreateUserDto {
   password: String!
 }
 
+"""
+The javascript `Date` as string. Type represents date and time as the ISO Date string.
+"""
+scalar DateTime
+
 type Mutation {
   createUser(input: UserInput!): CreateUserDto!
+  login(password: String!, email: String!): AuthModel!
+  validateToken(token: String!): Boolean!
 }
 
 type Query {

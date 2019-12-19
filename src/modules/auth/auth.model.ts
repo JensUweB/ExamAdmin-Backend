@@ -1,5 +1,7 @@
-import { User } from '../user/interfaces/user.interface';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 import { Field, ObjectType } from 'type-graphql';
+import { Model } from "mongoose";
+import { InjectModel } from '@nestjs/mongoose';
 
 /**
  * CoreAuthModel model for the response after the sign in
@@ -11,5 +13,5 @@ export class AuthModel {
   // ===================================================================================================================
   @Field() token: string;
   @Field() tokenExpireDate: Date;
-  @Field() user: User;
+  @Field() user: CreateUserDto;
 }
