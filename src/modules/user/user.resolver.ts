@@ -15,7 +15,7 @@ export class UserResolver {
   // ===========================================================================
   // Queries
   // ===========================================================================
-
+  
     @UseGuards(AuthGuard('jwt'))
     @Query(() => CreateUserDto)
     async getUser(@Args('email') email: string) {
@@ -26,10 +26,7 @@ export class UserResolver {
   // ===========================================================================
   // Mutations
   // ===========================================================================
-  @Mutation(() => CreateUserDto)
-  async createUser(@Args('input') input: UserInput) {
-      return this.usersService.create(input);
-  }
+    
 
 
   // ===========================================================================
