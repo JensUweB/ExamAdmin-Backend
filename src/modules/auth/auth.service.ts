@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthModel } from './auth.model';
+import { User } from '../user/interfaces/user.interface';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
@@ -13,12 +15,14 @@ export class AuthService {
     /**
      * Check if email and password are correct
      */
-    async validateUser(email: string, pass: string): Promise<any> {
+    async validateUser({email, password}): Promise<User> {
         const user = await this.userService.findByEmail(email);
-        if (user && user.password === pass) {
-            return user;
+        const valid = await bcrypt.compare(password, user.password);
+
+        if(!valid || !user){
+            throw Error('Email or password incorrect');
         }
-        return null;
+        return user;
     }
 
     /**
@@ -26,15 +30,13 @@ export class AuthService {
      */
     async login(user: any) {
         const payload = { email: user.email, sub: user.id };
-        const result = { access_token: this.jwtService.sign(payload) };
-
-        //console.log(user.email + ' | '+ user.id);
-        //console.log(user);
+        const result = this.jwtService.sign(payload);
 
         const authModel = new AuthModel();
-        authModel.token = result.access_token;
+        authModel.token = result;
         authModel.tokenExpireDate = new Date(Date.now() + 1000*60*60 + 1000*3600);
         authModel.user = user;
+
         return authModel;
     }
 }

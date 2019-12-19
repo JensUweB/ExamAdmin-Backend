@@ -1,19 +1,26 @@
 import { Resolver, Args, Mutation } from "@nestjs/graphql";
 import { AuthService } from "./auth.service";
 import { AuthModel } from "./auth.model";
-import { Query } from "@nestjs/common";
+import * as bcrypt from 'bcryptjs';
+import { JwtService } from "@nestjs/jwt";
+import { UserInput } from "../user/input/user.input";
+import { UserService } from "../user/user.service";
 
 /**
  * Authentication resolver for the sign in
  */
-@Resolver((of) => AuthModel)
+@Resolver('Auth') //(of) => AuthModel
 export class AuthResolver {
 
-    constructor(private readonly authService: AuthService) {}
+    constructor(
+      private readonly authService: AuthService,
+      private readonly jwt: JwtService,
+      private readonly userService: UserService
+    ) {}
 
-  // ===========================================================================
-  // Queries
-  // ===========================================================================
+// ===========================================================================
+// Queries
+// ===========================================================================
 
 
 
@@ -22,14 +29,28 @@ export class AuthResolver {
 // ===========================================================================
     @Mutation(() => AuthModel)
     async login(@Args('email') email: string, @Args('password') password: string) {
-      const user = this.authService.validateUser(email, password);
-      if(user)
+      try{
+        const user = this.authService.validateUser({email, password});
         return this.authService.login(user);
-      throw new Error('Invalid Credentials!');
+      } catch (error) {
+        throw error;
+      }
     }
 
-      @Mutation(() => Boolean)
-  async validateToken(@Args('token') token: string) {
-      return true;
-  }
+    @Mutation(() => AuthModel)
+    async signup(@Args('userInput') userInput: UserInput) {
+        const emailExists = await this.userService.findByEmail(userInput.email);
+
+        if(emailExists) throw Error('Email is already in use');
+        // Warning: "No metadata found. There is more than once class-validator version installed probably. You need to flatten your dependencies.""
+
+        const password = await bcrypt.hash(userInput.password, 10);
+        //const password = '$2a$10$prmp.UNwaBjghvFLLgkG.e1T8l6G6RTNnquz.yTw3yp8AyQwwGQJS';
+        const user = await this.userService.create({
+          ...userInput,
+          password: password
+        });
+
+        return this.authService.login(user);
+    }
 }

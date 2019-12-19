@@ -26,11 +26,11 @@ scalar DateTime
 type Mutation {
   createUser(input: UserInput!): CreateUserDto!
   login(password: String!, email: String!): AuthModel!
-  validateToken(token: String!): Boolean!
+  signup(userInput: UserInput!): AuthModel!
 }
 
 type Query {
-  getUser(email: String!): [CreateUserDto!]!
+  getUser(email: String!): CreateUserDto!
 }
 
 input UserInput {

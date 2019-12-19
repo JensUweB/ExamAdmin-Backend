@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { UserModule } from "../user/user.module";
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from "./auth.service";
-import { LocalStrategy } from './local.strategy';
+import { JwtStrategy } from './jwt.strategy';
 import { JwtModule } from "@nestjs/jwt";
 import { jwtConstants } from "./constants";
 import { MongooseModule } from "@nestjs/mongoose";
@@ -18,7 +18,7 @@ import { AuthResolver } from "./auth.resolver";
             signOptions: {expiresIn: '60s'}
         }),
         MongooseModule.forFeature([{name: 'User', schema: UserSchema}])],
-    providers: [AuthService, LocalStrategy, AuthResolver],
+    providers: [AuthService, JwtStrategy, AuthResolver],
     exports: [AuthService]
 })
 export class AuthModule {
