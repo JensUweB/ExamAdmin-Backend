@@ -2,9 +2,9 @@ import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { UserSchema } from './user.schema';
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { UserInput } from "./input/user.input";
-import { UseGuards } from "@nestjs/common";
+/* import { UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
+import { GqlAuthGuard } from '../guards/graphql-auth.guard'; */
 
 
 @Resolver((of) => UserSchema)
@@ -16,7 +16,7 @@ export class UserResolver {
   // Queries
   // ===========================================================================
   
-    @UseGuards(AuthGuard('jwt'))
+    //@UseGuards(GqlAuthGuard)
     @Query(() => CreateUserDto)
     async getUser(@Args('email') email: string) {
         //console.log('Received email: '+email);
@@ -26,7 +26,6 @@ export class UserResolver {
   // ===========================================================================
   // Mutations
   // ===========================================================================
-    
 
 
   // ===========================================================================

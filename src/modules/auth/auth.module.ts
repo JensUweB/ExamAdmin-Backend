@@ -12,10 +12,12 @@ import { AuthResolver } from "./auth.resolver";
 @Module({
     imports: [
         UserModule, 
-        PassportModule, 
+        PassportModule.register({
+            defaultStrategy: 'jwt'
+        }), 
         JwtModule.register({
             secret: jwtConstants.secret,
-            signOptions: {expiresIn: '60s'}
+            signOptions: {expiresIn: 3600}
         }),
         MongooseModule.forFeature([{name: 'User', schema: UserSchema}])],
     providers: [AuthService, JwtStrategy, AuthResolver],
