@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { MartialArts } from "./martialArts.interface";
+import { MartialArts } from "./interfaces/martialArts.interface";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { MartialArtsInput } from "./inputs/martialArts.input";
+import { MartialArtsDto } from "./dto/martialArts.dto";
 
 @Injectable()
 export class MartialArtsService {
@@ -15,10 +16,14 @@ export class MartialArtsService {
     }
 
     async findById(id: string): Promise<MartialArts | undefined> {
-        return this.maModel.find(ma => ma.id === id);
+        return this.maModel.findOne({_id: id});
     }
 
-    async findAll(): Promise<[MartialArts]> {
+    async findAll(): Promise<MartialArtsDto[]> {
         return await this.maModel.find().exec();
+    }
+
+    async update(user: Model<MartialArts>) {
+        
     }
 }

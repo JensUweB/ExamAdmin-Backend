@@ -7,15 +7,7 @@
 type AuthModel {
   token: String!
   tokenExpireDate: DateTime!
-  user: CreateUserDto!
-}
-
-type CreateUserDto {
-  id: ID!
-  firstName: String!
-  lastName: String!
-  email: String!
-  password: String!
+  user: UserDto!
 }
 
 """
@@ -23,13 +15,52 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 """
 scalar DateTime
 
+type MartialArtsDto {
+  id: ID!
+  name: String!
+  styleName: String!
+  ranks: [RankModel!]!
+  examiners: [String!]!
+}
+
+input MartialArtsInput {
+  """The name of the martial art"""
+  name: String!
+
+  """The style name the martial art belongs to"""
+  styleName: String!
+  ranks: [RankInput!]!
+  examiners: [String!]!
+}
+
 type Mutation {
   login(password: String!, email: String!): AuthModel!
   signup(userInput: UserInput!): AuthModel!
+  getMartialArtsById(id: String!): MartialArtsDto!
+  createMartialArt(input: MartialArtsInput!): MartialArtsDto!
 }
 
 type Query {
-  getUser(email: String!): CreateUserDto!
+  getUser(email: String!): UserDto!
+  getAllMartialArts: [MartialArtsDto!]!
+}
+
+input RankInput {
+  rankName: String!
+  rankNumber: Float!
+}
+
+type RankModel {
+  rankName: String!
+  rankNumber: Float!
+}
+
+type UserDto {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  email: String!
+  password: String!
 }
 
 input UserInput {

@@ -1,8 +1,9 @@
 import {Document} from 'mongoose';
+import { RankModel } from '../ranks.model';
 
 export interface MartialArts extends Document {
     readonly name: string;
     readonly stylename: string;
-    readonly ranks: [{rankName: String, rankNumber: Number}];
-    readonly examiners: [{userId: String}] ;
+    readonly ranks: RankModel[];
+    readonly examiners: string[];
 }

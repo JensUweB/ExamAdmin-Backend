@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose';
-import { ID } from 'type-graphql';
+
+const Schema = mongoose.Schema;
 
 /**
  * Mongoose User Schema
@@ -8,5 +9,5 @@ export const MartialArtsSchema = new mongoose.Schema({
     name: {type: String, required: true},
     styleName: {type: String, required: true},
     ranks: [{rankName: String, rankNumber: Number}],
-    examiners: [{userId: ID}] 
+    examiners: [{type: Schema.Types.ObjectId, ref: 'User'}] 
 });

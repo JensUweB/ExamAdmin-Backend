@@ -1,4 +1,4 @@
-import { CreateUserDto } from '../user/dto/create-user.dto';
+import { UserDto } from '../user/dto/user.dto';
 import { Field, ObjectType } from 'type-graphql';
 
 /**
@@ -11,5 +11,5 @@ export class AuthModel {
   // ===================================================================================================================
   @Field() token: string;
   @Field() tokenExpireDate: Date;
-  @Field() user: CreateUserDto;
+  @Field() user: UserDto;
 }
