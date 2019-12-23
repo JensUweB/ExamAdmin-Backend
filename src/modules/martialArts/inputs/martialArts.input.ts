@@ -1,7 +1,5 @@
 import { Field, InputType } from 'type-graphql';
-import { RankModel } from '../ranks.model';
 import { RankInput } from './rank.input';
-import { ExaminerInput } from './examiner.input';
 
 @InputType()
 export class MartialArtsInput {
