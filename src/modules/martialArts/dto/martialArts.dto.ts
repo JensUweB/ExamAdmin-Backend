@@ -1,6 +1,7 @@
 import { ObjectType, Field, ID } from 'type-graphql';
 import { RankModel } from '../ranks.model';
 import { RankInput } from '../inputs/rank.input';
+import { UserDto } from 'src/modules/user/dto/user.dto';
 
 /**
  * This DTO (Data transfer object) defines how data will be sent over the network
@@ -16,6 +17,6 @@ export class MartialArtsDto {
     readonly styleName: string;
     @Field(type => [RankModel])
     readonly ranks: RankModel[];
-    @Field(type => [String])
-    readonly examiners: string[];
+    @Field(type => [UserDto])
+    readonly examiners: UserDto[];
 }

@@ -16,7 +16,8 @@ export class MartialArtsService {
     }
 
     async findById(id: string): Promise<MartialArts | undefined> {
-        return this.maModel.findOne({_id: id});
+        const result = this.maModel.findOne({_id: id}).populate('examiners').exec();
+        return result;
     }
 
     async findAll(): Promise<MartialArtsDto[]> {

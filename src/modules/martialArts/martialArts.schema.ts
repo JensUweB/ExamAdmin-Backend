@@ -9,5 +9,5 @@ export const MartialArtsSchema = new mongoose.Schema({
     name: {type: String, required: true},
     styleName: {type: String, required: true},
     ranks: [{rankName: String, rankNumber: Number}],
-    examiners: [{type: Schema.Types.ObjectId, ref: 'User'}] 
+    examiners: [{type: Schema.Types.ObjectId, ref: 'User'}]
 });

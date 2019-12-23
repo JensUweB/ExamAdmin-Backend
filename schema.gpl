@@ -20,7 +20,7 @@ type MartialArtsDto {
   name: String!
   styleName: String!
   ranks: [RankModel!]!
-  examiners: [String!]!
+  examiners: [UserDto!]!
 }
 
 input MartialArtsInput {
