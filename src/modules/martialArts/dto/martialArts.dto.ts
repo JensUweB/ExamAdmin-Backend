@@ -10,7 +10,7 @@ import { UserDto } from 'src/modules/user/dto/user.dto';
 @ObjectType()
 export class MartialArtsDto {
     @Field(type => ID)
-    id: string;
+    _id: string;
     @Field()
     readonly name: string;
     @Field()

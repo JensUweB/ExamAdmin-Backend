@@ -16,7 +16,7 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 scalar DateTime
 
 type MartialArtsDto {
-  id: ID!
+  _id: ID!
   name: String!
   styleName: String!
   ranks: [RankModel!]!
@@ -29,20 +29,27 @@ input MartialArtsInput {
 
   """The style name the martial art belongs to"""
   styleName: String!
-  ranks: [RankInput!]!
-  examiners: [String!]!
+
+  """The name of the martial art"""
+  ranks: [RankInput!]
+
+  """The name of the martial art"""
+  examiners: [String!]
 }
 
 type Mutation {
-  login(password: String!, email: String!): AuthModel!
   signup(userInput: UserInput!): AuthModel!
-  getMartialArtsById(id: String!): MartialArtsDto!
   createMartialArt(input: MartialArtsInput!): MartialArtsDto!
+  updateMartialArt(input: MartialArtsInput!, id: String!): MartialArtsDto!
 }
 
 type Query {
   getUser(email: String!): UserDto!
+  login(password: String!, email: String!): AuthModel!
   getAllMartialArts: [MartialArtsDto!]!
+  getMartialArtById(id: String!): MartialArtsDto!
+  getMartialArtByRank(rankId: String!): MartialArtsDto!
+  getRank(rankId: String!): RanksDto!
 }
 
 input RankInput {
@@ -51,6 +58,12 @@ input RankInput {
 }
 
 type RankModel {
+  rankName: String!
+  rankNumber: Float!
+}
+
+type RanksDto {
+  _id: ID!
   rankName: String!
   rankNumber: Float!
 }

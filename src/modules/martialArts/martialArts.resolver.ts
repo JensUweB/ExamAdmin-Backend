@@ -3,6 +3,8 @@ import { MartialArts } from "./interfaces/martialArts.interface";
 import { MartialArtsService } from "./martialArts.Service";
 import { MartialArtsDto } from "./dto/martialArts.dto";
 import { MartialArtsInput } from "./inputs/martialArts.input";
+import { RankModel } from "./ranks.model";
+import { RanksDto } from "./dto/ranks.dto";
 
 @Resolver('MartialArts')
 export class MartialArtsResolver {
@@ -18,19 +20,39 @@ export class MartialArtsResolver {
         return this.maService.findAll();
     }
 
-    @Mutation(() => MartialArtsDto)
-    async getMartialArtsById(@Args('id') id: string): Promise<MartialArts> {
+    @Query(() => MartialArtsDto)
+    async getMartialArtById(@Args('id') id: string) {
         return this.maService.findById(id);
     }
+
+    @Query(() => MartialArtsDto)
+    async getMartialArtByRank(@Args('rankId') rankId: string) {
+        return this.maService.findByRank(rankId);
+    }
+
+    @Query(() => RanksDto)
+    async getRank(@Args('rankId') rankId: string) {
+        return this.maService.findRank(rankId);
+    }
+
 
     // ===========================================================================
     // Mutations
     // ===========================================================================
 
     @Mutation(() => MartialArtsDto)
-    async createMartialArt(@Args('input') input: MartialArtsInput): Promise<MartialArts> {
+    async createMartialArt(@Args('input') input: MartialArtsInput) {
         return this.maService.create(input);
     }
+
+    
+
+    @Mutation(() => MartialArtsDto)
+    async updateMartialArt(@Args('id') id: string, @Args('input') input: MartialArtsInput) {
+        return this.maService.update(id, input);
+    }
+
+    
 
 
     // ===========================================================================
