@@ -10,6 +10,52 @@ type AuthModel {
   user: UserDto!
 }
 
+type ClubDto {
+  _id: ID!
+
+  """The name of the club"""
+  name: String!
+  street: String!
+  zip: String!
+  city: String!
+
+  """Register of associatoins ID, if exists in country of origin"""
+  registrationId: String!
+
+  """Country of origin"""
+  country: String!
+
+  """An array(ids) of provided martial arts in this club"""
+  martialArts: [MartialArtsDto!]!
+
+  """
+  An array(ids) of users who administrate this club. Default: The creator of the club.
+  """
+  admins: [UserDto!]!
+}
+
+input ClubInput {
+  """The name of the club"""
+  name: String!
+  street: String!
+  zip: String!
+  city: String!
+
+  """Register of associatoins ID, if exists in country of origin"""
+  registrationId: String!
+
+  """Country of origin"""
+  country: String!
+
+  """An array(ids) of provided martial arts in this club"""
+  martialArts: [String!]!
+
+  """
+  An array(ids) of users who administrate this club. Default: The creator of the club.
+  """
+  admins: [String!]!
+}
+
 """
 The javascript `Date` as string. Type represents date and time as the ISO Date string.
 """
@@ -30,10 +76,14 @@ input MartialArtsInput {
   """The style name the martial art belongs to"""
   styleName: String!
 
-  """The name of the martial art"""
+  """
+  An array of all ranks available in this martial art. The lower the rank number the higher the rank.
+  """
   ranks: [RankInput!]
 
-  """The name of the martial art"""
+  """
+  An array of users who is examiner for this martial art. Insert user id.
+  """
   examiners: [String!]
 }
 
@@ -41,6 +91,8 @@ type Mutation {
   signup(userInput: UserInput!): AuthModel!
   createMartialArt(input: MartialArtsInput!): MartialArtsDto!
   updateMartialArt(input: MartialArtsInput!, id: String!): MartialArtsDto!
+  createClub(input: ClubInput!): ClubDto!
+  updateClub(input: ClubInput!, id: String!): ClubDto!
 }
 
 type Query {
@@ -50,6 +102,8 @@ type Query {
   getMartialArtById(id: String!): MartialArtsDto!
   getMartialArtByRank(rankId: String!): MartialArtsDto!
   getRank(rankId: String!): RanksDto!
+  getAllClubs: [ClubDto!]!
+  getClubById(id: String!): ClubDto!
 }
 
 input RankInput {
@@ -69,7 +123,7 @@ type RanksDto {
 }
 
 type UserDto {
-  id: ID!
+  _id: ID!
   firstName: String!
   lastName: String!
   email: String!
