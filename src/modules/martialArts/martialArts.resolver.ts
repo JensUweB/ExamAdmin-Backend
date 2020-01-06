@@ -1,9 +1,7 @@
 import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
-import { MartialArts } from "./interfaces/martialArts.interface";
 import { MartialArtsService } from "./martialArts.Service";
 import { MartialArtsDto } from "./dto/martialArts.dto";
 import { MartialArtsInput } from "./inputs/martialArts.input";
-import { RankModel } from "./ranks.model";
 import { RanksDto } from "./dto/ranks.dto";
 
 @Resolver('MartialArts')
@@ -16,7 +14,7 @@ export class MartialArtsResolver {
     // ===========================================================================
 
     @Query(() => [MartialArtsDto])
-    async getAllMartialArts(): Promise<MartialArtsDto[]> {
+    async getAllMartialArts() {
         return this.maService.findAll();
     }
 
@@ -45,20 +43,14 @@ export class MartialArtsResolver {
         return this.maService.create(input);
     }
 
-    
-
     @Mutation(() => MartialArtsDto)
     async updateMartialArt(@Args('id') id: string, @Args('input') input: MartialArtsInput) {
         return this.maService.update(id, input);
     }
 
-    
-
-
     // ===========================================================================
     // Subscriptions
     // ===========================================================================
-
 
 
 }
