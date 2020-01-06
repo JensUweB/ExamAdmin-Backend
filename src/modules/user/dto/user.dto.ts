@@ -1,4 +1,6 @@
 import { ObjectType, Field, ID } from 'type-graphql';
+import { MartialArtsDto } from 'src/modules/martialArts/dto/martialArts.dto';
+import { UserMartialArtsDto } from './userMartialArts.dto';
 
 @ObjectType()
 export class UserDto {
@@ -12,4 +14,8 @@ export class UserDto {
     readonly email: string;
     @Field()
     readonly password: string;
+    @Field(() => [UserMartialArtsDto])
+    readonly martialArts: UserMartialArtsDto[]
+    @Field(() => [UserDto])
+    readonly admins: [UserDto]
 }

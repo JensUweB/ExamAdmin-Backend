@@ -25,7 +25,7 @@ export class MartialArtsService {
     }
 
     async findAll(): Promise<MartialArtsDto[]> {
-        return await this.maModel.find().exec();
+        return await this.maModel.find().populate('examiners').exec();
     }
 
     async findRank(rankId: string): Promise<RankDto> {
