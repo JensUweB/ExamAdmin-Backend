@@ -3,7 +3,7 @@ import { Field, InputType } from 'type-graphql';
 @InputType()
 export class ClubMemberInput {
     @Field()
-    readonly _id: string;
+    readonly club: string;
     @Field()
     readonly confirmed: boolean;
 }

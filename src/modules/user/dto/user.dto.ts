@@ -1,6 +1,7 @@
 import { ObjectType, Field, ID } from 'type-graphql';
 import { MartialArtsDto } from 'src/modules/martialArts/dto/martialArts.dto';
-import { UserMartialArtsDto } from './userMartialArts.dto';
+import { ClubDto } from 'src/modules/club/dto/club.dto';
+import { ClubMemberDto } from './clubMember.dto';
 
 @ObjectType()
 export class UserDto {
@@ -14,8 +15,8 @@ export class UserDto {
     readonly email: string;
     @Field()
     readonly password: string;
-    @Field(() => [UserMartialArtsDto])
-    readonly martialArts: UserMartialArtsDto[]
-    @Field(() => [UserDto])
-    readonly admins: [UserDto]
+    @Field(() => [MartialArtsDto], { description: 'Returns an array of Martial Arts. The child array "ranks" should only contain the current rank (at index 0).', nullable: false })
+    readonly martialArts: MartialArtsDto[];
+    @Field(() => [ClubMemberDto])
+    readonly clubs: ClubMemberDto[];
 }
