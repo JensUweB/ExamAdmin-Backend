@@ -1,9 +1,9 @@
 import {Document} from 'mongoose';
-import { RankModel } from '../ranks.model';
+import { Rank } from './rank.interface';
 
 export interface MartialArts extends Document {
     name: string;
     stylename: string;
-    ranks: RankModel[];
+    ranks: Rank[];
     examiners: string[];
 }

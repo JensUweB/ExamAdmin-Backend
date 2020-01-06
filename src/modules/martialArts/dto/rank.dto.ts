@@ -1,11 +1,11 @@
 import { ObjectType, Field, ID } from "type-graphql";
 
 @ObjectType()
-export class RanksDto {
+export class RankDto {
         @Field(type => ID)
         _id: string;
         @Field()    
-        public rankName: string; 
+        public name: string; 
         @Field()
-        public rankNumber: number;
+        public number: number;
 }

@@ -65,7 +65,7 @@ type MartialArtsDto {
   _id: ID!
   name: String!
   styleName: String!
-  ranks: [RankModel!]!
+  ranks: [RankDto!]!
   examiners: [UserDto!]!
 }
 
@@ -101,25 +101,20 @@ type Query {
   getAllMartialArts: [MartialArtsDto!]!
   getMartialArtById(id: String!): MartialArtsDto!
   getMartialArtByRank(rankId: String!): MartialArtsDto!
-  getRank(rankId: String!): RanksDto!
+  getRank(rankId: String!): RankDto!
   getAllClubs: [ClubDto!]!
   getClubById(id: String!): ClubDto!
 }
 
-input RankInput {
-  rankName: String!
-  rankNumber: Float!
-}
-
-type RankModel {
-  rankName: String!
-  rankNumber: Float!
-}
-
-type RanksDto {
+type RankDto {
   _id: ID!
-  rankName: String!
-  rankNumber: Float!
+  name: String!
+  number: Float!
+}
+
+input RankInput {
+  name: String!
+  number: Float!
 }
 
 type UserDto {
@@ -128,6 +123,8 @@ type UserDto {
   lastName: String!
   email: String!
   password: String!
+  martialArts: [UserMartialArtsDto!]!
+  admins: [UserDto!]!
 }
 
 input UserInput {
@@ -135,4 +132,9 @@ input UserInput {
   lastName: String!
   email: String!
   password: String!
+}
+
+type UserMartialArtsDto {
+  martialArt: MartialArtsDto!
+  rank: RankDto!
 }

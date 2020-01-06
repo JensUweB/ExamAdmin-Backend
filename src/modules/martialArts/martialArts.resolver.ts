@@ -2,7 +2,7 @@ import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { MartialArtsService } from "./martialArts.Service";
 import { MartialArtsDto } from "./dto/martialArts.dto";
 import { MartialArtsInput } from "./inputs/martialArts.input";
-import { RanksDto } from "./dto/ranks.dto";
+import { RankDto } from "./dto/rank.dto";
 
 @Resolver('MartialArts')
 export class MartialArtsResolver {
@@ -28,7 +28,7 @@ export class MartialArtsResolver {
         return this.maService.findByRank(rankId);
     }
 
-    @Query(() => RanksDto)
+    @Query(() => RankDto)
     async getRank(@Args('rankId') rankId: string) {
         return this.maService.findRank(rankId);
     }

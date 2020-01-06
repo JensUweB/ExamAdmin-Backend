@@ -1,5 +1,5 @@
 import { ObjectType, Field, ID } from 'type-graphql';
-import { RankModel } from '../ranks.model';
+import { RankDto } from './rank.dto';
 import { UserDto } from 'src/modules/user/dto/user.dto';
 
 /**
@@ -14,8 +14,8 @@ export class MartialArtsDto {
     readonly name: string;
     @Field()
     readonly styleName: string;
-    @Field(type => [RankModel])
-    readonly ranks: RankModel[];
+    @Field(type => [RankDto])
+    readonly ranks: RankDto[];
     @Field(type => [UserDto])
     readonly examiners: UserDto[];
 }

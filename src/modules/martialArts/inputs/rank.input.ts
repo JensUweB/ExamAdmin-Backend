@@ -3,7 +3,7 @@ import { InputType, Field } from "type-graphql";
 @InputType()
 export class RankInput {
         @Field()    
-        public rankName: string; 
+        public name: string; 
         @Field()
-        public rankNumber: number;
+        public number: number;
 }

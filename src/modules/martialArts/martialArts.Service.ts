@@ -4,7 +4,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { MartialArtsInput } from "./inputs/martialArts.input";
 import { MartialArtsDto } from "./dto/martialArts.dto";
-import { RanksDto } from "./dto/ranks.dto";
+import { RankDto } from "./dto/rank.dto";
 
 @Injectable()
 export class MartialArtsService {
@@ -28,7 +28,7 @@ export class MartialArtsService {
         return await this.maModel.find().exec();
     }
 
-    async findRank(rankId: string): Promise<RanksDto> {
+    async findRank(rankId: string): Promise<RankDto> {
         const result = await this.maModel.findOne({'ranks._id': rankId});
         const rank = result.ranks.filter(rank => {
             return rank._id == rankId;
