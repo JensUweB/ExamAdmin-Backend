@@ -13,5 +13,5 @@ export const ClubSchema = new mongoose.Schema({
     registrationId: {type: String, required: true},
     country: {type: String, required: true},
     martialArts: [{type: Schema.Types.ObjectId, required: true, ref: 'MartialArt'}],
-    admins: [{type: Schema.Types.ObjectId, required: true}]
+    admins: [{type: Schema.Types.ObjectId, required: true, ref: 'User'}]
 });
