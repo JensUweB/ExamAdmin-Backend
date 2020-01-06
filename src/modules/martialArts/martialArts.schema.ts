@@ -3,7 +3,7 @@ import * as mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 /**
- * Mongoose User Schema
+ * Mongoose Martial Art Schema
  */
 export const MartialArtsSchema = new mongoose.Schema({
     name: {type: String, required: true},
