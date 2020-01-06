@@ -17,8 +17,7 @@ export class MartialArtsService {
     }
 
     async findById(id: string): Model<MartialArts | undefined> {
-        const result = this.maModel.findOne({_id: id}).populate('examiners').exec();
-        return result;
+        return this.maModel.findOne({_id: id}).populate('examiners').exec();
     }
 
     async findByRank(rankId: string): Model<MartialArts | undefined> {
