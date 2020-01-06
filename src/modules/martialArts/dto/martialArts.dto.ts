@@ -1,6 +1,5 @@
 import { ObjectType, Field, ID } from 'type-graphql';
 import { RankModel } from '../ranks.model';
-import { RankInput } from '../inputs/rank.input';
 import { UserDto } from 'src/modules/user/dto/user.dto';
 
 /**

@@ -9,7 +9,7 @@ import { RanksDto } from "./dto/ranks.dto";
 @Injectable()
 export class MartialArtsService {
 
-    constructor(@InjectModel('MartialArts') private readonly maModel: Model<MartialArts>) {}
+    constructor(@InjectModel('MartialArt') private readonly maModel: Model<MartialArts>) {}
 
     async create(maInput: MartialArtsInput): Promise<MartialArts> {
         const martialArt = new this.maModel(maInput);

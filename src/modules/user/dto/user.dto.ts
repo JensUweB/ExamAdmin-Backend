@@ -3,7 +3,7 @@ import { ObjectType, Field, ID } from 'type-graphql';
 @ObjectType()
 export class UserDto {
     @Field(() => ID)
-    id: string;
+    _id: string;
     @Field()
     readonly firstName: string;
     @Field()

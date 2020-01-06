@@ -5,7 +5,7 @@ import { MartialArtsService } from "./martialArts.Service";
 import { MartialArtsResolver } from "./martialArts.resolver";
 
 @Module({
-    imports: [MongooseModule.forFeature([{name: 'MartialArts', schema: MartialArtsSchema}])],
+    imports: [MongooseModule.forFeature([{name: 'MartialArt', schema: MartialArtsSchema}])],
     providers: [MartialArtsResolver, MartialArtsService],
     exports: [MartialArtsService]
 })
