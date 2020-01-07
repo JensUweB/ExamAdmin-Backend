@@ -36,14 +36,6 @@ export class MartialArtsService {
         return rank[0];
     }
 
-/* async findByRankFiltered(rankId: string) {
-        return await this.maModel.findOne({'ranks._id': rankId}).then(martialArt => {
-            martialArt.ranks.filter(rank => {
-                return rank._id ==rankId;
-            })
-        });
-    } */
-
     async update(id: string, input: MartialArtsInput): Model<MartialArts | undefined> {
         const oldMA = await this.findById(id);
         if(input.name) oldMA.name = input.name;
