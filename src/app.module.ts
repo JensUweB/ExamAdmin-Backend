@@ -9,6 +9,7 @@ import { APP_PIPE } from '@nestjs/core';
 import { MartialArtsModule } from './modules/martialArts/martialArts.module';
 import { ClubModule } from './modules/club/club.module';
 import { ExamModule } from './modules/exam/exam.module';
+import { ExamResultModule } from './modules/examResult/examResult.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ExamModule } from './modules/exam/exam.module';
     MartialArtsModule,
     ClubModule,
     ExamModule,
+    ExamResultModule,
     GraphQLModule.forRoot(
       {autoSchemaFile: 'schema.gpl'}),
     MongooseModule.forRoot(`mongodb://admin:admin%40p8x@127.0.0.1:27017/examadmin?authSource=admin&compressors=zlib&readPreference=primary&gssapiServiceName=mongodb&appname=MongoDB%20Compass%20Community&ssl=false`),

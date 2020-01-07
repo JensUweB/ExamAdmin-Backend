@@ -11,11 +11,11 @@ export class MartialArtsDto {
     @Field(type => ID)
     _id: string;
     @Field()
-     name: string;
+    name: string;
     @Field()
-     styleName: string;
+    styleName: string;
     @Field(type => [RankDto])
-     ranks: RankDto[];
+    ranks: RankDto[];
     @Field(type => [UserDto])
-     examiners: UserDto[];
+    examiners: UserDto[];
 }

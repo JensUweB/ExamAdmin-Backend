@@ -83,6 +83,18 @@ type ExamDto {
   participants: [String!]!
 }
 
+type ExaminerDto {
+  _id: ID!
+  firstName: String!
+  lastName: String!
+}
+
+input ExaminerInput {
+  _id: String!
+  firstName: String!
+  lastName: String!
+}
+
 input ExamInput {
   """The title of the exam"""
   title: String!
@@ -107,6 +119,41 @@ input ExamInput {
 
   """An array of ids from users who wants to get examined """
   participants: [String!]!
+}
+
+type ExamResultDto {
+  _id: ID!
+  user: String!
+  exam: String!
+  martialArt: MartialArtDto!
+  examiner: ExaminerDto!
+  rank: String!
+  date: String!
+  reportUri: String!
+  passed: Boolean!
+}
+
+input ExamResultInput {
+  user: String!
+  exam: String!
+  martialArt: MartialArtInput!
+  examiner: ExaminerInput!
+  rank: String!
+  date: String!
+  reportUri: String!
+  passed: Boolean!
+}
+
+type MartialArtDto {
+  _id: ID!
+  name: String!
+  styleName: String!
+}
+
+input MartialArtInput {
+  _id: String!
+  name: String!
+  styleName: String!
 }
 
 type MartialArtsDto {
@@ -144,6 +191,7 @@ type Mutation {
   createClub(input: ClubInput!): ClubDto!
   updateClub(input: ClubInput!, id: String!): ClubDto!
   createExam(input: ExamInput!): ExamDto!
+  createExamResult(input: ExamResultInput!): ExamResultDto!
 }
 
 type Query {
@@ -158,6 +206,8 @@ type Query {
   getClubById(id: String!): ClubDto!
   getAllExams: [ExamDto!]!
   getExamById(id: String!): ExamDto!
+  getAllExamResults(userId: String!): [ExamResultDto!]!
+  getExamResultById(id: String!): ExamResultDto!
 }
 
 type RankDto {
