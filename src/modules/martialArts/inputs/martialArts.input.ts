@@ -3,9 +3,9 @@ import { RankInput } from './rank.input';
 
 @InputType()
 export class MartialArtsInput {
-    @Field({ description: 'The name of the martial art', nullable: false })
+    @Field({ description: 'The name of the martial art', nullable: true })
     readonly name: string;
-    @Field({ description: 'The style name the martial art belongs to', nullable: false })
+    @Field({ description: 'The style name the martial art belongs to', nullable: true })
     readonly styleName: string;
     @Field(type => [RankInput], { description: 'An array of all ranks available in this martial art. The lower the rank number the higher the rank.', nullable: true })
     readonly ranks: RankInput[];

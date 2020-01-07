@@ -37,10 +37,10 @@ export class MartialArtsService {
     }
 
     async update(id: string, input: MartialArtsInput): Model<MartialArts | undefined> {
-        const oldMA = await this.findById(id);
-        if(input.name) oldMA.name = input.name;
-        if(input.styleName) oldMA.stylename = input.styleName;
-        if(input.ranks) oldMA.ranks = input.ranks;
-        return oldMA.save();
+        const ma = await this.findById(id);
+        if(input.name) ma.name = input.name;
+        if(input.styleName) ma.stylename = input.styleName;
+        if(input.ranks) ma.ranks = input.ranks;
+        return ma.save();
     }
 }

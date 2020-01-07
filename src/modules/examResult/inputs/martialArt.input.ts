@@ -2,10 +2,10 @@ import { Field, InputType } from 'type-graphql';
 
 @InputType()
 export class MartialArtInput {
-    @Field()
+    @Field({ description: '', nullable: true })
     _id: string;
-    @Field()
+    @Field({ description: '', nullable: true })
     name: string;
-    @Field()
+    @Field({ description: '', nullable: true })
     styleName: string;
 }

@@ -2,10 +2,10 @@ import { Field, InputType } from 'type-graphql';
 
 @InputType()
 export class ExaminerInput {
-    @Field()
+    @Field({ description: '', nullable: true })
     _id: string;
-    @Field()
+    @Field({ description: '', nullable: true })
     firstName: string;
-    @Field()
+    @Field({ description: '', nullable: true })
     lastName: string;
 }

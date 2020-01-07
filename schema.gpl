@@ -36,24 +36,24 @@ type ClubDto {
 
 input ClubInput {
   """The name of the club"""
-  name: String!
-  street: String!
-  zip: String!
-  city: String!
+  name: String
+  street: String
+  zip: String
+  city: String
 
   """Register of associatoins ID, if exists in country of origin"""
-  registrationId: String!
+  registrationId: String
 
   """Country of origin"""
-  country: String!
+  country: String
 
   """An array(ids) of provided martial arts in this club"""
-  martialArts: [String!]!
+  martialArts: [String!]
 
   """
   An array(ids) of users who administrate this club. Default: The creator of the club.
   """
-  admins: [String!]!
+  admins: [String!]
 }
 
 type ClubMemberDto {
@@ -90,9 +90,9 @@ type ExaminerDto {
 }
 
 input ExaminerInput {
-  _id: String!
-  firstName: String!
-  lastName: String!
+  _id: String
+  firstName: String
+  lastName: String
 }
 
 input ExamInput {
@@ -134,14 +134,14 @@ type ExamResultDto {
 }
 
 input ExamResultInput {
-  user: String!
-  exam: String!
-  martialArt: MartialArtInput!
-  examiner: ExaminerInput!
-  rank: String!
-  date: String!
-  reportUri: String!
-  passed: Boolean!
+  user: String
+  exam: String
+  martialArt: MartialArtInput
+  examiner: ExaminerInput
+  rank: String
+  date: String
+  reportUri: String
+  passed: Boolean
 }
 
 type MartialArtDto {
@@ -151,9 +151,9 @@ type MartialArtDto {
 }
 
 input MartialArtInput {
-  _id: String!
-  name: String!
-  styleName: String!
+  _id: String
+  name: String
+  styleName: String
 }
 
 type MartialArtsDto {
@@ -166,10 +166,10 @@ type MartialArtsDto {
 
 input MartialArtsInput {
   """The name of the martial art"""
-  name: String!
+  name: String
 
   """The style name the martial art belongs to"""
-  styleName: String!
+  styleName: String
 
   """
   An array of all ranks available in this martial art. The lower the rank number the higher the rank.
@@ -236,10 +236,10 @@ type UserDto {
 }
 
 input UserInput {
-  firstName: String!
-  lastName: String!
-  email: String!
-  password: String!
-  martialArts: [String!]!
-  clubs: [ClubMemberInput!]!
+  firstName: String
+  lastName: String
+  email: String
+  password: String
+  martialArts: [String!]
+  clubs: [ClubMemberInput!]
 }

@@ -25,14 +25,14 @@ export class ExamService {
 
     async update(id: string, input: ExamInput): Promise<ExamDto> {
         let exam = await this.findById(id);
-        exam.title = input.title;
-        exam.description = input.description;
-        exam.examDate = input.examDate;
-        exam.regEndDate = input.regEndDate;
-        exam.club = input.club;
-        exam.examiner = input.examiner;
-        exam.martialArt = input.martialArt;
-        exam.participants = input.participants;
+        if(input.title) exam.title = input.title;
+        if(input.description) exam.description = input.description;
+        if(input.examDate) exam.examDate = input.examDate;
+        if(input.regEndDate) exam.regEndDate = input.regEndDate;
+        if(input.club) exam.club = input.club;
+        if(input.examiner) exam.examiner = input.examiner;
+        if(input.martialArt) exam.martialArt = input.martialArt;
+        if(input.participants) exam.participants = input.participants;
         return exam.save();
     }
 

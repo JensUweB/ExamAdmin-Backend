@@ -4,20 +4,20 @@ import { ExaminerInput } from "./examiner.input";
 
 @InputType()
 export class ExamResultInput {
-    @Field()
+    @Field({ description: '', nullable: true })
     user: string;
-    @Field()
+    @Field({ description: '', nullable: true })
     exam: string;
-    @Field(type => MartialArtInput)
+    @Field(type => MartialArtInput, { description: '', nullable: true })
     martialArt: MartialArtInput;
-    @Field(type => ExaminerInput)
+    @Field(type => ExaminerInput, { description: '', nullable: true })
     examiner: ExaminerInput;
-    @Field()
+    @Field({ description: '', nullable: true })
     rank: string;
-    @Field()
+    @Field({ description: '', nullable: true })
     date: string;
-    @Field()
+    @Field({ description: '', nullable: true })
     reportUri: string;
-    @Field()
+    @Field({ description: '', nullable: true })
     passed: boolean;
 }

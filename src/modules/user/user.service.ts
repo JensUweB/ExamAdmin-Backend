@@ -37,7 +37,15 @@ export class UserService {
         return user;
     }
 
-    async update(user: Model<User>) {
+    async update(id: string, input: UserInput) {
+        let user = await this.userModel.findOne({_id: id});
+
+        if(input.firstName) user.firstName = input.firstName;
+        if(input.lastName) user.lastName = input.lastName;
+        if(input.email) user.email = input.email;
+        if(input.martialArts) user.martialArts = input.martialArts;
+        if(input.clubs) user.clubs = input.clubs;
+
         return await user.save();
     }
 

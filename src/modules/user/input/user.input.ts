@@ -3,16 +3,16 @@ import { ClubMemberInput } from './clubMember.input';
 
 @InputType()
 export class UserInput {
-    @Field()
+    @Field({ description: '', nullable: true })
     readonly firstName: string;
-    @Field()
+    @Field({ description: '', nullable: true })
     readonly lastName: string;
-    @Field()
+    @Field({ description: '', nullable: true })
     readonly email: string;
-    @Field()
+    @Field({ description: '', nullable: true })
     readonly password: string; 
-    @Field(() => [String])
+    @Field(() => [String], { description: '', nullable: true })
     readonly martialArts: string[]
-    @Field(() => [ClubMemberInput])
+    @Field(() => [ClubMemberInput], { description: '', nullable: true })
     readonly clubs: ClubMemberInput[];
 }

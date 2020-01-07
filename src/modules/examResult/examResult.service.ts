@@ -26,7 +26,14 @@ export class ExamResultService {
     async update(id: string, input: ExamResultInput): Promise<ExamResultDto | undefined> {
         const examResult = await this.erModel.findOne({ _id: id });
 
-        examResult.reportUri = input.reportUri;
+        if(input.user) examResult.user = input.user;
+        if(input.exam) examResult.exam = input.exam;
+        if(input.martialArt) examResult.martialArt = input.martialArt;
+        if(input.examiner) examResult.examiner = input.examiner;
+        if(input.rank) examResult.rank = input.rank;
+        if(input.date) examResult.date = input.date;
+        if(input.reportUri) examResult.reportUri = input.reportUri;
+        if(input.passed) examResult.passed = input.passed;
 
         return examResult.save();
     }
