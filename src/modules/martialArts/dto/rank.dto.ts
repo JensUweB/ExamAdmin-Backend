@@ -5,7 +5,7 @@ export class RankDto {
         @Field(type => ID)
         _id: string;
         @Field()    
-        public name: string; 
+         name: string; 
         @Field()
-        public number: number;
+         number: number;
 }

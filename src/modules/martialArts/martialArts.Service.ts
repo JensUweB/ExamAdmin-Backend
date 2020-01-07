@@ -20,8 +20,8 @@ export class MartialArtsService {
         return this.maModel.findOne({_id: id}).populate('examiners').exec();
     }
 
-    async findByRank(rankId: string): Model<MartialArts | undefined> {
-        return this.maModel.findOne({'ranks._id': rankId});
+    async findByRank(rankId: string): Promise<MartialArtsDto> {
+        return await this.maModel.findOne({'ranks._id': rankId});
     }
 
     async findAll(): Promise<MartialArtsDto[]> {
@@ -35,6 +35,14 @@ export class MartialArtsService {
         });
         return rank[0];
     }
+
+/* async findByRankFiltered(rankId: string) {
+        return await this.maModel.findOne({'ranks._id': rankId}).then(martialArt => {
+            martialArt.ranks.filter(rank => {
+                return rank._id ==rankId;
+            })
+        });
+    } */
 
     async update(id: string, input: MartialArtsInput): Model<MartialArts | undefined> {
         const oldMA = await this.findById(id);

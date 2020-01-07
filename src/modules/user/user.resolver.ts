@@ -10,7 +10,7 @@ import { GqlAuthGuard } from '../guards/graphql-auth.guard'; */
 @Resolver((of) => UserSchema)
 export class UserResolver {
 
-    constructor(private readonly usersService: UserService) {}
+    constructor(private readonly userService: UserService) {}
 
   // ===========================================================================
   // Queries
@@ -18,15 +18,28 @@ export class UserResolver {
   
     //@UseGuards(GqlAuthGuard)
     @Query(() => UserDto)
-    async getUser(@Args('email') email: string) {
-        //console.log('Received email: '+email);
-        return this.usersService.findByEmail(email);
+    async getUserByEmail(@Args('email') email: string) {
+        return this.userService.findByEmail(email);
+    }
+
+    @Query(() => UserDto)
+    async getUserById(@Args('id') id: string) {
+      return this.userService.findById(id);
     }
 
   // ===========================================================================
   // Mutations
   // ===========================================================================
 
+  @Mutation(() => UserDto)
+  async addClub(@Args('userId') userId: string, @Args('clubId') clubId: string) {
+      return this.userService.addClub(userId, clubId);
+  }
+
+  @Mutation(() => UserDto)
+  async addMartialArtToUser(@Args('userId') userId: string, @Args('rankId') rankId: string) {
+    return this.userService.addMartialArtRank(userId, rankId);
+  }
 
   // ===========================================================================
   // Subscriptions

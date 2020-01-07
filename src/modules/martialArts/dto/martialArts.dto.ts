@@ -11,11 +11,11 @@ export class MartialArtsDto {
     @Field(type => ID)
     _id: string;
     @Field()
-    readonly name: string;
+     name: string;
     @Field()
-    readonly styleName: string;
+     styleName: string;
     @Field(type => [RankDto])
-    readonly ranks: RankDto[];
+     ranks: RankDto[];
     @Field(type => [UserDto])
-    readonly examiners: UserDto[];
+     examiners: UserDto[];
 }

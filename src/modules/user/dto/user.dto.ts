@@ -8,15 +8,15 @@ export class UserDto {
     @Field(() => ID)
     _id: string;
     @Field()
-    readonly firstName: string;
+     firstName: string;
     @Field()
-    readonly lastName: string;
+     lastName: string;
     @Field()
-    readonly email: string;
+     email: string;
     @Field()
-    readonly password: string;
+     password: string;
     @Field(() => [MartialArtsDto], { description: 'Returns an array of Martial Arts. The child array "ranks" should only contain the current rank (at index 0).', nullable: false })
-    readonly martialArts: MartialArtsDto[];
+     martialArts: MartialArtsDto[];
     @Field(() => [ClubMemberDto])
-    readonly clubs: ClubMemberDto[];
+     clubs: ClubMemberDto[];
 }
