@@ -188,12 +188,24 @@ type Mutation {
 
   """Add a new martial art rank to a user"""
   addMartialArtRankToUser(rankId: String!, userId: String!): UserDto!
+
+  """Creates a new martial art"""
   createMartialArt(input: MartialArtsInput!): MartialArtsDto!
+
+  """Updates an existing martial art"""
   updateMartialArt(input: MartialArtsInput!, id: String!): MartialArtsDto!
+
+  """Create a new club."""
   createClub(input: ClubInput!): ClubDto!
+
+  """Update an existinc club. Just fill out what you want to change!"""
   updateClub(input: ClubInput!, id: String!): ClubDto!
   signup(userInput: UserInput!): AuthModel!
+
+  """Creates a new exam. DOH!"""
   createExam(input: ExamInput!): ExamDto!
+
+  """Creates a new exam result"""
   createExamResult(input: ExamResultInput!): ExamResultDto!
 }
 
@@ -203,16 +215,39 @@ type Query {
 
   """Searchs for a user by a given id"""
   getUserById(id: String!): UserDto!
+
+  """Returns an array of martial art objects"""
   getAllMartialArts: [MartialArtsDto!]!
+
+  """Returns one martial art object by id"""
   getMartialArtById(id: String!): MartialArtsDto!
+
+  """Returns one martial art object by rank id"""
   getMartialArtByRank(rankId: String!): MartialArtsDto!
+
+  """Returns striped out one rank object by rank id"""
   getRank(rankId: String!): RankDto!
+
+  """Returns an array with all existing clubs"""
   getAllClubs: [ClubDto!]!
+
+  """Returns one club by id"""
   getClubById(id: String!): ClubDto!
   login(password: String!, email: String!): AuthModel!
+
+  """Returns an array of all exams. Including previous ones."""
   getAllExams: [ExamDto!]!
   getExamById(id: String!): ExamDto!
+
+  """
+  Returns an array of all exams. Only exams with an future starting date included.
+  """
+  getPlannedExams: [ExamDto!]!
+
+  """Returns an array with all exam results of a given user"""
   getAllExamResults(userId: String!): [ExamResultDto!]!
+
+  """Returns one exam result with a given id"""
   getExamResultById(id: String!): ExamResultDto!
 }
 

@@ -11,14 +11,22 @@ export class ExamResolver {
     // ===========================================================================
     // Queries
     // ===========================================================================
-    @Query(() => [ExamDto])
+    @Query(() => [ExamDto], {description: 'Returns an array of all exams. Including previous ones.'})
     async getAllExams() {
         return this.examService.findAll();
     }
 
-    @Query(() => ExamDto)
+    @Query(() => ExamDto, {description: ''})
     async getExamById(@Args('id') id: string) {
         return this.examService.findById(id);
+    }
+
+    @Query(() => [ExamDto], {description: 'Returns an array of all exams. Only exams with an future starting date included.'})
+    async getPlannedExams() {
+        let exams = await this.examService.findAll();
+
+        // Filter exams by date and return
+        return await exams.filter(exam => exam.examDate > new Date(Date.now()));
     }
 
 
@@ -26,7 +34,7 @@ export class ExamResolver {
     // Mutations
     // ===========================================================================
 
-    @Mutation(() => ExamDto)
+    @Mutation(() => ExamDto, {description: 'Creates a new exam. DOH!'})
     async createExam(@Args('input') input: ExamInput) {
         return this.examService.create(input);
     }

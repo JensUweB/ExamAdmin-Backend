@@ -12,12 +12,12 @@ export class ClubResolver {
     // Queries
     // ===========================================================================
    
-    @Query(() => [ClubDto])
+    @Query(() => [ClubDto], {description: 'Returns an array with all existing clubs'})
     async getAllClubs() {
         return this.clubService.findAll();
     }
 
-    @Query(() => ClubDto)
+    @Query(() => ClubDto, {description: 'Returns one club by id'})
     async getClubById(@Args('id') id: string) {
         return this.clubService.findById(id);
     }
@@ -27,12 +27,12 @@ export class ClubResolver {
     // Mutations
     // ===========================================================================
     
-    @Mutation(() => ClubDto)
+    @Mutation(() => ClubDto, {description: 'Create a new club.'})
     async createClub(@Args('input') input: ClubInput) {
         return this.clubService.create(input);
     }
 
-    @Mutation(() => ClubDto)
+    @Mutation(() => ClubDto, {description: 'Update an existinc club. Just fill out what you want to change!'})
     async updateClub(@Args('id') id: string, @Args('input') input: ClubInput) {
         return this.clubService.update(id, input);
     }

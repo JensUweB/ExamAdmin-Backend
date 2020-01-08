@@ -11,12 +11,12 @@ export class ExamResultResolver {
     // Queries
     // ===========================================================================
 
-    @Query(() => [ExamResultDto])
+    @Query(() => [ExamResultDto], {description: 'Returns an array with all exam results of a given user'})
     async getAllExamResults(@Args('userId') userId: string) {
         return this.erService.findAll(userId);
     }
 
-    @Query(() => ExamResultDto)
+    @Query(() => ExamResultDto, {description: 'Returns one exam result with a given id'})
     async getExamResultById(@Args('id') id: string) {
         return this.erService.findById(id);
     }
@@ -25,7 +25,7 @@ export class ExamResultResolver {
     // Mutations
     // ===========================================================================
     
-    @Mutation(() => ExamResultDto)
+    @Mutation(() => ExamResultDto, {description: 'Creates a new exam result'})
     async createExamResult(@Args('input') input: ExamResultInput) {
         return this.erService.create(input);
     }

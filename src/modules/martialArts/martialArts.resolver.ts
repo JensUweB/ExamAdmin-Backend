@@ -13,22 +13,22 @@ export class MartialArtsResolver {
     // Queries
     // ===========================================================================
 
-    @Query(() => [MartialArtsDto])
+    @Query(() => [MartialArtsDto], {description: 'Returns an array of martial art objects'})
     async getAllMartialArts() {
         return this.maService.findAll();
     }
 
-    @Query(() => MartialArtsDto)
+    @Query(() => MartialArtsDto, {description: 'Returns one martial art object by id'})
     async getMartialArtById(@Args('id') id: string) {
         return this.maService.findById(id);
     }
 
-    @Query(() => MartialArtsDto)
+    @Query(() => MartialArtsDto, {description: 'Returns one martial art object by rank id'})
     async getMartialArtByRank(@Args('rankId') rankId: string) {
         return this.maService.findByRank(rankId);
     }
 
-    @Query(() => RankDto)
+    @Query(() => RankDto, {description: 'Returns striped out one rank object by rank id'})
     async getRank(@Args('rankId') rankId: string) {
         return this.maService.findRank(rankId);
     }
@@ -38,12 +38,12 @@ export class MartialArtsResolver {
     // Mutations
     // ===========================================================================
 
-    @Mutation(() => MartialArtsDto)
+    @Mutation(() => MartialArtsDto, {description: 'Creates a new martial art'})
     async createMartialArt(@Args('input') input: MartialArtsInput) {
         return this.maService.create(input);
     }
 
-    @Mutation(() => MartialArtsDto)
+    @Mutation(() => MartialArtsDto, {description: 'Updates an existing martial art'})
     async updateMartialArt(@Args('id') id: string, @Args('input') input: MartialArtsInput) {
         return this.maService.update(id, input);
     }
