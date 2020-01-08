@@ -183,27 +183,33 @@ input MartialArtsInput {
 }
 
 type Mutation {
+  """Add a new club to the clubs array of a user"""
   addClub(clubId: String!, userId: String!): UserDto!
-  addMartialArtToUser(rankId: String!, userId: String!): UserDto!
+
+  """Add a new martial art rank to a user"""
+  addMartialArtRankToUser(rankId: String!, userId: String!): UserDto!
   createMartialArt(input: MartialArtsInput!): MartialArtsDto!
   updateMartialArt(input: MartialArtsInput!, id: String!): MartialArtsDto!
-  signup(userInput: UserInput!): AuthModel!
   createClub(input: ClubInput!): ClubDto!
   updateClub(input: ClubInput!, id: String!): ClubDto!
+  signup(userInput: UserInput!): AuthModel!
   createExam(input: ExamInput!): ExamDto!
   createExamResult(input: ExamResultInput!): ExamResultDto!
 }
 
 type Query {
+  """Searches for a user by a given email"""
   getUserByEmail(email: String!): UserDto!
+
+  """Searchs for a user by a given id"""
   getUserById(id: String!): UserDto!
   getAllMartialArts: [MartialArtsDto!]!
   getMartialArtById(id: String!): MartialArtsDto!
   getMartialArtByRank(rankId: String!): MartialArtsDto!
   getRank(rankId: String!): RankDto!
-  login(password: String!, email: String!): AuthModel!
   getAllClubs: [ClubDto!]!
   getClubById(id: String!): ClubDto!
+  login(password: String!, email: String!): AuthModel!
   getAllExams: [ExamDto!]!
   getExamById(id: String!): ExamDto!
   getAllExamResults(userId: String!): [ExamResultDto!]!

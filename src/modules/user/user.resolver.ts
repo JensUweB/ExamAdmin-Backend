@@ -17,12 +17,12 @@ export class UserResolver {
   // ===========================================================================
   
     //@UseGuards(GqlAuthGuard)
-    @Query(() => UserDto)
+    @Query(() => UserDto, {description: 'Searches for a user by a given email'})
     async getUserByEmail(@Args('email') email: string) {
         return this.userService.findByEmail(email);
     }
 
-    @Query(() => UserDto)
+    @Query(() => UserDto, {description: 'Searchs for a user by a given id'})
     async getUserById(@Args('id') id: string) {
       return this.userService.findById(id);
     }
@@ -31,13 +31,13 @@ export class UserResolver {
   // Mutations
   // ===========================================================================
 
-  @Mutation(() => UserDto)
+  @Mutation(() => UserDto, {description: 'Add a new club to the clubs array of a user'})
   async addClub(@Args('userId') userId: string, @Args('clubId') clubId: string) {
       return this.userService.addClub(userId, clubId);
   }
 
-  @Mutation(() => UserDto)
-  async addMartialArtToUser(@Args('userId') userId: string, @Args('rankId') rankId: string) {
+  @Mutation(() => UserDto, {description: 'Add a new martial art rank to a user'})
+  async addMartialArtRankToUser(@Args('userId') userId: string, @Args('rankId') rankId: string) {
     return this.userService.addMartialArtRank(userId, rankId);
   }
 
