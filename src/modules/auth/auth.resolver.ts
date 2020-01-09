@@ -21,7 +21,7 @@ export class AuthResolver {
   // ===========================================================================
   // Queries
   // ===========================================================================
-  @Query(() => AuthModel)
+  @Query(() => AuthModel, {description: 'Logs the user in if email and password are correct'})
     async login(@Args('email') email: string, @Args('password') password: string) {
       try{
         const user = this.authService.validateUser({email, password});
@@ -35,7 +35,7 @@ export class AuthResolver {
   // ===========================================================================
   // Mutations
   // ===========================================================================
-  @Mutation(() => AuthModel)
+  @Mutation(() => AuthModel, {description: 'Creates a new User'})
   async signup(@Args('userInput') userInput: UserInput) {
       const emailExists = await this.userService.findByEmail(userInput.email);
 

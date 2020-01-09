@@ -1,14 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthModel } from './auth.model';
 import { User } from '../user/interfaces/user.interface';
 import * as bcrypt from 'bcryptjs';
+import { jwtConstants } from './constants';
 
 @Injectable()
 export class AuthService {
     constructor(
-        private readonly userService: UserService,
+        @Inject(forwardRef(() => UserService)) private readonly userService: UserService,
         private readonly jwtService: JwtService
     ) { }
 
@@ -29,7 +30,7 @@ export class AuthService {
      * After validating, this will return an access token for you
      */
     async login(user: any) {
-        const payload = { email: user.email, sub: user.id };
+        const payload = { firstName: user.firstName, sub: user._id };
         const result = this.jwtService.sign(payload);
 
         const authModel = new AuthModel();
@@ -38,5 +39,20 @@ export class AuthService {
         authModel.user = user;
 
         return authModel;
+    }
+
+    async decryptToken(token: string): Promise<string | undefined> {
+        if(!token || token === '') return null;
+
+        let decodedToken;
+
+        try{
+            decodedToken = this.jwtService.verify(token);
+        } catch (error) {
+            return null;
+        }
+
+        if(!decodedToken) return null;
+        return decodedToken.userId.toString();
     }
 }
