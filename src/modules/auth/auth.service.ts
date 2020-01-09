@@ -31,8 +31,6 @@ export class AuthService {
     async login(user: any) {
         const payload = { firstName: user.firstName, userId: user._id };
         const result = this.jwtService.sign(payload);
-        console.log(payload);
-        console.log(this.jwtService.verify(result));
         const authModel = new AuthModel();
         authModel.token = result;
         authModel.tokenExpireDate = new Date(Date.now() + 1000*60*60 + 1000*3600);
