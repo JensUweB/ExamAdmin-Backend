@@ -2,9 +2,10 @@ import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { ClubService } from "./club.service";
 import { ClubDto } from "./dto/club.dto";
 import { ClubInput } from "./inputs/club.input";
-import { GraphQLError } from "graphql";
-import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { NotFoundException, UseGuards } from "@nestjs/common";
+import { AuthGuard } from "../guards/auth.guard";
 
+@UseGuards(AuthGuard)
 @Resolver('Club')
 export class ClubResolver {
 

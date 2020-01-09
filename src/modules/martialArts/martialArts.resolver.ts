@@ -3,7 +3,10 @@ import { MartialArtsService } from "./martialArts.Service";
 import { MartialArtsDto } from "./dto/martialArts.dto";
 import { MartialArtsInput } from "./inputs/martialArts.input";
 import { RankDto } from "./dto/rank.dto";
+import { UseGuards } from "@nestjs/common";
+import { AuthGuard } from "../guards/auth.guard";
 
+@UseGuards(AuthGuard)
 @Resolver('MartialArts')
 export class MartialArtsResolver {
 

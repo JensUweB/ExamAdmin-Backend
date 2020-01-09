@@ -4,9 +4,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { UserSchema } from './user.schema';
 import { UserService } from "./user.service";
 import { MartialArtsModule } from "../martialArts/martialArts.module";
-import { MartialArtsService } from "../martialArts/martialArts.Service";
 import { ClubModule } from "../club/club.module";
-import { ClubService } from "../club/club.service";
 import { AuthModule } from "../auth/auth.module";
 
 @Module({
@@ -14,7 +12,7 @@ import { AuthModule } from "../auth/auth.module";
         MongooseModule.forFeature([{name: 'User', schema: UserSchema}]),
         MartialArtsModule,
         ClubModule,
-        forwardRef(() => AuthModule) 
+        forwardRef(() => AuthModule)
     ],
     providers: [UserResolver, UserService],
     exports: [UserService]

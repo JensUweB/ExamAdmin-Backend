@@ -2,7 +2,10 @@ import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { ExamService } from "./exam.service";
 import { ExamDto } from "./dto/exam.dto";
 import { ExamInput } from "./inputs/exam.input";
+import { UseGuards } from "@nestjs/common";
+import { AuthGuard } from "../guards/auth.guard";
 
+@UseGuards(AuthGuard)
 @Resolver('Exam')
 export class ExamResolver {
 

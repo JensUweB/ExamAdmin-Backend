@@ -8,6 +8,7 @@ import { jwtConstants } from "./constants";
 import { MongooseModule } from "@nestjs/mongoose";
 import { UserSchema } from "../user/user.schema";
 import { AuthResolver } from "./auth.resolver";
+import { AuthGuard } from "../guards/auth.guard";
 
 @Module({
     imports: [
@@ -20,8 +21,8 @@ import { AuthResolver } from "./auth.resolver";
             signOptions: {expiresIn: 3600}
         }),
         MongooseModule.forFeature([{name: 'User', schema: UserSchema}])],
-    providers: [AuthService, JwtStrategy, AuthResolver],
-    exports: [AuthService]
+    providers: [AuthService, JwtStrategy, AuthResolver, AuthGuard],
+    exports: [AuthService, JwtModule, AuthGuard]
 })
 export class AuthModule {
 

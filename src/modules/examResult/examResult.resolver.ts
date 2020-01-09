@@ -2,7 +2,10 @@ import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { ExamResultService } from "./examResult.service";
 import { ExamResultDto } from "./dto/examResult.dto";
 import { ExamResultInput } from "./inputs/examResult.input";
+import { UseGuards } from "@nestjs/common";
+import { AuthGuard } from "../guards/auth.guard";
 
+@UseGuards(AuthGuard)
 @Resolver('ExamResult')
 export class ExamResultResolver {
     constructor(private readonly erService: ExamResultService) {}

@@ -24,8 +24,8 @@ export class AuthResolver {
   @Query(() => AuthModel, {description: 'Logs the user in if email and password are correct'})
     async login(@Args('email') email: string, @Args('password') password: string) {
       try{
-        const user = this.authService.validateUser({email, password});
-        return this.authService.login(user);
+        const user = await this.authService.validateUser({email, password});
+        return await this.authService.login(user);
       } catch (error) {
         throw error;
       }

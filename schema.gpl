@@ -195,14 +195,14 @@ type Mutation {
   """Updates an existing martial art"""
   updateMartialArt(input: MartialArtsInput!, id: String!): MartialArtsDto!
 
+  """Creates a new User"""
+  signup(userInput: UserInput!): AuthModel!
+
   """Create a new club."""
   createClub(input: ClubInput!): ClubDto!
 
   """Update an existinc club. Just fill out what you want to change!"""
   updateClub(input: ClubInput!, id: String!): ClubDto!
-
-  """Creates a new User"""
-  signup(userInput: UserInput!): AuthModel!
 
   """Creates a new exam. DOH!"""
   createExam(input: ExamInput!): ExamDto!
@@ -230,14 +230,14 @@ type Query {
   """Returns striped out one rank object by rank id"""
   getRank(rankId: String!): RankDto!
 
+  """Logs the user in if email and password are correct"""
+  login(password: String!, email: String!): AuthModel!
+
   """Returns an array with all existing clubs"""
   getAllClubs: [ClubDto!]!
 
   """Returns one club by id"""
   getClubById(id: String!): ClubDto!
-
-  """Logs the user in if email and password are correct"""
-  login(password: String!, email: String!): AuthModel!
 
   """Returns an array of all exams. Including previous ones."""
   getAllExams: [ExamDto!]!

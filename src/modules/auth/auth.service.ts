@@ -4,7 +4,6 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthModel } from './auth.model';
 import { User } from '../user/interfaces/user.interface';
 import * as bcrypt from 'bcryptjs';
-import { jwtConstants } from './constants';
 
 @Injectable()
 export class AuthService {
@@ -30,29 +29,15 @@ export class AuthService {
      * After validating, this will return an access token for you
      */
     async login(user: any) {
-        const payload = { firstName: user.firstName, sub: user._id };
+        const payload = { firstName: user.firstName, userId: user._id };
         const result = this.jwtService.sign(payload);
-
+        console.log(payload);
+        console.log(this.jwtService.verify(result));
         const authModel = new AuthModel();
         authModel.token = result;
         authModel.tokenExpireDate = new Date(Date.now() + 1000*60*60 + 1000*3600);
         authModel.user = user;
 
         return authModel;
-    }
-
-    async decryptToken(token: string): Promise<string | undefined> {
-        if(!token || token === '') return null;
-
-        let decodedToken;
-
-        try{
-            decodedToken = this.jwtService.verify(token);
-        } catch (error) {
-            return null;
-        }
-
-        if(!decodedToken) return null;
-        return decodedToken.userId.toString();
     }
 }

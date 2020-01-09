@@ -20,7 +20,11 @@ import { ExamResultModule } from './modules/examResult/examResult.module';
     ExamModule,
     ExamResultModule,
     GraphQLModule.forRoot(
-      {autoSchemaFile: 'schema.gpl'}),
+      {
+        autoSchemaFile: 'schema.gpl',
+        installSubscriptionHandlers: true,
+        context: ({req}) => {return {request: req};}
+      }),
     MongooseModule.forRoot(`mongodb://admin:admin%40p8x@127.0.0.1:27017/examadmin?authSource=admin&compressors=zlib&readPreference=primary&gssapiServiceName=mongodb&appname=MongoDB%20Compass%20Community&ssl=false`),
     ], 
   controllers: [AppController],
