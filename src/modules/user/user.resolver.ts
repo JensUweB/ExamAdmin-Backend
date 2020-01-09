@@ -48,6 +48,11 @@ export class UserResolver {
     return new NotFoundException('User not found!');
   }
 
+  @Mutation(() => Boolean)
+  async deleteUser(@Args('id') id: string){
+    return this.userService.deleteUser(id);
+  }
+
   // ===========================================================================
   // Subscriptions
   // ===========================================================================

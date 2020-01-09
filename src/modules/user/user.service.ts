@@ -37,12 +37,15 @@ export class UserService {
     async findByEmail(email: string): Promise<UserDto | undefined> {
         const user = await this.userModel.findOne({ email: email }).populate('clubs.club').exec();
 
-        
-        for (let i = 0; i < user.martialArts.length; i++) {
-            const ma = await this.maService.findByRank(user.martialArts[i]._id);
-            ma.ranks = ma.ranks.filter((rank) => rank._id.toString() == user.martialArts[i]._id.toString());
-            if (ma.ranks) {
-                user.martialArts[i] = ma;
+        if (user) {
+            if (user.martialArts) {
+                for (let i = 0; i < user.martialArts.length; i++) {
+                    const ma = await this.maService.findByRank(user.martialArts[i]._id);
+                    ma.ranks = ma.ranks.filter((rank) => rank._id.toString() == user.martialArts[i]._id.toString());
+                    if (ma.ranks) {
+                        user.martialArts[i] = ma;
+                    }
+                }
             }
         }
 
@@ -93,8 +96,8 @@ export class UserService {
      */
     async addClub(userId: string, clubId: string): Promise<UserDto> {
         const user: Model<User> = await this.findById(userId);
-        
-        if(user) {
+
+        if (user) {
             user.clubs.push({ club: clubId, confirmed: false });
             return user.save();
         }
@@ -110,7 +113,7 @@ export class UserService {
      */
     async addMartialArtRank(userId: string, rankId: string) {
         const user: Model<User> = await this.findById(userId);
-        if(user){
+        if (user) {
             user.martialArts.push({ _id: rankId });
             return user.save();
         }
@@ -125,7 +128,7 @@ export class UserService {
     async deleteUser(id: string) {
         const user = await this.findById(id);
         const clubs = [];
-        
+
         // VALIDATION AREA BEFORE DELETING USER
 
         // VALIDATION AREA ENDS
@@ -133,22 +136,27 @@ export class UserService {
         //DELETE AREA
 
         // Remove user from all club admin arrays, if exists
-        for (let i = 0; i < user.clubs.length; i++) {
-            let club: Model<Club> = await this.clubService.findById(user.clubs[i].club._id); //Get Club as mongoose object
+        if (user.clubs.length) {
+            for (let i = 0; i < user.clubs.length; i++) {
+                let club: Model<Club> = await this.clubService.findById(user.clubs[i].club._id); //Get Club as mongoose object
 
-            club.admins.filter(res => res._id.toString() != id);
-            club.save();
+                club.admins.filter(res => res._id.toString() != id);
+                club.save();
+            }
         }
 
         // Remove user from all martial arts examiner arrays, if exists
-        for (let i = 0; i < user.martialArts.length; i++) {
-            let ma: Model<MartialArts> = await this.maService.findByRank(user.martialArts[i]._id);
-
-            ma.examiner.filter(res => res._id.toString() != id);
-            ma.save();
+        let maArray: Model<MartialArts> = await this.maService.findAll();
+        for(let i = 0; i < maArray.length; i++){
+            if(maArray[i].examiners.length){
+                maArray[i].examiners.filter(res => res._id.toString() != id);
+                maArray[i].save();
+            }
         }
-
-        this.userModel.deleteOne({ _id: id });
+        
+        const result = await this.userModel.deleteOne({ _id: id });
+        if (result) { return true }
+        else return false;
     }
 
     /* async findAll(): Promise<User[]> {

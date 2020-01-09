@@ -188,6 +188,7 @@ type Mutation {
 
   """Add a new martial art rank to a user"""
   addMartialArtRankToUser(rankId: String!, userId: String!): UserDto!
+  deleteUser(id: String!): Boolean!
 
   """Creates a new martial art"""
   createMartialArt(input: MartialArtsInput!): MartialArtsDto!
