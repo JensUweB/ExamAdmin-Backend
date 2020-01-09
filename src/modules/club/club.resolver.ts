@@ -2,6 +2,8 @@ import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { ClubService } from "./club.service";
 import { ClubDto } from "./dto/club.dto";
 import { ClubInput } from "./inputs/club.input";
+import { GraphQLError } from "graphql";
+import { BadRequestException, NotFoundException } from "@nestjs/common";
 
 @Resolver('Club')
 export class ClubResolver {
@@ -14,12 +16,16 @@ export class ClubResolver {
    
     @Query(() => [ClubDto], {description: 'Returns an array with all existing clubs'})
     async getAllClubs() {
-        return this.clubService.findAll();
+        const result = await this.clubService.findAll();
+        if(result) return result;
+        return new NotFoundException('No club not found. Please create a club first bevore searching.');
     }
 
     @Query(() => ClubDto, {description: 'Returns one club by id'})
     async getClubById(@Args('id') id: string) {
-        return this.clubService.findById(id);
+        const result = await this.clubService.findById(id);
+        if(result) return result;
+        return new NotFoundException('Club not found!');
     }
 
 
@@ -34,7 +40,9 @@ export class ClubResolver {
 
     @Mutation(() => ClubDto, {description: 'Update an existinc club. Just fill out what you want to change!'})
     async updateClub(@Args('id') id: string, @Args('input') input: ClubInput) {
-        return this.clubService.update(id, input);
+        const result = await this.clubService.update(id, input);
+        if(result) return result;
+        return new NotFoundException('Club not found!');
     }
 
 

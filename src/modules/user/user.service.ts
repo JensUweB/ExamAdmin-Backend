@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, HttpException, HttpStatus } from "@nestjs/common";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { User } from './interfaces/user.interface';
@@ -8,6 +8,8 @@ import { MartialArtsService } from "../martialArts/martialArts.Service";
 import { ClubService } from "../club/club.service";
 import { Club } from "../club/interfaces/club.interface";
 import { MartialArts } from "../martialArts/interfaces/martialArts.interface";
+import { ExceptionsHandler } from "@nestjs/core/exceptions/exceptions-handler";
+import { AuthService } from "../auth/auth.service";
 
 @Injectable()
 export class UserService {
@@ -15,7 +17,7 @@ export class UserService {
     constructor(
         @InjectModel('User') private readonly userModel: Model<User>,
         readonly maService: MartialArtsService,
-        readonly clubService: ClubService,
+        readonly clubService: ClubService
     ) { }
 
 
@@ -33,8 +35,9 @@ export class UserService {
      * @param email the user email you want to search for
      */
     async findByEmail(email: string): Promise<UserDto | undefined> {
-        const user = this.userModel.findOne({ email: email }).populate('clubs.club').exec();
+        const user = await this.userModel.findOne({ email: email }).populate('clubs.club').exec();
 
+        
         for (let i = 0; i < user.martialArts.length; i++) {
             const ma = await this.maService.findByRank(user.martialArts[i]._id);
             ma.ranks = ma.ranks.filter((rank) => rank._id.toString() == user.martialArts[i]._id.toString());
@@ -43,8 +46,7 @@ export class UserService {
             }
         }
 
-        if (user) return user;
-        else return null;
+        return user;
     }
 
     /**
@@ -61,7 +63,8 @@ export class UserService {
                 user.martialArts[i] = ma;
             }
         }
-        return user;
+        if (user) return user;
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -72,13 +75,15 @@ export class UserService {
     async update(id: string, input: UserInput) {
         let user = await this.userModel.findOne({ _id: id });
 
-        if (input.firstName) user.firstName = input.firstName;
-        if (input.lastName) user.lastName = input.lastName;
-        if (input.email) user.email = input.email;
-        if (input.martialArts) user.martialArts = input.martialArts;
-        if (input.clubs) user.clubs = input.clubs;
-
-        return await user.save();
+        if (user) {
+            if (input.firstName) user.firstName = input.firstName;
+            if (input.lastName) user.lastName = input.lastName;
+            if (input.email) user.email = input.email;
+            if (input.martialArts) user.martialArts = input.martialArts;
+            if (input.clubs) user.clubs = input.clubs;
+            return await user.save();
+        }
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -88,8 +93,13 @@ export class UserService {
      */
     async addClub(userId: string, clubId: string): Promise<UserDto> {
         const user: Model<User> = await this.findById(userId);
-        user.clubs.push({ club: clubId, confirmed: false });
-        return user.save();
+        
+        if(user) {
+            user.clubs.push({ club: clubId, confirmed: false });
+            return user.save();
+        }
+
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -100,8 +110,11 @@ export class UserService {
      */
     async addMartialArtRank(userId: string, rankId: string) {
         const user: Model<User> = await this.findById(userId);
-        user.martialArts.push({ _id: rankId });
-        return user.save();
+        if(user){
+            user.martialArts.push({ _id: rankId });
+            return user.save();
+        }
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -112,7 +125,7 @@ export class UserService {
     async deleteUser(id: string) {
         const user = await this.findById(id);
         const clubs = [];
-
+        
         // VALIDATION AREA BEFORE DELETING USER
 
         // VALIDATION AREA ENDS
@@ -120,7 +133,7 @@ export class UserService {
         //DELETE AREA
 
         // Remove user from all club admin arrays, if exists
-        for(let i = 0; i < user.clubs.length; i++) {
+        for (let i = 0; i < user.clubs.length; i++) {
             let club: Model<Club> = await this.clubService.findById(user.clubs[i].club._id); //Get Club as mongoose object
 
             club.admins.filter(res => res._id.toString() != id);
@@ -128,7 +141,7 @@ export class UserService {
         }
 
         // Remove user from all martial arts examiner arrays, if exists
-        for(let i = 0; i < user.martialArts.length; i++) {
+        for (let i = 0; i < user.martialArts.length; i++) {
             let ma: Model<MartialArts> = await this.maService.findByRank(user.martialArts[i]._id);
 
             ma.examiner.filter(res => res._id.toString() != id);

@@ -33,5 +33,3 @@ import { ExamResultModule } from './modules/examResult/examResult.module';
   ]
 })
 export class AppModule {}
-
-// 1 ERROR IN user.service
