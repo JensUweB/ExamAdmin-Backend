@@ -4,9 +4,9 @@ import { MartialArtsDto } from "./dto/martialArts.dto";
 import { MartialArtsInput } from "./inputs/martialArts.input";
 import { RankDto } from "./dto/rank.dto";
 import { UseGuards } from "@nestjs/common";
-import { AuthGuard } from "../guards/auth.guard";
+import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
 
-@UseGuards(AuthGuard)
+@UseGuards(GraphqlAuthGuard)
 @Resolver('MartialArts')
 export class MartialArtsResolver {
 

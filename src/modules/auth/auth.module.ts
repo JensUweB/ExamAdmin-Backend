@@ -20,7 +20,8 @@ import { AuthGuard } from "../guards/auth.guard";
             secret: jwtConstants.secret,
             signOptions: {expiresIn: 3600}
         }),
-        MongooseModule.forFeature([{name: 'User', schema: UserSchema}])],
+        //MongooseModule.forFeature([{name: 'User', schema: UserSchema}])
+    ],
     providers: [AuthService, JwtStrategy, AuthResolver, AuthGuard],
     exports: [AuthService, JwtModule, AuthGuard]
 })

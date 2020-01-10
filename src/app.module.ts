@@ -23,7 +23,7 @@ import { ExamResultModule } from './modules/examResult/examResult.module';
       {
         autoSchemaFile: 'schema.gpl',
         installSubscriptionHandlers: true,
-        context: ({req}) => {return {request: req};}
+        context: ({req}) => ({req})
       }),
     MongooseModule.forRoot(`mongodb://admin:admin%40p8x@127.0.0.1:27017/examadmin?authSource=admin&compressors=zlib&readPreference=primary&gssapiServiceName=mongodb&appname=MongoDB%20Compass%20Community&ssl=false`),
     ], 

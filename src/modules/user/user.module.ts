@@ -6,7 +6,6 @@ import { UserService } from "./user.service";
 import { MartialArtsModule } from "../martialArts/martialArts.module";
 import { ClubModule } from "../club/club.module";
 import { AuthModule } from "../auth/auth.module";
-
 @Module({
     imports: [
         MongooseModule.forFeature([{name: 'User', schema: UserSchema}]),

@@ -3,9 +3,9 @@ import { ExamService } from "./exam.service";
 import { ExamDto } from "./dto/exam.dto";
 import { ExamInput } from "./inputs/exam.input";
 import { UseGuards } from "@nestjs/common";
-import { AuthGuard } from "../guards/auth.guard";
+import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
 
-@UseGuards(AuthGuard)
+@UseGuards(GraphqlAuthGuard)
 @Resolver('Exam')
 export class ExamResolver {
 
@@ -19,7 +19,7 @@ export class ExamResolver {
         return this.examService.findAll();
     }
 
-    @Query(() => ExamDto, {description: ''})
+    @Query(() => ExamDto, {description: 'Returns one exam with the given id'})
     async getExamById(@Args('id') id: string) {
         return this.examService.findById(id);
     }

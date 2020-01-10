@@ -1,56 +1,55 @@
-import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
+import { Resolver, Query, Mutation, Args, GqlExecutionContext } from "@nestjs/graphql";
 import { UserSchema } from './user.schema';
 import { UserService } from "./user.service";
 import { UserDto } from "./dto/user.dto";
 import { UseGuards, NotFoundException, Req } from "@nestjs/common";
-import { GqlAuthGuard } from '../guards/graphql-auth.guard';
-import { AuthGuard } from "../guards/auth.guard";
-import { ExecutionContext } from "graphql/execution/execute";
+import { User as CurrentUser } from "../decorators/user.decorator";
+import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
 
 
-@UseGuards(AuthGuard)
+@UseGuards(GraphqlAuthGuard)
 @Resolver((of) => UserSchema)
 export class UserResolver {
 
-    constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   // ===========================================================================
   // Queries
   // ===========================================================================
-  
-    
-    @Query(() => UserDto, {description: 'Searches for a user by a given email'})
-    async getUserByEmail(@Args('email') email: string) {
-        const result = await this.userService.findByEmail(email);
-        if(result) return result;
-        return new NotFoundException('User not found!');
-    }
-    @Query(() => UserDto, {description: 'Searchs for a user by a given id'})
-    async getUserById(@Args('id') id: string) {
-      const result = await this.userService.findById(id);
-      if(result) return result;
-      return new NotFoundException('User not found!');
-    }
+
+  /* @Query(() => UserDto, { description: 'Searches for a user by a given email' })
+  async getUserByEmail(@Args('email') email: string) {
+    const result = await this.userService.findByEmail(email);
+    if (result) return result;
+    return new NotFoundException('User not found!');
+  } */
+  @Query(() => UserDto, { description: 'Returns an user object representing the current logged in user' })
+  async getUser(@CurrentUser() user: any) {
+    console.log(user);
+    const result = await this.userService.findById(user.userId);
+    if (result) return result;
+    return new NotFoundException('User not found!');
+  }
 
   // ===========================================================================
   // Mutations
   // ===========================================================================
-  @Mutation(() => UserDto, {description: 'Add a new club to the clubs array of a user'})
-  async addClub(@Args('userId') userId: string, @Args('clubId') clubId: string) {
-      const result = await this.userService.addClub(userId, clubId);
-      if(result) return result;
-      return new NotFoundException('User not found!');
+  @Mutation(() => UserDto, { description: 'Add a new club to the clubs array of a user' })
+  async addUserToClub(@CurrentUser() user: any, @Args('clubId') clubId: string) {
+    const result = await this.userService.addClub(user.userId, clubId);
+    if (result) return result;
+    return new NotFoundException('User not found!');
   }
-  @Mutation(() => UserDto, {description: 'Add a new martial art rank to a user'})
-  async addMartialArtRankToUser(@Args('userId') userId: string, @Args('rankId') rankId: string) {
-    const result = await this.userService.addMartialArtRank(userId, rankId);
-    if(result) return result;
+  @Mutation(() => UserDto, { description: 'Add a new martial art rank to the current user' })
+  async addMartialArtRankToUser(@CurrentUser() user: any, @Args('rankId') rankId: string) {
+    const result = await this.userService.addMartialArtRank(user.userId, rankId);
+    if (result) return result;
     return new NotFoundException('User not found!');
   }
 
-  @Mutation(() => Boolean)
-  async deleteUser(@Args('id') id: string){
-    return this.userService.deleteUser(id);
+  @Mutation(() => Boolean, {description: 'Deletes the account of the current user'})
+  async deleteUser(@CurrentUser() user: any) {
+    return this.userService.deleteUser(user.userId);
   }
 
   // ===========================================================================

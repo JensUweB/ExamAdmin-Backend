@@ -3,9 +3,9 @@ import { ClubService } from "./club.service";
 import { ClubDto } from "./dto/club.dto";
 import { ClubInput } from "./inputs/club.input";
 import { NotFoundException, UseGuards } from "@nestjs/common";
-import { AuthGuard } from "../guards/auth.guard";
+import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
 
-@UseGuards(AuthGuard)
+@UseGuards(GraphqlAuthGuard)
 @Resolver('Club')
 export class ClubResolver {
 

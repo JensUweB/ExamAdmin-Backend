@@ -37,4 +37,10 @@ export class ExamResultService {
 
         return examResult.save();
     }
+
+    async deleteAllRelated(userId: string): Promise<any>{
+       const result = await this.erModel.deleteMany({'user._id': userId});
+       if(result) return true;
+       return false;
+    }
 }
