@@ -10,6 +10,7 @@ import { MartialArtsModule } from './modules/martialArts/martialArts.module';
 import { ClubModule } from './modules/club/club.module';
 import { ExamModule } from './modules/exam/exam.module';
 import { ExamResultModule } from './modules/examResult/examResult.module';
+import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
 
 @Module({
   imports: [
@@ -24,6 +25,19 @@ import { ExamResultModule } from './modules/examResult/examResult.module';
         autoSchemaFile: 'schema.gpl',
         installSubscriptionHandlers: true,
         context: ({req}) => ({req})
+      }),
+      MailerModule.forRoot({
+        transport: 'smtps://info@root-itsolutions.de:c&^TQ(^)NR|e7_Bp@root-itsolutions.de',
+        defaults: {
+          from:'"nest-modules" <modules@nestjs.com>',
+        },
+        template: {
+          dir: __dirname + '/templates',
+          adapter: new HandlebarsAdapter(), // or new PugAdapter()
+          options: {
+            strict: true,
+          },
+        },
       }),
     MongooseModule.forRoot(`mongodb://admin:admin%40p8x@127.0.0.1:27017/examadmin?authSource=admin&compressors=zlib&readPreference=primary&gssapiServiceName=mongodb&appname=MongoDB%20Compass%20Community&ssl=false`),
     ], 

@@ -8,8 +8,7 @@ import { MartialArtsService } from "../martialArts/martialArts.Service";
 import { ClubService } from "../club/club.service";
 import { Club } from "../club/interfaces/club.interface";
 import { MartialArts } from "../martialArts/interfaces/martialArts.interface";
-import { ExceptionsHandler } from "@nestjs/core/exceptions/exceptions-handler";
-import { AuthService } from "../auth/auth.service";
+import { MailerService } from '@nest-modules/mailer';
 
 @Injectable()
 export class UserService {
@@ -17,7 +16,8 @@ export class UserService {
     constructor(
         @InjectModel('User') private readonly userModel: Model<User>,
         readonly maService: MartialArtsService,
-        readonly clubService: ClubService
+        readonly clubService: ClubService,
+        private readonly mailerService: MailerService
     ) { }
 
 
@@ -27,6 +27,21 @@ export class UserService {
      */
     async create(userInput: UserInput): Promise<UserDto> {
         const createdUser = new this.userModel(userInput);
+
+        this
+      .mailerService
+      .sendMail({
+        to: userInput.email, // list of receivers
+        from: 'info@root-itsolutions.de', // sender address
+        subject: 'User Account Created', // Subject line
+        text: 'Welcome to exam admin!', // plaintext body
+        html: '<b>Welcome to exam admin!</b>', // HTML body content
+      })
+      .then(res => {
+          console.log('Email sent! '+JSON.stringify(res));
+      })
+      .catch(() => {});
+
         return await createdUser.save();
     }
 
