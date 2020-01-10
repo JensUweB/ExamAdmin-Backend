@@ -197,6 +197,7 @@ type Mutation {
 
   """Updates an existing martial art"""
   updateMartialArt(input: MartialArtsInput!, id: String!): MartialArtsDto!
+  deleteMartialArt: String!
 
   """Creates a new User"""
   signup(userInput: UserInput!): AuthModel!
@@ -206,9 +207,15 @@ type Mutation {
 
   """Update an existinc club. Just fill out what you want to change!"""
   updateClub(input: ClubInput!, id: String!): ClubDto!
+  deleteClub: String!
 
   """Creates a new exam. DOH!"""
   createExam(input: ExamInput!): ExamDto!
+
+  """
+  Deletes the exam with given examId, if exam.examiner equals current user
+  """
+  deleteExam(examId: String!): String!
 
   """Creates a new exam result"""
   createExamResult(input: ExamResultInput!): ExamResultDto!

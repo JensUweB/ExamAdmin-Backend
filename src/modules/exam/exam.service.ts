@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Exam } from "./interfaces/exam.interface";
@@ -36,4 +36,14 @@ export class ExamService {
         return exam.save();
     }
 
+    async deleteExam(userId: string, examId: string): Promise<Number> {
+        const exam = await this.examModel.findOne({_id: examId});
+
+        if(!exam) return -1;
+        if(exam.examiner.toString() == userId) {
+            const result = await this.examModel.deleteOne({_id: examId});
+            if(result) return 1;
+            return 0;
+        } else return -2;
+    }
 }

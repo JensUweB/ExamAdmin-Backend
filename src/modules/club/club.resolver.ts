@@ -4,6 +4,7 @@ import { ClubDto } from "./dto/club.dto";
 import { ClubInput } from "./inputs/club.input";
 import { NotFoundException, UseGuards } from "@nestjs/common";
 import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
+import { User as CurrentUser } from "../decorators/user.decorator";
 
 @UseGuards(GraphqlAuthGuard)
 @Resolver('Club')
@@ -44,6 +45,18 @@ export class ClubResolver {
         const result = await this.clubService.update(id, input);
         if(result) return result;
         return new NotFoundException('Club not found!');
+    }
+
+    @Mutation(() => String)
+    async deleteClub(@CurrentUser() user: any, clubId: string) {
+        const res = await this.clubService.delete(user.userId, clubId);
+        switch(res){
+            case 1: {return 'Success';}
+            case 0: {return 'Error: delete club failed';}
+            case -1: {return 'Error: club not found';}
+            case -2: {return 'Error: Not authorized to delete this club';}
+            default: {return 'Unexpected Server Error';}
+        }
     }
 
 

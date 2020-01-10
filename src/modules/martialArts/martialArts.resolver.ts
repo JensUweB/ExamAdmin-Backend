@@ -5,6 +5,8 @@ import { MartialArtsInput } from "./inputs/martialArts.input";
 import { RankDto } from "./dto/rank.dto";
 import { UseGuards } from "@nestjs/common";
 import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
+import { User as CurrentUser } from "../decorators/user.decorator";
+
 
 @UseGuards(GraphqlAuthGuard)
 @Resolver('MartialArts')
@@ -49,6 +51,18 @@ export class MartialArtsResolver {
     @Mutation(() => MartialArtsDto, {description: 'Updates an existing martial art'})
     async updateMartialArt(@Args('id') id: string, @Args('input') input: MartialArtsInput) {
         return this.maService.update(id, input);
+    }
+
+    @Mutation(() => String)
+    async deleteMartialArt(@CurrentUser() user: any, martialArtId: string) {
+        const res = await this.maService.delete(user.userId, martialArtId);
+        switch(res){
+            case 1: {return 'Success';}
+            case 0: {return 'Error: delete martial art failed';}
+            case -1: {return 'Error: martial art not found';}
+            case -2: {return 'Error: Not authorized to delete this martial art';}
+            default: {return 'Unexpected Server Error';}
+        }
     }
 
     // ===========================================================================

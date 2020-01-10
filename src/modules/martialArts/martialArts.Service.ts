@@ -5,6 +5,7 @@ import { Model } from "mongoose";
 import { MartialArtsInput } from "./inputs/martialArts.input";
 import { MartialArtsDto } from "./dto/martialArts.dto";
 import { RankDto } from "./dto/rank.dto";
+import { Int } from "generated/prisma-client";
 
 @Injectable()
 export class MartialArtsService {
@@ -51,5 +52,20 @@ export class MartialArtsService {
             return ma.save();
         }
         throw new HttpException('Martial Art not found', HttpStatus.NOT_FOUND);
+    }
+
+    async delete(userId: string, maId): Promise<Number> {
+        const ma = await this.maModel.findOne({ _id: maId });
+
+        if(!ma) return -1;
+        if(ma.examiner){
+            for(let i = 0; i < ma.examiner.length; i++) {
+                if(ma.examiner[i].toString() == userId){
+                    const res = await this.maModel.deleteOne({_id: maId});
+                    if(res) return 1;
+                    return 0;
+                }
+            }
+        } else return -2;
     }
 }

@@ -58,4 +58,19 @@ export class ClubService {
         throw NotImplementedException;
     }
 
+    async delete(userId: string, clubId: string): Promise<Number>{
+        const club = await this.clubModel.findOne({_id: clubId});
+
+        if(!club) return -1;
+        if(club.admins){
+            for(let i = 0; i < club.admins.length; i++) {
+                if(club.admins[i]._id.toString() == userId){
+                    const res = await this.clubModel.deleteOne({_id: clubId});
+                    if(res) return 1;
+                    return 0;
+                }
+            }
+        } else return -2;
+    }
+
 }
