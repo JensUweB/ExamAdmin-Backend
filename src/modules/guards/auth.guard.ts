@@ -1,8 +1,10 @@
 import { CanActivate, Injectable, ExecutionContext } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import { deprecate } from "util";
 
+/**
+ * @DEPRECATED
+ */
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(readonly jwtService: JwtService/*, readonly userService: UsersService*/) { }
