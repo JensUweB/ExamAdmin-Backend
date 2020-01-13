@@ -44,10 +44,10 @@ export class UserService {
         //setup email data
         let mailOptions = {
             from: 'postmaster@localhost', 
-            to: 'tester@localhost',
+            to: userInput.email,
             subject: 'Test',                           
-            text: 'Hello user, this is an awesome test!',
-            html: '<b>Hello user</b>,<br> this is an awesome test!'
+            text: 'Hello '+userInput.firstName+' '+userInput.lastName+', welcome to our awesome examAdmin!',
+            html: '<b>Hello '+userInput.firstName+' '+userInput.lastName+'</b>,<br> welcome to our awesome examAdmin!'
         }
         console.log('[Nodemailer] Trying to send email...');
         //send email
