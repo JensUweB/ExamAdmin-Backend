@@ -3,7 +3,8 @@
         "MONGO_USER": "admin",
         "MONGO_PW": "admin%40p8x",
         "MONGO_DB": "graphtest",
-        "MONGO_IP": "127.0.0.1:27017"
+        "MONGO_IP": "127.0.0.1:27017",
+        "BACKEND_HOST": "http://localhost:3000"
     },
     "watch": ["src"],
     "ext": "ts",

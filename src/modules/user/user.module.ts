@@ -6,9 +6,10 @@ import { UserService } from "./user.service";
 import { MartialArtsModule } from "../martialArts/martialArts.module";
 import { ClubModule } from "../club/club.module";
 import { AuthModule } from "../auth/auth.module";
+import { TmpUserSchema } from "./tmpUser.schema";
 @Module({
     imports: [
-        MongooseModule.forFeature([{name: 'User', schema: UserSchema}]),
+        MongooseModule.forFeature([{name: 'User', schema: UserSchema}, {name: 'TmpUser', schema: TmpUserSchema}]),
         MartialArtsModule,
         ClubModule,
         forwardRef(() => AuthModule)

@@ -9,6 +9,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { UserSchema } from "../user/user.schema";
 import { AuthResolver } from "./auth.resolver";
 import { AuthGuard } from "../guards/auth.guard";
+import { MailerService } from "./mailer.service";
 
 @Module({
     imports: [
@@ -22,8 +23,8 @@ import { AuthGuard } from "../guards/auth.guard";
         }),
         //MongooseModule.forFeature([{name: 'User', schema: UserSchema}])
     ],
-    providers: [AuthService, JwtStrategy, AuthResolver, AuthGuard],
-    exports: [AuthService, JwtModule, AuthGuard]
+    providers: [AuthService, MailerService, JwtStrategy, AuthResolver, AuthGuard],
+    exports: [AuthService, MailerService, JwtModule, AuthGuard]
 })
 export class AuthModule {
 

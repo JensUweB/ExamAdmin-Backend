@@ -1,6 +1,4 @@
 import * as mongoose from 'mongoose';
-import { ID } from 'type-graphql';
-import { ClubMemberModel } from './clubMember.model';
 
 const Schema = mongoose.Schema;
 /**

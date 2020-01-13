@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, HttpException, HttpStatus } from "@nestjs/common";
+import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { User } from './interfaces/user.interface';
@@ -8,17 +8,18 @@ import { MartialArtsService } from "../martialArts/martialArts.Service";
 import { ClubService } from "../club/club.service";
 import { Club } from "../club/interfaces/club.interface";
 import { MartialArts } from "../martialArts/interfaces/martialArts.interface";
-//import { MailerService } from "@nest-modules/mailer";
-var nodemailer = require('nodemailer');
+import { MailerService } from "../auth/mailer.service";
+import { TmpUser } from "./interfaces/tmpuser.interface";
 
 @Injectable()
 export class UserService {
 
     constructor(
         @InjectModel('User') private readonly userModel: Model<User>,
+        @InjectModel('TmpUser') private readonly tmpUser: Model<TmpUser>,
         readonly maService: MartialArtsService,
         readonly clubService: ClubService,
-        //private readonly mailerService: MailerService
+        private readonly mailerService: MailerService
     ) { }
 
 
@@ -27,56 +28,14 @@ export class UserService {
      * @param userInput All needed fields in one object! :O
      */
     async create(userInput: UserInput): Promise<UserDto | any> {
+        const id = await this.mailerService.sendVerification(userInput);
         const createdUser = new this.userModel(userInput);
+        const tmpuser = new this.tmpUser({user: createdUser, uuid: id, createdAt: new Date(Date.now())}); 
+        return tmpuser.save();
+    }
 
-        var smtpConfig = {
-            host: 'localhost',
-            port: 25,
-            secure: false, // use SSL
-            auth: {
-                user: 'postmaster@localhost',
-                pass: '123456@localhost'
-            }
-        };
-        //create transporter object
-        let transporter = nodemailer.createTransport(smtpConfig);
-        
-        //setup email data
-        let mailOptions = {
-            from: 'postmaster@localhost', 
-            to: userInput.email,
-            subject: 'Test',                           
-            text: 'Hello '+userInput.firstName+' '+userInput.lastName+', welcome to our awesome examAdmin!',
-            html: '<b>Hello '+userInput.firstName+' '+userInput.lastName+'</b>,<br> welcome to our awesome examAdmin!'
-        }
-        console.log('[Nodemailer] Trying to send email...');
-        //send email
-        transporter.sendMail(mailOptions, function(error, info) {
-            if(error) {
-                console.log('[Nodemailer] '+error);
-                return error;
-            }
-            console.log('[Nodemailer] Email sent: '+JSON.stringify(info));
-            return info;
-        }); 
-
-        /* this
-            .mailerService
-            .sendMail({
-                to: 'postmaster@localhost', // list of receivers
-                from: 'postmaster@localhost', // sender address
-                subject: 'User Account Created', // Subject line
-                text: 'Welcome to exam admin!', // plaintext body
-                html: '<b>Welcome to exam admin!</b>', // HTML body content
-            })
-            .then(res => {
-                console.log('Email sent! ' + JSON.stringify(res));
-            })
-            .catch(error => {
-                console.log('Mailer ' + error);
-            }); */
-
-        return await createdUser.save();
+    async findByConfirmId(uuid: string): Promise<any> {
+        return await this.tmpUser.findOne({ uuid: uuid });
     }
 
     /**
@@ -85,7 +44,7 @@ export class UserService {
      */
     async findByEmail(email: string): Promise<UserDto | undefined> {
         const user = await this.userModel.findOne({ email: email }).populate('clubs.club').exec();
-
+        
         if (user) {
             if (user.martialArts) {
                 for (let i = 0; i < user.martialArts.length; i++) {
@@ -97,8 +56,21 @@ export class UserService {
                 }
             }
         }
-
         return user;
+    }
+
+    async addUser(user: any, tmpUserId: string): Promise<any> {
+        const createdUser = new this.userModel({
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            password: user.password,
+            clubs: user.clubs,
+            martialArts: user.martialArts,
+        });
+        console.log(tmpUserId);
+        await this.tmpUser.deleteOne({_id: tmpUserId});
+        return createdUser.save();
     }
 
     /**
