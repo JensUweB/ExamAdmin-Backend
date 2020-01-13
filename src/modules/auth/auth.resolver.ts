@@ -39,7 +39,7 @@ export class AuthResolver {
   async signup(@Args('userInput') userInput: UserInput) {
       const emailExists = await this.userService.findByEmail(userInput.email);
 
-      if(emailExists) throw Error('Email is already in use');
+      if(emailExists) return Error('Email is already in use');
       // Warning: "No metadata found. There is more than once class-validator version installed probably. You need to flatten your dependencies.""
 
       const password = await bcrypt.hash(userInput.password, 10);
