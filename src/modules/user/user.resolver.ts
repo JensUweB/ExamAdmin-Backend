@@ -8,7 +8,7 @@ import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
 
 
 @UseGuards(GraphqlAuthGuard)
-@Resolver((of) => UserSchema)
+@Resolver('User')
 export class UserResolver {
 
   constructor(private readonly userService: UserService) { }

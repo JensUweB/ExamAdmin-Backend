@@ -8,7 +8,8 @@ import { MartialArtsService } from "../martialArts/martialArts.Service";
 import { ClubService } from "../club/club.service";
 import { Club } from "../club/interfaces/club.interface";
 import { MartialArts } from "../martialArts/interfaces/martialArts.interface";
-import { MailerService } from '@nest-modules/mailer';
+//import { MailerService } from "@nest-modules/mailer";
+var nodemailer = require('nodemailer');
 
 @Injectable()
 export class UserService {
@@ -17,7 +18,7 @@ export class UserService {
         @InjectModel('User') private readonly userModel: Model<User>,
         readonly maService: MartialArtsService,
         readonly clubService: ClubService,
-        private readonly mailerService: MailerService
+        //private readonly mailerService: MailerService
     ) { }
 
 
@@ -25,22 +26,55 @@ export class UserService {
      * Create a new user. What else?
      * @param userInput All needed fields in one object! :O
      */
-    async create(userInput: UserInput): Promise<UserDto> {
+    async create(userInput: UserInput): Promise<UserDto | any> {
         const createdUser = new this.userModel(userInput);
 
-        this
-      .mailerService
-      .sendMail({
-        to: userInput.email, // list of receivers
-        from: 'info@root-itsolutions.de', // sender address
-        subject: 'User Account Created', // Subject line
-        text: 'Welcome to exam admin!', // plaintext body
-        html: '<b>Welcome to exam admin!</b>', // HTML body content
-      })
-      .then(res => {
-          console.log('Email sent! '+JSON.stringify(res));
-      })
-      .catch(() => {});
+        var smtpConfig = {
+            host: 'localhost',
+            port: 25,
+            secure: false, // use SSL
+            auth: {
+                user: 'postmaster@localhost',
+                pass: '123456@localhost'
+            }
+        };
+        //create transporter object
+        let transporter = nodemailer.createTransport(smtpConfig);
+        
+        //setup email data
+        let mailOptions = {
+            from: 'postmaster@localhost', 
+            to: 'tester@localhost',
+            subject: 'Test',                           
+            text: 'Hello user, this is an awesome test!',
+            html: '<b>Hello user</b>,<br> this is an awesome test!'
+        }
+        console.log('[Nodemailer] Trying to send email...');
+        //send email
+        transporter.sendMail(mailOptions, function(error, info) {
+            if(error) {
+                console.log('[Nodemailer] '+error);
+                return error;
+            }
+            console.log('[Nodemailer] Email sent: '+JSON.stringify(info));
+            return info;
+        }); 
+
+        /* this
+            .mailerService
+            .sendMail({
+                to: 'postmaster@localhost', // list of receivers
+                from: 'postmaster@localhost', // sender address
+                subject: 'User Account Created', // Subject line
+                text: 'Welcome to exam admin!', // plaintext body
+                html: '<b>Welcome to exam admin!</b>', // HTML body content
+            })
+            .then(res => {
+                console.log('Email sent! ' + JSON.stringify(res));
+            })
+            .catch(error => {
+                console.log('Mailer ' + error);
+            }); */
 
         return await createdUser.save();
     }
@@ -162,13 +196,13 @@ export class UserService {
 
         // Remove user from all martial arts examiner arrays, if exists
         let maArray: Model<MartialArts> = await this.maService.findAll();
-        for(let i = 0; i < maArray.length; i++){
-            if(maArray[i].examiners.length){
+        for (let i = 0; i < maArray.length; i++) {
+            if (maArray[i].examiners.length) {
                 maArray[i].examiners.filter(res => res._id.toString() != id);
                 maArray[i].save();
             }
         }
-        
+
         const result = await this.userModel.deleteOne({ _id: id });
         if (result) { return true }
         else return false;
