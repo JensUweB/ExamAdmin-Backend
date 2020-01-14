@@ -43,6 +43,14 @@ export class ExamResultResolver {
 
     @Mutation(() => Boolean, {description: 'Delete all exam results related to the current user'})
     async deleteRelatedExamResults(@CurrentUser() user: any) {
+        const resultArray = await this.erService.findAll(user.userId);
+
+        for(let i = 0; i < resultArray.length; i++) {
+            if(resultArray[i].reportUri && resultArray[i].reportUri != ""){
+                fs.unlinkSync(resultArray[i].reportUri.split('///')[1]);
+            }
+        }
+
         return this.erService.deleteAllRelated(user.userId);
     }
 
