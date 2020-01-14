@@ -11,7 +11,7 @@ import { Upload } from '../types/Upload';
 import { v4 } from 'uuid';
 import { pathToFileURL } from "url";
 import { ExamService } from "../exam/exam.service";
-import { UnauthorizedError } from "type-graphql";
+import * as fs  from 'fs';
 
 @UseGuards(GraphqlAuthGuard)
 @Resolver('ExamResult')
@@ -55,6 +55,9 @@ export class ExamResultResolver {
         const exam = await this.examService.findById(examResult.exam);
         if(!exam) return false;
         if(exam.examiner.toString() != user.userId) return false;
+
+        // Deletes file if some already exist
+        if(examResult.reportUri) fs.unlinkSync(examResult.reportUri.split('///')[1]);        
 
         // Create an new unique file name
         const id = v4();
