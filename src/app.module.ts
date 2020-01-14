@@ -10,6 +10,8 @@ import { MartialArtsModule } from './modules/martialArts/martialArts.module';
 import { ClubModule } from './modules/club/club.module';
 import { ExamModule } from './modules/exam/exam.module';
 import { ExamResultModule } from './modules/examResult/examResult.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -28,6 +30,9 @@ import { ExamResultModule } from './modules/examResult/examResult.module';
           maxFileSize: 10485760, // 10 MiB
           maxFiles: 5
         }
+      }),
+      ServeStaticModule.forRoot({
+        rootPath: join(__dirname, './doc'),   // <-- path to the static files
       }),
     MongooseModule.forRoot(`mongodb://admin:admin%40p8x@127.0.0.1:27017/examadmin?authSource=admin&compressors=zlib&readPreference=primary&gssapiServiceName=mongodb&appname=MongoDB%20Compass%20Community&ssl=false`),
     ], 
