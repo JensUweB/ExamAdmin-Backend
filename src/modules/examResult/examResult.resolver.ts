@@ -5,11 +5,18 @@ import { ExamResultInput } from "./inputs/examResult.input";
 import { UseGuards } from "@nestjs/common";
 import { User as CurrentUser } from "../decorators/user.decorator";
 import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
+import { GraphQLUpload } from 'graphql-upload';
+import { createWriteStream } from "fs";
+import { Upload } from '../types/Upload';
+import { v4 } from 'uuid';
+import { pathToFileURL } from "url";
+import { ExamService } from "../exam/exam.service";
+import { UnauthorizedError } from "type-graphql";
 
 @UseGuards(GraphqlAuthGuard)
 @Resolver('ExamResult')
 export class ExamResultResolver {
-    constructor(private readonly erService: ExamResultService) {}
+    constructor(private readonly erService: ExamResultService, private readonly examService: ExamService) {}
     
     // ===========================================================================
     // Queries
@@ -38,7 +45,39 @@ export class ExamResultResolver {
     async deleteRelatedExamResults(@CurrentUser() user: any) {
         return this.erService.deleteAllRelated(user.userId);
     }
+
+    @Mutation(()=> Boolean, {description: 'Examiners can upload an exam protocol to an existing exam result. Use cURL request to send required data.'})
+    async uploadExamProtocol(@CurrentUser() user: any, @Args({name: 'examResultId', type: () => String}) erId: string,  @Args({name: "protocol", type: () => GraphQLUpload}) { createReadStream, filename }: Upload): Promise<boolean> {
+        // Checks if the sending user is equal to the examiner
+        if(!erId) return false;
+        const examResult = await this.erService.findById( erId);
+        if(!examResult) return false;
+        const exam = await this.examService.findById(examResult.exam);
+        if(!exam) return false;
+        if(exam.examiner.toString() != user.userId) return false;
+
+        // Create an new unique file name
+        const id = v4();
+        const fileArray = filename.split('.');
+        const fileEnd = fileArray[fileArray.length-1];
+        const newfilename = id + '.' + fileEnd.toLocaleLowerCase();
+        const relativePath = __dirname + `/../../uploads/protocols/${newfilename}`;
+        
+        // Add the file uri to the exam result
+        this.erService.addReportUri(erId,pathToFileURL(relativePath).toString());
+
+        return new Promise(async (resolve, reject) => 
+            createReadStream()
+            .pipe(createWriteStream(relativePath))
+            .on('finish', result => {
+                resolve(true);
+            })
+            .on('error', () => reject(false))
+        );
+        
+    } 
     // ===========================================================================
     // Subscriptions
     // ===========================================================================
 }
+ 

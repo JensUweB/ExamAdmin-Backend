@@ -23,6 +23,12 @@ export class ExamResultService {
         return await this.erModel.find({ user: userId });
     }
 
+    async addReportUri(id: string, uri: string): Promise<ExamResultDto | undefined> {
+        const examResult = await this.erModel.findOne({ _id: id });
+        examResult.reportUri = uri;
+        return examResult.save();
+    }
+
     async update(id: string, input: ExamResultInput): Promise<ExamResultDto | undefined> {
         const examResult = await this.erModel.findOne({ _id: id });
 

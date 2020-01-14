@@ -222,6 +222,11 @@ type Mutation {
 
   """Delete all exam results related to the current user"""
   deleteRelatedExamResults: Boolean!
+
+  """
+  Examiners can upload an exam protocol to an existing exam result. Use cURL request to send required data.
+  """
+  uploadExamProtocol(protocol: Upload!, examResultId: String!): Boolean!
 }
 
 type Query {
@@ -277,6 +282,9 @@ input RankInput {
   name: String!
   number: Float!
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
 
 type UserDto {
   _id: ID!
