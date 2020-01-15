@@ -77,7 +77,7 @@ export class UserService {
      * Returns an user object with populated clubs and martialArts (the user ranks) fields. 
      * @param id the user id you want to search for
      */
-    async findById(id: string): Promise<UserDto | undefined> {
+    async findById(id: string): Promise<UserDto | any> {
         const user = await this.userModel.findOne({ _id: id }).populate('clubs.club').exec();
 
         for (let i = 0; i < user.martialArts.length; i++) {
@@ -88,7 +88,7 @@ export class UserService {
             }
         }
         if (user) return user;
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        return new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -96,7 +96,7 @@ export class UserService {
      * @param id the user id to update
      * @param input the user input. Just fill fields you wish to update!
      */
-    async update(id: string, input: UserInput) {
+    async update(id: string, input: UserInput): Promise<UserDto | any> {
         let user = await this.userModel.findOne({ _id: id });
 
         if (user) {
@@ -107,7 +107,7 @@ export class UserService {
             if (input.clubs) user.clubs = input.clubs;
             return await user.save();
         }
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        return new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -115,7 +115,7 @@ export class UserService {
      * @param userId the user to add the club to
      * @param clubId the club to add
      */
-    async addClub(userId: string, clubId: string): Promise<UserDto> {
+    async addClub(userId: string, clubId: string): Promise<UserDto | any> {
         const user: Model<User> = await this.findById(userId);
 
         if (user) {
@@ -123,7 +123,7 @@ export class UserService {
             return user.save();
         }
 
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        return new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -132,13 +132,13 @@ export class UserService {
      * @param userId the user to add the new rank to
      * @param rankId the martial art rank to add
      */
-    async addMartialArtRank(userId: string, rankId: string) {
+    async addMartialArtRank(userId: string, rankId: string): Promise<UserDto | any> {
         const user: Model<User> = await this.findById(userId);
         if (user) {
             user.martialArts.push({ _id: rankId });
             return user.save();
         }
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        return new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     /**

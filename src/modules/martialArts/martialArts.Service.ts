@@ -20,18 +20,18 @@ export class MartialArtsService {
         return this.maModel.findOne({ _id: id }).populate('examiners').exec();
     }
 
-    async findByRank(rankId: string): Promise<MartialArtsDto> {
+    async findByRank(rankId: string): Promise<MartialArtsDto | any> {
         const result = await this.maModel.findOne({ 'ranks._id': rankId });
 
         if (result) return result;
-        throw new HttpException('Martial Art Rank not found', HttpStatus.NOT_FOUND);
+        return new HttpException('Martial Art Rank not found', HttpStatus.NOT_FOUND);
     }
 
     async findAll(): Promise<MartialArtsDto[]> {
         return await this.maModel.find().populate('examiners').exec();
     }
 
-    async findRank(rankId: string): Promise<RankDto> {
+    async findRank(rankId: string): Promise<RankDto | any> {
         const result = await this.maModel.findOne({ 'ranks._id': rankId });
         if (result) {
             const rank = result.ranks.filter(rank => {
@@ -39,7 +39,7 @@ export class MartialArtsService {
             });
             return rank[0];
         }
-        throw new HttpException('Martial Art Rank not found', HttpStatus.NOT_FOUND);
+        return new HttpException('Martial Art Rank not found', HttpStatus.NOT_FOUND);
     }
 
     async update(id: string, input: MartialArtsInput): Model<MartialArts | undefined> {
@@ -50,7 +50,7 @@ export class MartialArtsService {
             if (input.ranks) ma.ranks = input.ranks;
             return ma.save();
         }
-        throw new HttpException('Martial Art not found', HttpStatus.NOT_FOUND);
+        return new HttpException('Martial Art not found', HttpStatus.NOT_FOUND);
     }
 
     async delete(userId: string, maId): Promise<Number> {
