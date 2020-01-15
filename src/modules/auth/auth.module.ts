@@ -5,11 +5,9 @@ import { AuthService } from "./auth.service";
 import { JwtStrategy } from './jwt.strategy';
 import { JwtModule } from "@nestjs/jwt";
 import { jwtConstants } from "./constants";
-import { MongooseModule } from "@nestjs/mongoose";
-import { UserSchema } from "../user/user.schema";
 import { AuthResolver } from "./auth.resolver";
-import { AuthGuard } from "../guards/auth.guard";
 import { MailerService } from "./mailer.service";
+import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
 
 @Module({
     imports: [
@@ -21,10 +19,9 @@ import { MailerService } from "./mailer.service";
             secret: jwtConstants.secret,
             signOptions: {expiresIn: 3600}
         }),
-        //MongooseModule.forFeature([{name: 'User', schema: UserSchema}])
     ],
-    providers: [AuthService, MailerService, JwtStrategy, AuthResolver, AuthGuard],
-    exports: [AuthService, MailerService, JwtModule, AuthGuard]
+    providers: [AuthService, MailerService, JwtStrategy, AuthResolver, GraphqlAuthGuard],
+    exports: [AuthService, MailerService, JwtModule, GraphqlAuthGuard]
 })
 export class AuthModule {
 

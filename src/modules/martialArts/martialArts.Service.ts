@@ -5,7 +5,6 @@ import { Model } from "mongoose";
 import { MartialArtsInput } from "./inputs/martialArts.input";
 import { MartialArtsDto } from "./dto/martialArts.dto";
 import { RankDto } from "./dto/rank.dto";
-import { Int } from "generated/prisma-client";
 
 @Injectable()
 export class MartialArtsService {
