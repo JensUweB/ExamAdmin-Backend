@@ -55,7 +55,8 @@ export class ExamResultResolver {
     }
 
     @Mutation(()=> Boolean, {description: 'Examiners can upload an exam protocol to an existing exam result. Use cURL request to send required data.'})
-    async uploadExamProtocol(@CurrentUser() user: any, @Args({name: 'examResultId', type: () => String}) erId: string,  @Args({name: "protocol", type: () => GraphQLUpload}) { createReadStream, filename }: Upload): Promise<boolean> {
+    async uploadExamProtocol(@CurrentUser() user: any, @Args({name: 'examResultId', type: () => String}) erId: string,  @Args({name: "protocol", type: () => GraphQLUpload}) 
+    { createReadStream, filename }: Upload): Promise<boolean> {
         // Checks if the sending user is equal to the examiner
         if(!erId) return false;
         const examResult = await this.erService.findById( erId);

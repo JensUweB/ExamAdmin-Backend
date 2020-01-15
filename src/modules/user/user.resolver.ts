@@ -16,12 +16,6 @@ export class UserResolver {
   // Queries
   // ===========================================================================
 
-  /* @Query(() => UserDto, { description: 'Searches for a user by a given email' })
-  async getUserByEmail(@Args('email') email: string) {
-    const result = await this.userService.findByEmail(email);
-    if (result) return result;
-    return new NotFoundException('User not found!');
-  } */
   @Query(() => UserDto, { description: 'Returns an user object representing the current logged in user' })
   async getUser(@CurrentUser() user: any) {
     console.log(user);
@@ -39,6 +33,7 @@ export class UserResolver {
     if (result) return result;
     return new NotFoundException('User not found!');
   }
+  
   @Mutation(() => UserDto, { description: 'Add a new martial art rank to the current user' })
   async addMartialArtRankToUser(@CurrentUser() user: any, @Args('rankId') rankId: string) {
     const result = await this.userService.addMartialArtRank(user.userId, rankId);

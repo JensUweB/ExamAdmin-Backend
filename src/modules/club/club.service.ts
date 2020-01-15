@@ -1,4 +1,4 @@
-import { Injectable, NotImplementedException, HttpStatus, HttpException } from "@nestjs/common";
+import { Injectable, NotImplementedException } from "@nestjs/common";
 import { Club } from "./interfaces/club.interface";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";

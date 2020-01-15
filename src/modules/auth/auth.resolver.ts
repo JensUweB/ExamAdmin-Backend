@@ -2,7 +2,6 @@ import { Resolver, Args, Mutation, Query } from "@nestjs/graphql";
 import { AuthService } from "./auth.service";
 import { AuthModel } from "./auth.model";
 import * as bcrypt from 'bcryptjs';
-import { JwtService } from "@nestjs/jwt";
 import { UserInput } from "../user/input/user.input";
 import { UserService } from "../user/user.service";
 import { User as CurrentUser } from "../decorators/user.decorator";
@@ -12,7 +11,7 @@ import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
 /**
  * Authentication resolver for the sign in
  */
-@Resolver('Auth') //(of) => AuthModel
+@Resolver('Auth')
 export class AuthResolver {
 
   constructor(
