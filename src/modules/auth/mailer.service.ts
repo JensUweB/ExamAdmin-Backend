@@ -4,6 +4,7 @@ import { UserInput } from '../user/input/user.input';
 import { v4 } from 'uuid';
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { UserService } from '../user/user.service';
+import { Config } from 'Config';
 
 @Injectable()
 export class MailerService {
@@ -13,11 +14,11 @@ export class MailerService {
     async sendVerification(userInput: UserInput) {
         //setup unique verification link with uuid and ioredis
         const id = v4();
-        const link = 'http://localhost:3000/auth/confirm/'+id
+        const link = Config.URL+'/auth/confirm/'+id
         
         //setup email data
         let mailOptions = {
-            from: 'postmaster@localhost', 
+            from: Config.SERVER_EMAIL, 
             to: userInput.email,
             subject: 'Test',                           
             text: `Hello ${userInput.firstName} ${userInput.lastName}, welcome to our awesome examAdmin! Please click on the following link, to confirm registration: ${link}"`,
@@ -36,11 +37,11 @@ export class MailerService {
         const user = await this.userService.findByEmail(email);
         if(!user) return false;
         const  name: string = user.firstName.toString + " " + user.lastName;
-        const url: string = 'http://localhost:3000/auth/forgot-password/'+token;
+        const url: string = Config.URL+'/auth/forgot-password/'+token;
 
         //setup email data
         let mailOptions = {
-            from: 'postmaster@localhost', 
+            from: Config.SERVER_EMAIL, 
             to: email,
             subject: 'Password help has arived!',  
             text: `No plain text available.`,                         
@@ -64,7 +65,7 @@ export class MailerService {
 
         //setup email data
         let mailOptions = {
-            from: 'postmaster@localhost', 
+            from: Config.SERVER_EMAIL, 
             to: email,
             subject: 'Password Reset Confirmation',                           
             template: 'reset-password.email',
@@ -79,12 +80,12 @@ export class MailerService {
     async sendMail(mailOptions) {
         //setup smtp config
         var smtpConfig = {
-            host: 'localhost',
-            port: 25,
-            secure: false, // use SSL
+            host: Config.SMTP_HOST,
+            port: Config.SMTP_PORT,
+            secure: Config.SMTP_SSL, // use SSL
             auth: {
-                user: 'postmaster@localhost',
-                pass: '123456@localhost'
+                user: Config.SERVER_EMAIL,
+                pass: Config.EMAIL_PASS
             }
         };
 

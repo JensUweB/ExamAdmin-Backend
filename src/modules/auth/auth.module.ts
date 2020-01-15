@@ -4,10 +4,10 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthService } from "./auth.service";
 import { JwtStrategy } from './jwt.strategy';
 import { JwtModule } from "@nestjs/jwt";
-import { jwtConstants } from "./constants";
 import { AuthResolver } from "./auth.resolver";
 import { MailerService } from "./mailer.service";
 import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
+import { Config } from "Config";
 
 @Module({
     imports: [
@@ -16,8 +16,8 @@ import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
             defaultStrategy: 'jwt'
         }), 
         JwtModule.register({
-            secret: jwtConstants.secret,
-            signOptions: {expiresIn: 3600}
+            secret: Config.JWT_SECRET,
+            signOptions: {expiresIn: Config.JWT_EXPIRE}
         }),
     ],
     providers: [AuthService, MailerService, JwtStrategy, AuthResolver, GraphqlAuthGuard],
