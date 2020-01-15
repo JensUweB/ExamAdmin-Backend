@@ -2,33 +2,18 @@ var Redis = require("ioredis");
 import * as nodemailer from 'nodemailer';
 import { UserInput } from '../user/input/user.input';
 import { v4 } from 'uuid';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class MailerService {
 
-    constructor() {}
+    constructor(@Inject(forwardRef(() => UserService)) private readonly userService: UserService) {}
 
     async sendVerification(userInput: UserInput) {
         //setup unique verification link with uuid and ioredis
         const id = v4();
-        //const redis = new Redis();
-        //await redis.set(id, userId, "ex", 60*60*24);
-        const link = 'http://localhost:3000/user/confirm/'+id
-        console.log(link);
-
-        //setup smtp config
-        var smtpConfig = {
-            host: 'localhost',
-            port: 25,
-            secure: false, // use SSL
-            auth: {
-                user: 'postmaster@localhost',
-                pass: '123456@localhost'
-            }
-        };
-        //create transporter object
-        let transporter = nodemailer.createTransport(smtpConfig);
+        const link = 'http://localhost:3000/auth/confirm/'+id
         
         //setup email data
         let mailOptions = {
@@ -43,13 +28,74 @@ export class MailerService {
                 Maybe you should change your email account password, just to be safe.<br>`
         }
         //send email
+        this.sendMail(mailOptions);
+        return id; 
+    }
+
+    async forgotPassword(email: string, token) {
+        const user = await this.userService.findByEmail(email);
+        if(!user) return false;
+        const  name: string = user.firstName.toString + " " + user.lastName;
+        const url: string = 'http://localhost:3000/auth/forgot-password/'+token;
+
+        //setup email data
+        let mailOptions = {
+            from: 'postmaster@localhost', 
+            to: email,
+            subject: 'Password help has arived!',  
+            text: `No plain text available.`,                         
+            html: `
+                    <h3>Dear ${name},</h3>
+                    <p>You requested for a password reset, kindly use this <a href="${url}">link</a> to reset your password</p>
+                    <br>
+                    <p>This link contains a security token. The token will expire after one hour!</p>
+                    <br>
+                    <p>Cheers!</p>`
+        }
+        //send email
+        this.sendMail(mailOptions);
+    }
+
+    async passwordReset(email: string) {
+        const user = await this.userService.findByEmail(email);
+        if(!user) return false;
+
+        const id = v4();
+
+        //setup email data
+        let mailOptions = {
+            from: 'postmaster@localhost', 
+            to: email,
+            subject: 'Password Reset Confirmation',                           
+            template: 'reset-password.email',
+            context: {
+                name: user.firstName + " " + user.lastName
+            }
+        }
+        //send email
+        this.sendMail(mailOptions);
+    }
+
+    async sendMail(mailOptions) {
+        //setup smtp config
+        var smtpConfig = {
+            host: 'localhost',
+            port: 25,
+            secure: false, // use SSL
+            auth: {
+                user: 'postmaster@localhost',
+                pass: '123456@localhost'
+            }
+        };
+
+        //create transporter object
+        let transporter = nodemailer.createTransport(smtpConfig);
+
         transporter.sendMail(mailOptions, function(error, info) {
             if(error) {
                 console.log('[Nodemailer] '+error);
                 return error;
-            }
-            //console.log('[Nodemailer] Email sent: '+JSON.stringify(info));
+            } else return null;
         });
-        return id; 
     }
 }

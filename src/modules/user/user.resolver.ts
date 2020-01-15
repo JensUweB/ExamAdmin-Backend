@@ -1,5 +1,4 @@
-import { Resolver, Query, Mutation, Args, GqlExecutionContext } from "@nestjs/graphql";
-import { UserSchema } from './user.schema';
+import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { UserService } from "./user.service";
 import { UserDto } from "./dto/user.dto";
 import { UseGuards, NotFoundException, Req } from "@nestjs/common";

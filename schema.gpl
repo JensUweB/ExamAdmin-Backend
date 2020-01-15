@@ -201,6 +201,8 @@ type Mutation {
 
   """Creates a new User"""
   signup(userInput: UserInput!): AuthModel!
+  forgotPassword(email: String!): String!
+  changePassword(password: String!): Boolean!
 
   """Create a new club."""
   createClub(input: ClubInput!): ClubDto!

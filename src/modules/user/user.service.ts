@@ -180,7 +180,9 @@ export class UserService {
         else return false;
     }
 
-    /* async findAll(): Promise<User[]> {
-        return await this.userModel.find().exec();
-    } */
+    async updatePassword(id: string, hashedPw: string): Promise<UserDto | undefined> {
+        const user = await this.userModel.findOne({_id: id});
+        user.password = hashedPw;
+        return user.save();
+    }
 }
