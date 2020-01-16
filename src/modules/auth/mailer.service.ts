@@ -1,5 +1,6 @@
 var Redis = require("ioredis");
 import * as nodemailer from 'nodemailer';
+import * as hbs from 'nodemailer-express-handlebars';
 import { UserInput } from '../user/input/user.input';
 import { v4 } from 'uuid';
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
@@ -36,7 +37,6 @@ export class MailerService {
     async forgotPassword(email: string, token) {
         const user = await this.userService.findByEmail(email);
         if(!user) return false;
-        const  name: string = user.firstName.toString + " " + user.lastName;
         const url: string = Config.URL+'/auth/forgot-password/'+token;
 
         //setup email data
@@ -44,14 +44,12 @@ export class MailerService {
             from: Config.SERVER_EMAIL, 
             to: email,
             subject: 'Password help has arived!',  
-            text: `No plain text available.`,                         
-            html: `
-                    <h3>Dear ${name},</h3>
-                    <p>You requested for a password reset, kindly use this <a href="${url}">link</a> to reset your password</p>
-                    <br>
-                    <p>This link contains a security token. The token will expire after one hour!</p>
-                    <br>
-                    <p>Cheers!</p>`
+            text: 'Sorry, seems you disabled html view... Your password reset help is here! If you want to reset your password, klick on this Link: '+url,
+            template: 'forgot-password',
+            context: {
+                name: user.firstName + " " + user.lastName,
+                url: url
+            }
         }
         //send email
         this.sendMail(mailOptions);
@@ -61,14 +59,13 @@ export class MailerService {
         const user = await this.userService.findByEmail(email);
         if(!user) return false;
 
-        const id = v4();
-
         //setup email data
         let mailOptions = {
             from: Config.SERVER_EMAIL, 
             to: email,
-            subject: 'Password Reset Confirmation',                           
-            template: 'reset-password.email',
+            subject: 'Password Reset Confirmation',           
+            text: 'You have reset your password. Good for you!',                
+            template: 'reset-password',
             context: {
                 name: user.firstName + " " + user.lastName
             }
@@ -91,6 +88,18 @@ export class MailerService {
 
         //create transporter object
         let transporter = nodemailer.createTransport(smtpConfig);
+        
+        transporter.use('compile',hbs({
+            viewEngine: {
+                extName: '.hbs',
+                partialsDir: 'src/modules/auth/templates',
+                layoutsDir: 'src/modules/auth/templates',
+                defaultLayout: 'email.hbs',
+                },
+                viewPath: 'src/modules/auth/templates',
+                extName: '.hbs',
+        }));
+    
 
         transporter.sendMail(mailOptions, function(error, info) {
             if(error) {

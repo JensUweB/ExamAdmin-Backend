@@ -183,6 +183,7 @@ export class UserService {
     async updatePassword(id: string, hashedPw: string): Promise<UserDto | undefined> {
         const user = await this.userModel.findOne({_id: id});
         user.password = hashedPw;
+        this.mailerService.passwordReset(user.email);
         return user.save();
     }
 }
