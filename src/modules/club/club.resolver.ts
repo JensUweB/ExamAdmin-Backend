@@ -20,7 +20,7 @@ export class ClubResolver {
     async getAllClubs() {
         const result = await this.clubService.findAll();
         if(result) return result;
-        return new NotFoundException('No club not found. Please create a club first bevore searching.');
+        return new Error('No club found. Please create a club first bevore searching.');
     }
 
     @Query(() => ClubDto, {description: 'Returns one club by id'})

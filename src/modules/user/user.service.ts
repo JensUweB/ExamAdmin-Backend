@@ -116,11 +116,12 @@ export class UserService {
      * @param clubId the club to add
      */
     async addClub(userId: string, clubId: string): Promise<UserDto | any> {
-        const user: Model<User> = await this.findById(userId);
+        const user = await this.userModel.findOne({ _id: userId });
 
         if (user) {
             user.clubs.push({ club: clubId, confirmed: false });
             return user.save();
+            //return await this.userModel.findOne({ _id: user._id }).populate('clubs.club').exec();
         }
 
         return new HttpException('User not found', HttpStatus.NOT_FOUND);

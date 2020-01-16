@@ -17,7 +17,7 @@ export class ClubService {
         return this.clubModel.findOne({_id: id}).populate('martialArts').populate('admins').exec();
     }
     async findAll(): Promise<ClubDto[]> {
-        return await this.clubModel.find().exec();
+        return this.clubModel.find().populate('martialArts').populate('admins').exec();
     }
     async update(id: string, input: ClubInput): Promise<ClubDto> {
         const oldClub = await this.clubModel.findOne({_id: id});

@@ -19,11 +19,9 @@ export class AuthService {
      */
     async validateUser({email, password}): Promise<User | any> {
         const user = await this.userService.findByEmail(email);
+        if(!user) return Error('Email or password incorrect');
         const valid = await bcrypt.compare(password, user.password);
-
-        if(!valid || !user){
-            return Error('Email or password incorrect');
-        }
+        if(!valid) return Error('Email or password incorrect');
         return user;
     }
 

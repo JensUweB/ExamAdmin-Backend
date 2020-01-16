@@ -200,7 +200,7 @@ type Mutation {
   deleteMartialArt: String!
 
   """Creates a new User"""
-  signup(userInput: UserInput!): AuthModel!
+  signup(userInput: UserInput!): String!
   forgotPassword(email: String!): String!
   changePassword(password: String!): Boolean!
 
