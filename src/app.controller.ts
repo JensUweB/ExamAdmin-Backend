@@ -59,8 +59,8 @@ export class AppController {
       );
       
     } catch (error) {
-      if (error.name == "TokenExpiredError") return `<h1>Your password reset token is expired.</h1><b> Please repeat password reset process.</b>`;
-      return `<h1>Unexpected ${error.name}</h1><b>${error.message}</b>`;
+      if (error.name == "TokenExpiredError") return res.render('index', {body: `<h1>Your password reset token is expired.</h1><b> Please repeat password reset process.</b>`});
+      return res.render('index', {body: `<h1>Error: ${error.name}</h1><b>${error.message}</b>`});
     }
   }
 }
