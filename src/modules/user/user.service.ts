@@ -134,7 +134,7 @@ export class UserService {
      * @param rankId the martial art rank to add
      */
     async addMartialArtRank(userId: string, rankId: string): Promise<UserDto | any> {
-        const user: Model<User> = await this.findById(userId);
+        const user = await this.userModel.findOne({ _id: userId });
         if (user) {
             user.martialArts.push({ _id: rankId });
             return user.save();
