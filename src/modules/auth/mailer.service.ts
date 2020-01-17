@@ -5,7 +5,7 @@ import { UserInput } from '../user/input/user.input';
 import { v4 } from 'uuid';
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { Config } from 'Config';
+import { Config } from '../../../Config';
 
 @Injectable()
 export class MailerService {

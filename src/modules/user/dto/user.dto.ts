@@ -1,6 +1,5 @@
 import { ObjectType, Field, ID } from 'type-graphql';
-import { MartialArtsDto } from 'src/modules/martialArts/dto/martialArts.dto';
-import { ClubDto } from 'src/modules/club/dto/club.dto';
+import { MartialArtsDto } from '../../martialArts/dto/martialArts.dto';
 import { ClubMemberDto } from './clubMember.dto';
 
 @ObjectType()

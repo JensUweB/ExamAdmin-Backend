@@ -10,7 +10,7 @@ import { MartialArtsModule } from './modules/martialArts/martialArts.module';
 import { ClubModule } from './modules/club/club.module';
 import { ExamModule } from './modules/exam/exam.module';
 import { ExamResultModule } from './modules/examResult/examResult.module';
-import { Config } from 'Config';
+import { Config } from '../Config';
 
 @Module({
   imports: [
