@@ -54,8 +54,8 @@ export class MartialArtsResolver {
     }
 
     @Mutation(() => String)
-    async deleteMartialArt(@CurrentUser() user: any, martialArtId: string) {
-        const res = await this.maService.delete(user.userId, martialArtId);
+    async deleteMartialArt(@CurrentUser() user: any, @Args('id') id: string) {
+        const res = await this.maService.delete(user.userId, id);
         switch(res){
             case 1: {return 'Success';}
             case 0: {return 'Error: delete martial art failed';}

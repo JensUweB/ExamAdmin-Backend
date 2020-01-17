@@ -197,7 +197,7 @@ type Mutation {
 
   """Updates an existing martial art"""
   updateMartialArt(input: MartialArtsInput!, id: String!): MartialArtsDto!
-  deleteMartialArt: String!
+  deleteMartialArt(id: String!): String!
 
   """Creates a new User"""
   signup(userInput: UserInput!): String!
