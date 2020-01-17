@@ -18,7 +18,6 @@ export class UserResolver {
 
   @Query(() => UserDto, { description: 'Returns an user object representing the current logged in user' })
   async getUser(@CurrentUser() user: any) {
-    console.log(user);
     const result = await this.userService.findById(user.userId);
     if (result) return result;
     return new NotFoundException('User not found!');
