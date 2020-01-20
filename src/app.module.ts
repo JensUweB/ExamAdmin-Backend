@@ -30,9 +30,6 @@ import { Config } from '../Config';
           maxFiles: 5
         }
       }),
-      /* ServeStaticModule.forRoot({
-        rootPath: join(__dirname, './doc'),   // <-- path to the static files
-      }), */
     MongooseModule.forRoot(Config.MONGO_CONN_STR),
     ], 
   controllers: [AppController],

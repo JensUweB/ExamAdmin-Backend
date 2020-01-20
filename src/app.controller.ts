@@ -3,7 +3,6 @@ import { AppService } from './app.service';
 import { UserService } from './modules/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import * as hbs from 'hbs';
 import { Response } from 'express';
 
 @Controller()
