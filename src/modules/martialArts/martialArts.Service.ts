@@ -11,7 +11,10 @@ export class MartialArtsService {
 
     constructor(@InjectModel('MartialArt') private readonly maModel: Model<MartialArts>) { }
 
-    async create(maInput: MartialArtsInput): Promise<MartialArts> {
+    async create(maInput: MartialArtsInput): Promise<MartialArts | Error> {
+        const exists = await this.maModel.findOne({name: maInput.name, styleName: maInput.styleName});
+        if(exists) return new Error(`An martial art with the name "${maInput.name}" already exists!`);
+
         const martialArt = await new this.maModel(maInput);
         return martialArt.save();
     }

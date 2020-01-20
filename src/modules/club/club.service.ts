@@ -10,7 +10,10 @@ export class ClubService {
 
     constructor(@InjectModel('Club') private readonly clubModel: Model<Club>) {}
 
-    async create(clubInput: ClubInput): Promise<ClubDto> {
+    async create(clubInput: ClubInput): Promise<ClubDto | Error> {
+        const exists = await this.clubModel.findOne({name: clubInput.name});
+        if(exists) return new Error(`An club with the name "${clubInput.name}" already exists!`);
+
         return new this.clubModel(clubInput).save();
     }
     async findById(id: string):Promise<ClubDto | undefined> {
@@ -60,6 +63,7 @@ export class ClubService {
 
     async delete(userId: string, clubId: string): Promise<Number>{
         const club = await this.clubModel.findOne({_id: clubId});
+
 
         if(!club) return -1;
         if(club.admins){

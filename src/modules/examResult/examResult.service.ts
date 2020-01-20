@@ -10,7 +10,9 @@ export class ExamResultService {
 
     constructor(@InjectModel('ExamResult') private readonly erModel: Model<ExamResult>) { }
 
-    async create(input: ExamResultInput): Promise<ExamResultDto> {
+    async create(input: ExamResultInput): Promise<ExamResultDto | Error> {
+        const existing = await this.erModel.findOne({ user: input.user,  exam: input.exam });
+        if(existing) return new Error('User has already an exam result for the given exam!');
         const examResult = new this.erModel(input);
         return examResult.save();
     }
@@ -45,7 +47,7 @@ export class ExamResultService {
     }
 
     async deleteAllRelated(userId: string): Promise<any>{
-       const result = await this.erModel.deleteMany({'user._id': userId});
+       const result = await this.erModel.deleteMany({'user': userId});
        if(result) return true;
        return false;
     }
