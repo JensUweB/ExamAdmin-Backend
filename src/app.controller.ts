@@ -25,15 +25,28 @@ export class AppController {
 
   @Get('auth/forgot-password/:token')
   async forgotPassword(@Res() res: Response, @Param('token') token: string) {
-    const result = await this.jwtService.verify(token);
+    let result;
+    let error;
+    try{
+      result = await this.jwtService.verify(token);
+    } catch (err) {
+      error = err;
+    }
 
-    return res.render(
+    if(!error) return res.render(
       'forgot-password',
       {
         email: result.email,
         token: token
-      }
-    );
+      });
+      return res.render(
+        'index',{
+          body: `<div>
+          <h2>An error has occured!</h2>
+          <b>${error}</b>
+        </div> `
+        }
+      );
   }
 
   @Post('auth/forgot-password/')
