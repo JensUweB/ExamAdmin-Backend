@@ -48,7 +48,7 @@ export class ClubResolver {
     }
 
     @Mutation(() => String)
-    async deleteClub(@CurrentUser() user: any, clubId: string) {
+    async deleteClub(@CurrentUser() user: any, @Args('clubId') clubId: string) {
         const res = await this.clubService.delete(user.userId, clubId);
         switch(res){
             case 1: {return 'Success';}
