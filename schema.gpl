@@ -185,6 +185,7 @@ input MartialArtsInput {
 type Mutation {
   """Add a new club to the clubs array of a user"""
   addUserToClub(clubId: String!): UserDto!
+  removeUserFromClub(clubId: String!): Boolean!
 
   """Add a new martial art rank to the current user"""
   addMartialArtRankToUser(rankId: String!): UserDto!
@@ -209,7 +210,7 @@ type Mutation {
 
   """Update an existinc club. Just fill out what you want to change!"""
   updateClub(input: ClubInput!, id: String!): ClubDto!
-  deleteClub: String!
+  deleteClub(clubId: String!): String!
 
   """Creates a new exam. DOH!"""
   createExam(input: ExamInput!): ExamDto!

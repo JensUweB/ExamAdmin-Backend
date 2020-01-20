@@ -10,6 +10,7 @@ import { Club } from "../club/interfaces/club.interface";
 import { MartialArts } from "../martialArts/interfaces/martialArts.interface";
 import { MailerService } from "../auth/mailer.service";
 import { TmpUser } from "./interfaces/tmpuser.interface";
+import { forEachChild } from "typescript";
 
 @Injectable()
 export class UserService {
@@ -118,28 +119,76 @@ export class UserService {
     async addClub(userId: string, clubId: string): Promise<UserDto | any> {
         const user = await this.userModel.findOne({ _id: userId });
 
+        //Check if a user is already member of the given club
+        let res = false;
+        if(user.clubs && user.clubs != null){
+            for(let i = 0; i < user.clubs.length; i++){
+                if(user.clubs[i].club._id.toString() == clubId) res = true;
+            }
+        } 
+        if(res) return new Error('User is already a member of this club!');
+
         if (user) {
             user.clubs.push({ club: clubId, confirmed: false });
-            return user.save();
-            //return await this.userModel.findOne({ _id: user._id }).populate('clubs.club').exec();
+            await user.save();
+            return await this.userModel.findOne({ _id: user._id }).populate('clubs.club').exec();
         }
 
         return new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
+    async removeClub(userId: string, clubId: string): Promise<Boolean | Error> {
+        const user = await this.userModel.findOne({ _id: userId });
+        const club = await this.clubService.findById(clubId);
+
+        if(!club) return new Error('Club does not exist.'); 
+
+        let remove = false;
+        user.clubs = await user.clubs.filter(ele => {
+            if(ele.club.toString() == clubId) remove = true;
+            return ele.club.toString() != clubId;
+        });
+        const result = await user.save();
+
+        if(!result) return new Error('Unexpected Server Error! Saving user object failed!');
+        if(!remove) return new Error('User is no member of this club.');
+        if(result && remove && club) return true;
+        return false;        
+    }
+
     /**
      * You can add a new martial art rank to a user.
+     * Checks if the user already contains this specific rank, or any rank from the connected martial art
      * This will NOT search for an existing rank of the same martial art!
      * @param userId the user to add the new rank to
      * @param rankId the martial art rank to add
      */
-    async addMartialArtRank(userId: string, rankId: string): Promise<UserDto | any> {
+    async addMartialArtRank(userId: string, rankId: string): Promise<UserDto | Error> {
         const user = await this.userModel.findOne({ _id: userId });
-        if (user) {
-            user.martialArts.push({ _id: rankId });
-            return user.save();
+        const fullUser = await this.findById(userId);
+        const maByRank = await this.maService.findByRank(rankId);
+        let containsMA: string;
+
+        if(!user) return new Error('User not found!');
+        if(!maByRank) return new Error('Rank not found!');
+
+        // Checks if the user already contains the specified rankId
+        const containsRank = await user.martialArts.filter(element => element.toString() == rankId);
+        if(containsRank.length) return new Error('User already contains this rank!');
+
+        // Checks if the user already contains any rank of the connected martial art
+        for(let i = 0; i < fullUser.martialArts.length; i++){
+            if(fullUser.martialArts[i]._id.toString() == maByRank._id) containsMA = user.martialArts[i];
         }
-        return new HttpException('User not found', HttpStatus.NOT_FOUND);
+
+        // Removes the old rank, if exists
+        if(containsMA) {
+            user.martialArts = await user.martialArts.filter(element => element.toString() != containsMA);
+        }
+        
+        // Saves the new rank
+        user.martialArts.push({ _id: rankId });
+        return user.save();
     }
 
     /**

@@ -32,6 +32,11 @@ export class UserResolver {
     if (result) return result;
     return new NotFoundException('Club not found!');
   }
+
+  @Mutation(() => Boolean)
+  async removeUserFromClub(@CurrentUser() user: any, @Args('clubId') clubId: string) {
+    return this.userService.removeClub(user.userId, clubId);
+  }
   
   @Mutation(() => UserDto, { description: 'Add a new martial art rank to the current user' })
   async addMartialArtRankToUser(@CurrentUser() user: any, @Args('rankId') rankId: string) {
