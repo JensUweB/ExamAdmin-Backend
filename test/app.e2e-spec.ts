@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { MongooseModule } from '@nestjs/mongoose';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 
