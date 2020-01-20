@@ -2,11 +2,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 describe('AppController (e2e)', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
+  let token: string;
+  let user;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         AppModule
@@ -14,16 +19,20 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useStaticAssets(join(__dirname, '/..', '/src/upload'));
+    app.setBaseViewsDir(join(__dirname, '/..', '/src/views'));
+    app.setViewEngine('hbs');
     await app.init();
+  })
+  
+  afterAll(async () => {
+    return await app.close();
   });
-
-  let token: string;
-  let user;
   
   // Testing Auth Module
   describe('Auth Module', () => {
-    it('login', () => {
-      return request(app.getHttpServer())
+    it('login', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .send({
           operationName: null,
@@ -40,8 +49,8 @@ describe('AppController (e2e)', () => {
           user = body.data.login.user;
         });
     });
-    it('login (wrong credentials)', () => {
-      return request(app.getHttpServer())
+    it('login (wrong credentials)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .send({
           operationName: null,
@@ -54,12 +63,30 @@ describe('AppController (e2e)', () => {
           expect(body.errors).toBeTruthy();
         });
     });
+    it('forgotPassword (Mutation)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{forgotPassword(email: "tester@localhost")}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).toBeDefined();
+        });
+    });
+    it('auth/forgot-password/ (GET)', async () => {
+      return await request(app.getHttpServer())
+        .get('/auth/forgot-password/'+token)
+        .expect(HttpStatus.OK);
+    });
   });
 
   //Testing User Module
   describe('User Module', () => {
-    it('getUser (Query)', () => {
-      return request(app.getHttpServer())
+    it('getUser (Query)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -76,8 +103,8 @@ describe('AppController (e2e)', () => {
           expect(body.data.getUser.clubs).toBeTruthy();
         });
     });
-    it('getUser (UnAuthorized Query)', () => {
-      return request(app.getHttpServer())
+    it('getUser (UnAuthorized Query)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token + 'invalid-token-test')
         .send({
@@ -90,43 +117,120 @@ describe('AppController (e2e)', () => {
           expect(body.errors).toBeTruthy();
         });
     });
-    it('addUserToClub (Mutation)', () => {
-      return request(app.getHttpServer())
+    it('addUserToClub (Mutation)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
           operationName: null,
           variables: {},
           query: `mutation{addUserToClub(clubId: "5e1306132002aa4ff88620a1")
-          {_id, firstName}}`,
+                    {_id, firstName, clubs{club{name}}}}`,
         })
         .expect(HttpStatus.OK)
         .expect(({ body }) => {
+          console.log(JSON.stringify(body));
           expect(body.data).toBeTruthy();
           expect(body.data.addUserToClub).toBeTruthy();
           expect(body.data.addUserToClub._id).toBeTruthy();
           expect(body.data.addUserToClub.firstName).toBeTruthy();
+          expect(body.data.addUserToClub.clubs).toBeTruthy();
+          expect(body.data.addUserToClub.clubs[0].club).toBeTruthy();
+          expect(body.data.addUserToClub.clubs[0].club.name).toBeTruthy();
         });
     });
-    it('addMartialArtRankToUser (Mutation)', () => {
-      return request(app.getHttpServer())
+    it('addUserToClub (Mutation | Duplicate Test)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
           operationName: null,
           variables: {},
-          query: `mutation{addMartialArtRankToUser(rankId: "5e1323f45521bf49046ca862")
-          {firstName}}`,
+          query: `mutation{addUserToClub(clubId: "5e1306132002aa4ff88620a1")
+                    {_id, firstName, clubs{club{name}}}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          console.log(JSON.stringify(body));
+          expect(body.data).not.toBeTruthy();
+          expect(body.errors).toBeTruthy();
+          expect(body.errors[0].message).toBe("User is already a member of this club!");
+        });
+    });
+    it('removeUserFromClub (Mutation)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{removeUserFromClub(clubId: "5e1306132002aa4ff88620a1")}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          console.log(JSON.stringify(body));
+          expect(body.data).toBeTruthy();
+          expect(body.data.removeUserFromClub).toBeTruthy();
+        });
+    });
+    it('addMartialArtRankToUser (Mutation)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{addMartialArtRankToUser(rankId: "5e1323f45521bf49046ca86c")
+          {firstName, martialArts{_id}, clubs{club{_id}}}}`,
         })
         .expect(HttpStatus.OK)
         .expect(({ body }) => {
           console.log(JSON.stringify(body));
           expect(body.data).toBeTruthy();
           expect(body.data.addMartialArtRankToUser).toBeTruthy();
+          expect(body.data.addMartialArtRankToUser.firstName).toBeTruthy();
+          expect(body.data.addMartialArtRankToUser.martialArts).toBeTruthy();
+          expect(body.data.addMartialArtRankToUser.clubs).toBeTruthy();
         });
     });
-    /* it('deleteUser (Mutation)', () => {
-      return request(app.getHttpServer())
+    it('addMartialArtRankToUser (Mutation | Duplicate Test)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{addMartialArtRankToUser(rankId: "5e1323f45521bf49046ca86c")
+          {firstName, martialArts{_id}, clubs{club{_id}}}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          console.log(JSON.stringify(body));
+          expect(body.data).not.toBeTruthy();
+          expect(body.errors).toBeTruthy();
+        });
+    });
+    it('addMartialArtRankToUser (Mutation | Override Test)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{addMartialArtRankToUser(rankId: "5e1323f45521bf49046ca86b")
+          {firstName, martialArts{_id}, clubs{club{_id}}}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          console.log(JSON.stringify(body));
+          expect(body.data).toBeTruthy();
+          expect(body.data.addMartialArtRankToUser).toBeTruthy();
+          expect(body.data.addMartialArtRankToUser.firstName).toBeTruthy();
+          expect(body.data.addMartialArtRankToUser.martialArts).toBeTruthy();
+          expect(body.data.addMartialArtRankToUser.clubs).toBeTruthy();
+        });
+    });
+    /* it('deleteUser (Mutation)', async () => { return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -145,8 +249,8 @@ describe('AppController (e2e)', () => {
   // Testing Club Module
   describe('Club Module', () => {
     let clubId: string;
-    it('createClub (Mutation)', () => {
-      return request(app.getHttpServer())
+    it('createClub (Mutation)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -166,10 +270,37 @@ describe('AppController (e2e)', () => {
         .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.data).toBeTruthy();
+          expect(body.data.createClub._id).toBeTruthy();
+          expect(body.data.createClub.name).toBeTruthy();
+          clubId = body.data.createClub._id;
         });
     });
-    it('getAllClubs (Query)', () => {
-      return request(app.getHttpServer())
+    it('createClub (Mutation | Duplicate Test)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{createClub(input:{
+              name: "E2ETest e.V."
+                registrationId: "REG-E2ETest"
+                street: "E2ETestStreet 123"
+                zip: "12345"
+                city: "E2ETestCity"
+                country: "Germany"
+                martialArts: ["5e1325565521bf49046ca86d"]
+                admins: ["${user._id}"]})
+            { _id, name}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).not.toBeTruthy();
+          expect(body.errors).toBeTruthy();
+        });
+    });
+    it('getAllClubs (Query)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -186,35 +317,28 @@ describe('AppController (e2e)', () => {
           expect(body.data.getAllClubs).toBeDefined();
         });
     });
-  });
-
-  // Testing the forgot password function
-  describe('Forgot Password', () => {
-    it('forgotPassword (Mutation)', () => {
-      return request(app.getHttpServer())
+    it('deleteClub (Mutation)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
         .send({
           operationName: null,
           variables: {},
-          query: `mutation{forgotPassword(email: "tester@localhost")}`,
+          query: `mutation{deleteClub(clubId: "${clubId}")}`,
         })
         .expect(HttpStatus.OK)
         .expect(({ body }) => {
           expect(body.data).toBeDefined();
+          expect(body.data.deleteClub).toBeDefined();
+          expect(body.data.deleteClub).toBe('Success');          
         });
     });
-    // ERROR: connect ECONNREFUSED 127.0.0.1:80
-    /* it('auth/forgot-password/ (GET)', () => {
-      return request(app.getHttpServer())
-        .get('auth/forgot-password')
-        .expect(HttpStatus.OK);
-    }); */
   });
 
   // Testing MartialArts Module
   describe('MartialArts Module', () => {
-    it('getAllMartialArts (Query)', () => {
-      return request(app.getHttpServer())
+    it('getAllMartialArts (Query)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -228,8 +352,8 @@ describe('AppController (e2e)', () => {
           expect(body.data.getAllMartialArts).toBeTruthy();
         });
     });
-    it('getMartialArtById (Query)', () => {
-      return request(app.getHttpServer())
+    it('getMartialArtById (Query)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -247,8 +371,8 @@ describe('AppController (e2e)', () => {
           expect(body.data.getMartialArtById.ranks).toBeTruthy();
         });
     });
-    it('getMartialArtByRank (Query)', () => {
-      return request(app.getHttpServer())
+    it('getMartialArtByRank (Query)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -266,8 +390,8 @@ describe('AppController (e2e)', () => {
           expect(body.data.getMartialArtByRank.ranks).toBeTruthy();
         });
     });
-    it('getRank (Query)', () => {
-      return request(app.getHttpServer())
+    it('getRank (Query)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -286,15 +410,16 @@ describe('AppController (e2e)', () => {
         });
     });
     let maId: string;
-    it('createMartialArt (Mutation)', () => {
-      return request(app.getHttpServer())
+    let maId2: string;
+    it('createMartialArt (Mutation)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
           operationName: null,
           variables: {},
           query: `mutation{createMartialArt(input:{
-            name:"E2Test",styleName:"E2ETest",
+            name:"E2Test",styleName:"E2ETest Ryu",
             ranks:[{name:"rank1", number:1},{name:"rank2",number:2}]
             examiners:["${user._id}"]}){_id,name,ranks{name, number}}}`,
         })
@@ -308,8 +433,48 @@ describe('AppController (e2e)', () => {
           maId = body.data.createMartialArt._id;
         });
     });
-    it('deleteMartialArt (Mutation)', () => {
-      return request(app.getHttpServer())
+    it('createMartialArt (Mutation | Duplicate Test)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{createMartialArt(input:{
+            name:"E2Test",styleName:"E2ETest Ryu",
+            ranks:[{name:"rank1", number:1},{name:"rank2",number:2}]
+            examiners:["${user._id}"]}){_id,name,ranks{name, number}}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).not.toBeTruthy();
+          expect(body.errors).toBeTruthy();
+        });
+    });
+    it('createMartialArt (Mutation | Other StyleName)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{createMartialArt(input:{
+            name:"E2Test",styleName:"Some Other Style Ryu",
+            ranks:[{name:"rank1", number:1},{name:"rank2",number:2}]
+            examiners:["${user._id}"]}){_id,name,ranks{name, number}}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).toBeTruthy();
+          expect(body.data.createMartialArt).toBeTruthy();
+          expect(body.data.createMartialArt._id).toBeTruthy();
+          expect(body.data.createMartialArt.name).toBeTruthy();
+          expect(body.data.createMartialArt.ranks).toBeTruthy();
+          maId2 = body.data.createMartialArt._id;
+        });
+    });
+    it('deleteMartialArt-1 (Mutation)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -324,12 +489,28 @@ describe('AppController (e2e)', () => {
           expect(body.data.deleteMartialArt).toEqual('Success');
         });
     });
+    it('deleteMartialArt-2 (Mutation)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{deleteMartialArt(id: "${maId2}")}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).toBeTruthy();
+          expect(body.data.deleteMartialArt).toBeTruthy();
+          expect(body.data.deleteMartialArt).toEqual('Success');
+        });
+    });
   });
 
   // Testing Exam Module
   describe('Exam Module', () => {
-    it('getAllExams (Query)', () => {
-      return request(app.getHttpServer())
+    it('getAllExams (Query)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -347,8 +528,8 @@ describe('AppController (e2e)', () => {
         });
     });
     let examId: string;
-    it('createExam (Mutation)', () => {
-      return request(app.getHttpServer())
+    it('createExam (Mutation)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -376,8 +557,8 @@ describe('AppController (e2e)', () => {
           examId = body.data.createExam._id;
         });
     });
-    it('getExamById (Query)', () => {
-      return request(app.getHttpServer())
+    it('getExamById (Query)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -394,8 +575,8 @@ describe('AppController (e2e)', () => {
           expect(body.data.getExamById.participants).toBeDefined();
         });
     });
-    it('getPlannedExams (Query)', () => {
-      return request(app.getHttpServer())
+    it('getPlannedExams (Query)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -412,8 +593,8 @@ describe('AppController (e2e)', () => {
           expect(body.data.getPlannedExams[0].participants).toBeDefined();
         });
     });
-    it('deleteExam (Mutation)', () => {
-      return request(app.getHttpServer())
+    it('deleteExam (Mutation)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -432,27 +613,9 @@ describe('AppController (e2e)', () => {
 
   // Testing ExamResult Module
   describe('ExamResult Module', () => {
-    it('getAllExamResults (Query)', () => {
-      return request(app.getHttpServer())
-        .post('/graphql')
-        .set('Authorization', 'Bearer ' + token)
-        .send({
-          operationName: null,
-          variables: {},
-          query: `{getAllExamResults
-            {_id, user, exam, martialArt{name},rank}}`,
-        })
-        .expect(HttpStatus.OK)
-        .expect(({ body }) => {
-          expect(body.data).toBeTruthy();
-          expect(body.data.getAllExamResults).toBeTruthy();
-          expect(body.data.getAllExamResults[0].user).toBeTruthy();
-          expect(body.data.getAllExamResults[0].martialArt).toBeTruthy();
-        });
-    });
     let erId: string;
-    it('createExamResult (Mutation)', () => {
-      return request(app.getHttpServer())
+    it('createExamResult (Mutation)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -472,6 +635,7 @@ describe('AppController (e2e)', () => {
         })
         .expect(HttpStatus.OK)
         .expect(({ body }) => {
+          console.log(JSON.stringify(body));
           expect(body.data).toBeTruthy();
           expect(body.data.createExamResult).toBeTruthy();
           expect(body.data.createExamResult._id).toBeTruthy();
@@ -480,8 +644,33 @@ describe('AppController (e2e)', () => {
           erId = body.data.createExamResult._id;
         });
     });
-    it('getExamResultById (Query)', () => {
-      return request(app.getHttpServer())
+    it('createExamResult (Mutation | Duplicate Test)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{createExamResult(input: {
+            user: "${user._id}"
+            exam: "5e187d278bff622b545f64dd"
+            examiner: {
+              _id: "${user._id}",firstName: "Karl",lastName: "Marx"}
+            martialArt: {
+              _id: "5e1323f45521bf49046ca85c",name: "Battojutsu"
+              styleName:"Shobukan Inyo-Ryu"}
+            rank: "5. Kyu",date: "2020-06-14",reportUri: "",passed: true})
+        {_id, user, exam, examiner{firstName}
+          rank,passed,martialArt{name}}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).not.toBeTruthy();
+          expect(body.errors).toBeTruthy();
+        });
+    });
+    it('getExamResultById (Query)', async () => { 
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -498,8 +687,26 @@ describe('AppController (e2e)', () => {
           expect(body.data.getExamResultById.martialArt).toBeTruthy();
         });
     });
-    it('deleteRelatedExamResults (Mutation)', () => {
-      return request(app.getHttpServer())
+    it('getAllExamResults (Query)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `{getAllExamResults
+            {_id, user, exam, martialArt{name},rank}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).toBeTruthy();
+          expect(body.data.getAllExamResults).toBeTruthy();
+          expect(body.data.getAllExamResults[0].user).toBeTruthy();
+          expect(body.data.getAllExamResults[0].martialArt).toBeTruthy();
+        });
+    });
+    it('deleteRelatedExamResults (Mutation)', async () => {
+      return await request(app.getHttpServer())
         .post('/graphql')
         .set('Authorization', 'Bearer ' + token)
         .send({
@@ -509,6 +716,7 @@ describe('AppController (e2e)', () => {
         })
         .expect(HttpStatus.OK)
         .expect(({ body }) => {
+          console.log(body);
           expect(body.data).toBeTruthy();
           expect(body.data.deleteRelatedExamResults).toBeTruthy();
         });
