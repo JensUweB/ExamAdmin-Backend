@@ -207,6 +207,7 @@ type Mutation {
 
   """Create a new club."""
   createClub(input: ClubInput!): ClubDto!
+  addClubAdmin(userId: String!, clubId: String!): Boolean!
 
   """Update an existinc club. Just fill out what you want to change!"""
   updateClub(input: ClubInput!, id: String!): ClubDto!
@@ -230,6 +231,16 @@ type Mutation {
   Examiners can upload an exam protocol to an existing exam result. Use cURL request to send required data.
   """
   uploadExamProtocol(protocol: Upload!, examResultId: String!): Boolean!
+
+  """Create a new Umbrella Association"""
+  createUA(input: UmbrellaAssocInput!): UmbrellaAssocDto!
+
+  """Updates an existing Umbrella Association"""
+  updateUA(input: UmbrellaAssocInput!, id: String!): UmbrellaAssocDto!
+
+  """Deletes an existing Umbrella Association"""
+  deleteUA(uaId: String!): Boolean!
+  addUaAdmin(userId: String!, uaId: String!): Boolean!
 }
 
 type Query {
@@ -256,6 +267,7 @@ type Query {
 
   """Returns one club by id"""
   getClubById(id: String!): ClubDto!
+  getAllClubMembers(clubId: String!): [UserDto!]!
 
   """Returns an array of all exams. Including previous ones."""
   getAllExams: [ExamDto!]!
@@ -273,6 +285,12 @@ type Query {
 
   """Returns one exam result with a given id"""
   getExamResultById(id: String!): ExamResultDto!
+
+  """Get an Umbrella Association by id"""
+  getUAById(id: String!): UmbrellaAssocDto!
+
+  """Get an array with all Umbrella Associations"""
+  getAllUAs: [UmbrellaAssocDto!]!
 }
 
 type RankDto {
@@ -284,6 +302,64 @@ type RankDto {
 input RankInput {
   name: String!
   number: Float!
+}
+
+type UmbrellaAssocDto {
+  _id: ID!
+
+  """The name of the club"""
+  name: String!
+  street: String!
+  zip: String!
+  city: String!
+
+  """Register of associatoins ID, if exists in country of origin"""
+  registrationId: String!
+
+  """Country of origin"""
+  country: String!
+
+  """An array(ids) of provided martial arts in this club"""
+  martialArts: [MartialArtsDto!]!
+
+  """
+  An array(ids) of users who administrate this club. Default: The creator of the club.
+  """
+  admins: [UserDto!]!
+
+  """An array of clubs that are members of this association"""
+  clubs: [String!]
+
+  """An array of users that are members on their own"""
+  singleMembers: [String!]
+}
+
+input UmbrellaAssocInput {
+  """The name of the club"""
+  name: String
+  street: String
+  zip: String
+  city: String
+
+  """Register of associatoins ID, if exists in country of origin"""
+  registrationId: String
+
+  """Country of origin"""
+  country: String
+
+  """An array(ids) of provided martial arts in this club"""
+  martialArts: [String!]
+
+  """
+  An array(ids) of users who administrate this club. Default: The creator of the club.
+  """
+  admins: [String!]
+
+  """An array of clubs that are members of this association"""
+  clubs: [String!]
+
+  """An array of users that are members on their own"""
+  singleMembers: [String!]
 }
 
 """The `Upload` scalar type represents a file upload."""
