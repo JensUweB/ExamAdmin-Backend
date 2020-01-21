@@ -18,7 +18,6 @@ export class UserResolver {
 
   @Query(() => UserDto, { description: 'Returns an user object representing the current logged in user' })
   async getUser(@CurrentUser() user: any) {
-    console.log(user);
     const result = await this.userService.findById(user.userId);
     if (result) return result;
     return new NotFoundException('User not found!');
@@ -31,7 +30,12 @@ export class UserResolver {
   async addUserToClub(@CurrentUser() user: any, @Args('clubId') clubId: string) {
     const result = await this.userService.addClub(user.userId, clubId);
     if (result) return result;
-    return new NotFoundException('User not found!');
+    return new NotFoundException('Club not found!');
+  }
+
+  @Mutation(() => Boolean)
+  async removeUserFromClub(@CurrentUser() user: any, @Args('clubId') clubId: string) {
+    return this.userService.removeClub(user.userId, clubId);
   }
   
   @Mutation(() => UserDto, { description: 'Add a new martial art rank to the current user' })

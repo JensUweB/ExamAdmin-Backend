@@ -10,7 +10,7 @@ import { MartialArtsModule } from './modules/martialArts/martialArts.module';
 import { ClubModule } from './modules/club/club.module';
 import { ExamModule } from './modules/exam/exam.module';
 import { ExamResultModule } from './modules/examResult/examResult.module';
-import { Config } from 'Config';
+import { Config } from '../Config';
 
 @Module({
   imports: [
@@ -30,9 +30,6 @@ import { Config } from 'Config';
           maxFiles: 5
         }
       }),
-      /* ServeStaticModule.forRoot({
-        rootPath: join(__dirname, './doc'),   // <-- path to the static files
-      }), */
     MongooseModule.forRoot(Config.MONGO_CONN_STR),
     ], 
   controllers: [AppController],

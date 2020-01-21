@@ -7,7 +7,7 @@ import { MartialArtsDto } from '../../martialArts/dto/martialArts.dto';
  */
 
 @ObjectType()
-export class ClubDto {
+export class UmbrellaAssocDto {
     @Field(type => ID)
     _id: string;
     @Field({ description: 'The name of the club', nullable: false })
@@ -26,4 +26,8 @@ export class ClubDto {
     readonly martialArts: MartialArtsDto[];
     @Field(type => [UserDto], { description: 'An array(ids) of users who administrate this club. Default: The creator of the club.', nullable: false })
     readonly admins: UserDto[];
+    @Field({ description: 'An array of clubs that are members of this association', nullable: true })
+    readonly clubs: string[];
+    @Field({ description: 'An array of users that are members on their own', nullable: true })
+    readonly singleMembers: string[];
 }

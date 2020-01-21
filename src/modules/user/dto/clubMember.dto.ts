@@ -1,5 +1,5 @@
 import { Field, ObjectType } from 'type-graphql';
-import { ClubDto } from 'src/modules/club/dto/club.dto';
+import { ClubDto } from '../../club/dto/club.dto';
 
 @ObjectType()
 export class ClubMemberDto {

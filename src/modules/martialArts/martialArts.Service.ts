@@ -11,7 +11,10 @@ export class MartialArtsService {
 
     constructor(@InjectModel('MartialArt') private readonly maModel: Model<MartialArts>) { }
 
-    async create(maInput: MartialArtsInput): Promise<MartialArts> {
+    async create(maInput: MartialArtsInput): Promise<MartialArts | Error> {
+        const exists = await this.maModel.findOne({name: maInput.name, styleName: maInput.styleName});
+        if(exists) return new Error(`An martial art with the name "${maInput.name}" already exists!`);
+
         const martialArt = await new this.maModel(maInput);
         return martialArt.save();
     }
@@ -57,9 +60,9 @@ export class MartialArtsService {
         const ma = await this.maModel.findOne({ _id: maId });
 
         if(!ma) return -1;
-        if(ma.examiner){
-            for(let i = 0; i < ma.examiner.length; i++) {
-                if(ma.examiner[i].toString() == userId){
+        if(ma.examiners){
+            for(let i = 0; i < ma.examiners.length; i++) {
+                if(ma.examiners[i].toString() == userId){
                     const res = await this.maModel.deleteOne({_id: maId});
                     if(res) return 1;
                     return 0;

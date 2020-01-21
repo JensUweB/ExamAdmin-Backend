@@ -1,8 +1,9 @@
-import { Controller, Get, Param, Post, Body } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Render, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UserService } from './modules/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { Response } from 'express';
 
 @Controller()
 export class AppController {
@@ -22,26 +23,33 @@ export class AppController {
   }
 
   @Get('auth/forgot-password/:token')
-  async forgotPassword(@Param('token') token: string) {
-    const result = await this.jwtService.verify(token);
+  async forgotPassword(@Res() res: Response, @Param('token') token: string) {
+    let result;
+    let error;
+    try{
+      result = await this.jwtService.verify(token);
+    } catch (err) {
+      error = err;
+    }
 
-    return `
-    <div>
-      <h1>Forgot your password?</h1>
-      <p>Never mind. We got you covered.</p>
-      <p><b>Is this your email adress?</b><br>${result.email}</p>
-      <div>
-        <form method="POST" action="/auth/forgot-password/">
-          <div>New Password <input type="password" name="password"></div>
-          <div><input type="submit"></div>
-          <input type="hidden" value="${token}" name="token">
-        </form>
-      </div>
-    </div>`;
+    if(!error) return res.render(
+      'forgot-password',
+      {
+        email: result.email,
+        token: token
+      });
+      return res.render(
+        'index',{
+          body: `<div>
+          <h2>An error has occured!</h2>
+          <b>${error}</b>
+        </div> `
+        }
+      );
   }
 
   @Post('auth/forgot-password/')
-  async resetPassword(@Body() body) {
+  async resetPassword(@Body() body, @Res() res: Response) {
     let result: any;
     try {
       result = this.jwtService.verify(body.token);
@@ -49,18 +57,22 @@ export class AppController {
       const hashPw = await bcrypt.hash(body.password, 10);
       const user = await this.userService.findByEmail(result.email);
       if (!user) return `<h1>ERROR: User not found. Invalid email adress!`;
-      const res = await this.userService.updatePassword(user._id, hashPw);
-      if (!res) return `<h1>ERROR: Unexpected Server Error! Try again later.</h1>`;
-
-      return `
-      <div>
-        <h2>Password reset was successful!</h2>
-        <b>We have send you an confirmation email.<br> Just close this window and login with your new password! </b>
-      </div>
-      `
+      const userRes = await this.userService.updatePassword(user._id, hashPw);
+      if (!userRes) return `<h1>ERROR: Unexpected Server Error! Try again later.</h1>`;
+      
+      return res.render(
+        'index',
+        {
+          body: `<div>
+          <h2>Password reset was successful!</h2>
+          <b>We have send you an confirmation email.<br> Just close this window and login with your new password! </b>
+        </div> `
+        }
+      );
+      
     } catch (error) {
-      if(error.name == "TokenExpiredError") return `<h1>Your password reset token is expired.</h1><b> Please repeat password reset process.</b>`;
-      return `<h1>Unexpected ${error.name}</h1><b>${error.message}</b>`;
+      if (error.name == "TokenExpiredError") return res.render('index', {body: `<h1>Your password reset token is expired.</h1><b> Please repeat password reset process.</b>`});
+      return res.render('index', {body: `<h1>Error: ${error.name}</h1><b>${error.message}</b>`});
     }
   }
 }
