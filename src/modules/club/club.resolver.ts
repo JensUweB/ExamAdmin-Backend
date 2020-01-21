@@ -5,6 +5,7 @@ import { ClubInput } from "./inputs/club.input";
 import { NotFoundException, UseGuards } from "@nestjs/common";
 import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
 import { User as CurrentUser } from "../decorators/user.decorator";
+import { UserDto } from "../user/dto/user.dto";
 
 @UseGuards(GraphqlAuthGuard)
 @Resolver('Club')
@@ -30,6 +31,11 @@ export class ClubResolver {
         return new NotFoundException('Club not found!');
     }
 
+    @Query(() => [UserDto])
+    async getAllClubMembers(@CurrentUser() user: any, @Args('clubId')clubId: string) {
+        return this.clubService.getAllMembers(user.userId, clubId);
+    }
+
 
     // ===========================================================================
     // Mutations
@@ -38,6 +44,11 @@ export class ClubResolver {
     @Mutation(() => ClubDto, {description: 'Create a new club.'})
     async createClub(@Args('input') input: ClubInput) {
         return this.clubService.create(input);
+    }
+
+    @Mutation(() => Boolean)
+    async addClubAdmin(@CurrentUser() user: any, @Args('clubId') clubId: string, @Args('userId') userId: string) {
+        return this.clubService.addAdmin(clubId, userId, user.userId);
     }
 
     @Mutation(() => ClubDto, {description: 'Update an existinc club. Just fill out what you want to change!'})

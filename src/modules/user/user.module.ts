@@ -11,7 +11,7 @@ import { TmpUserSchema } from "./tmpUser.schema";
     imports: [
         MongooseModule.forFeature([{name: 'User', schema: UserSchema}, {name: 'TmpUser', schema: TmpUserSchema}]),
         MartialArtsModule,
-        ClubModule,
+        forwardRef(() => ClubModule),
         forwardRef(() => AuthModule)
     ],
     providers: [UserResolver, UserService],

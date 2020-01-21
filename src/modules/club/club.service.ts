@@ -1,14 +1,19 @@
-import { Injectable, NotImplementedException } from "@nestjs/common";
+import { Injectable, UnauthorizedException, Inject, forwardRef, NotFoundException } from "@nestjs/common";
 import { Club } from "./interfaces/club.interface";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { ClubDto } from "./dto/club.dto";
 import { ClubInput } from "./inputs/club.input";
+import { UserService } from "../user/user.service";
+import { UserDto } from "../user/dto/user.dto";
 
 @Injectable()
 export class ClubService {
 
-    constructor(@InjectModel('Club') private readonly clubModel: Model<Club>) {}
+    constructor(
+        @InjectModel('Club') private readonly clubModel: Model<Club>, 
+        @Inject(forwardRef(() => UserService)) private readonly userService: UserService
+    ) {}
 
     async create(clubInput: ClubInput): Promise<ClubDto | Error> {
         const exists = await this.clubModel.findOne({name: clubInput.name});
@@ -35,30 +40,54 @@ export class ClubService {
         return oldClub.save();
 
     }
-    async addAdmin(clubId: string, userId: string): Promise<ClubDto | undefined> {
+
+    /**
+     * Adds a new admin user to a club
+     * @param clubId the id of the club
+     * @param userId the user id of the new admin
+     * @param currentUser the currently logged in user
+     */
+    async addAdmin(clubId: string, userId: string, currentUser: string): Promise<ClubDto | any> {
         const club = await this.clubModel.findOne({_id: clubId});
 
-        // Search if user was already added
-        const filter = club.admins.filter(a => {
-            a._id == userId;
-        });
+        if(!club.admins.includes(currentUser)) return new UnauthorizedException();
 
-        // Return null, if user was found
-        if(filter) return null; 
+        // Search if user was already added
+        if(club.admins.includes(userId)) return false;
 
         // Else add user to array and save
         club.admins.push(userId);
-        return club.save();
-    }
-    async addMartialArt(): Promise<ClubDto> {
-        throw NotImplementedException;
-    }
-    async addMember(): Promise<ClubDto> {
-        throw NotImplementedException;
+        const result = await club.save();
+        if(!result) return new Error('Unexpected Server Error! Could not save to database!');
+        return true;
     }
 
-    async findAllMembers() {
-        throw NotImplementedException;
+    /**
+     * Adds a martial art to a given club
+     * @param userId the id of the current user
+     * @param clubId the id of the club
+     * @param maId the id of the martial art to add
+     */
+    async addMartialArt(userId: string, clubId: string, maId: string): Promise<ClubDto | any> {
+        const club = await this.clubModel.findOne({_id: clubId});
+        const isAdmin = club.admins.includes(userId);
+        const exists = club.martialArts.includes(maId);
+
+        if(!isAdmin) return new UnauthorizedException();
+        if(exists) return new Error('Club already contains this martial art!');
+        club.martialArts.push({_id: maId});
+        return club.save();
+    }
+
+    async getAllMembers(userId: string, clubId: string): Promise<UserDto[] | any> {
+        const club = await this.clubModel.findOne({_id: clubId});
+
+        if(!club) return new NotFoundException(`Could not find club with id "${clubId}"`);
+        if(!club.admins.includes(userId)) return new UnauthorizedException();
+
+        const members = await this.userService.findByClub(clubId);
+        if(members == []) return new Error('This club has no members yet');
+        return members;
     }
 
     async delete(userId: string, clubId: string): Promise<Number>{

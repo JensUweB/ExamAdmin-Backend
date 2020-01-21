@@ -10,7 +10,6 @@ import { Club } from "../club/interfaces/club.interface";
 import { MartialArts } from "../martialArts/interfaces/martialArts.interface";
 import { MailerService } from "../auth/mailer.service";
 import { TmpUser } from "./interfaces/tmpuser.interface";
-import { forEachChild } from "typescript";
 
 @Injectable()
 export class UserService {
@@ -90,6 +89,10 @@ export class UserService {
         }
         if (user) return user;
         return new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    async findByClub(clubId: string): Promise<UserDto[]> {
+        return this.userModel.find({'clubs.club': clubId });
     }
 
     /**
