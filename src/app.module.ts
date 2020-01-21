@@ -11,6 +11,7 @@ import { ClubModule } from './modules/club/club.module';
 import { ExamModule } from './modules/exam/exam.module';
 import { ExamResultModule } from './modules/examResult/examResult.module';
 import { Config } from '../Config';
+import { UmbrellaAssocModule } from './modules/umbrellaAssoc/umbrellaAssoc.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { Config } from '../Config';
     ClubModule,
     ExamModule,
     ExamResultModule,
+    UmbrellaAssocModule,
     GraphQLModule.forRoot(
       {
         autoSchemaFile: 'schema.gpl',

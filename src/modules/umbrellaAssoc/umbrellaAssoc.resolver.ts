@@ -44,6 +44,11 @@ export class UmbrellaAssocResolver {
         return this.uaService.delete(uaId, user.userId);
     }
 
+    @Mutation(() => Boolean)
+    async addUaAdmin(@CurrentUser() user: any, @Args('uaId') uaId: string , @Args('userId') userId: string) {
+        return this.uaService.addAdmin(uaId, userId, user.userId);
+    }
+
     // ===========================================================================
     // Subscriptions
     // ===========================================================================

@@ -54,12 +54,18 @@ export class UmbrellaAssocService {
         return ua.save();
     }
 
-    async addAdmin(uaId: string, userId: string, currentUser: string): Promise<any> {
+    async addAdmin(uaId: string, userId: string, currentUser: string): Promise<Boolean | any> {
         const ua = await this.uaModel.findOne({_id: uaId});
         const isAdmin = await ua.admins.includes(currentUser);
 
         if(!ua) return new NotFoundException('Umbrella Association not found!');
         if(!isAdmin) return new UnauthorizedException();
+
+        ua.admins.push({_id: userId});
+        const result = ua.save();
+        
+        if(!result) return false;
+        return true;
 
     }
 
@@ -76,6 +82,8 @@ export class UmbrellaAssocService {
         const isAdmin = await ua.admins.includes(userId);
 
         if(!isAdmin) return new UnauthorizedException();
-        return this.uaModel.deleteOne({_id: uaId});
+        const result = await this.uaModel.deleteOne({_id: uaId});
+        if(result) return true;
+        return false;
     }
 }

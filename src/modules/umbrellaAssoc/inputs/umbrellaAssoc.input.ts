@@ -18,8 +18,8 @@ export class UmbrellaAssocInput {
     readonly martialArts: string[];
     @Field(type => [String], { description: 'An array(ids) of users who administrate this club. Default: The creator of the club.', nullable: true })
     readonly admins: string[];
-    @Field({ description: 'An array of clubs that are members of this association', nullable: true })
+    @Field(type => [String], { description: 'An array of clubs that are members of this association', nullable: true })
     readonly clubs: string[];
-    @Field({ description: 'An array of users that are members on their own', nullable: true })
+    @Field(type => [String], { description: 'An array of users that are members on their own', nullable: true })
     readonly singleMembers: string[];
 }
