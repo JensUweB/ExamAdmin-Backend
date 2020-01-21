@@ -113,6 +113,7 @@ describe('AppController (e2e)', () => {
         })
         .expect(HttpStatus.OK)
         .expect(({ body }) => {
+          console.log('getUser: '+JSON.stringify(body));
           expect(body.errors).toBeTruthy();
         });
     });
@@ -128,7 +129,7 @@ describe('AppController (e2e)', () => {
         })
         .expect(HttpStatus.OK)
         .expect(({ body }) => {
-          console.log(JSON.stringify(body));
+          console.log('addUserToClub: '+JSON.stringify(body));
           expect(body.data).toBeTruthy();
           expect(body.data.addUserToClub).toBeTruthy();
           expect(body.data.addUserToClub._id).toBeTruthy();
@@ -296,6 +297,39 @@ describe('AppController (e2e)', () => {
         .expect(({ body }) => {
           expect(body.data).not.toBeTruthy();
           expect(body.errors).toBeTruthy();
+        });
+    });
+    it('addClubAdmin (Mutation)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{addClubAdmin(clubId: "${clubId}", userId: "5e1c9385ac96ef12044e259b")}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).toBeTruthy();
+          expect(body.data.addClubAdmin).toBeTruthy();
+        });
+    });
+    it('getAllClubMembers (Mutation)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `{getAllClubMembers(clubId: "5e207ca41aa0f630b099c1fd"){_id, firstName, lastName, martialArts{_id}}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          console.log('getAllClubMembers: '+JSON.stringify(body));
+          expect(body.data).toBeTruthy();
+          expect(body.data.getAllClubMembers).toBeTruthy();
+          expect(body.data.getAllClubMembers[0].firstName).toBeTruthy();
+          expect(body.data.getAllClubMembers[0].martialArts).toBeTruthy();
         });
     });
     it('getAllClubs (Query)', async () => { 
@@ -715,9 +749,129 @@ describe('AppController (e2e)', () => {
         })
         .expect(HttpStatus.OK)
         .expect(({ body }) => {
-          console.log(body);
+          console.log(JSON.stringify(body));
           expect(body.data).toBeTruthy();
           expect(body.data.deleteRelatedExamResults).toBeTruthy();
+        });
+    });
+  });
+
+  // Testing Umbrella Association Module
+  describe('UmbrellaAssoc Module', () => {
+    let uaId: string;
+    it('createUA (Mutation)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{createUA(
+            input:{
+              name:"E2E Test Umbrella e.V.",street:"Teststreet 1",
+              zip:"12345",city:"Testcity",
+              registrationId:"E2E-12345",country:"Germany",
+              martialArts:["5e1323f45521bf49046ca85c"],admins:["${user._id}"],
+              clubs:["5e1306132002aa4ff88620a1"],singleMembers:["${user._id}"]
+            }){_id, name, martialArts{_id},admins{_id}}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).toBeTruthy();
+          expect(body.data.createUA).toBeTruthy();
+          expect(body.data.createUA.name).toBeTruthy();
+          expect(body.data.createUA.martialArts).toBeTruthy();
+          expect(body.data.createUA.admins).toBeTruthy();
+          uaId = body.data.createUA._id;
+        });
+    });
+    it('createUA (Mutation | Duplicate Test)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{createUA(
+            input:{
+              name:"E2E Test Umbrella e.V.",street:"Teststreet 1",
+              zip:"12345",city:"Testcity",
+              registrationId:"E2E-12345",country:"Germany",
+              martialArts:["5e1323f45521bf49046ca85c"],admins:["${user._id}"],
+              clubs:["5e1306132002aa4ff88620a1"],singleMembers:["${user._id}"]
+            }){_id, name, martialArts{_id},admins{_id}}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).not.toBeTruthy();
+          expect(body.errors).toBeTruthy();
+          expect(body.errors[0].message).toBe('An umbrella association with this name already exists!');
+        });
+    });
+    it('getAllUAs (Query)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `{getAllUAs{_id, name, martialArts{_id},admins{_id}}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).toBeTruthy();
+          expect(body.data.getAllUAs).toBeTruthy();
+          expect(body.data.getAllUAs[0].name).toBeTruthy();
+          expect(body.data.getAllUAs[0].martialArts).toBeTruthy();
+          expect(body.data.getAllUAs[0].admins).toBeTruthy();
+        });
+    });
+    it('getUAById (Query)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `{getUAById(id: "${uaId}"){_id, name, martialArts{_id},admins{_id}}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).toBeTruthy();
+          expect(body.data.getUAById).toBeTruthy();
+          expect(body.data.getUAById.name).toBeTruthy();
+          expect(body.data.getUAById.martialArts).toBeTruthy();
+          expect(body.data.getUAById.admins).toBeTruthy();
+        });
+    });
+    it('addUaAdmin (Mutation)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{addUaAdmin(uaId: "${uaId}", userId: "5e1c9385ac96ef12044e259b")}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).toBeTruthy();
+          expect(body.data.addUaAdmin).toBeTruthy();
+        });
+    });
+    it('deleteUA (Mutation)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{deleteUA(uaId: "${uaId}")}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).toBeTruthy();
+          expect(body.data.deleteUA).toBeTruthy();
         });
     });
   });
