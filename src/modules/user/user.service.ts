@@ -103,7 +103,7 @@ export class UserService {
      * @param id the user id to update
      * @param input the user input. Just fill fields you wish to update!
      */
-    async update(id: string, input: UserInput): Promise<UserDto | any> {
+    async update(id: string, input: UserInput): Promise<UserDto> {
         let user = await this.userModel.findOne({ _id: id });
         if (!user) throw new NotFoundException(`No user with _id: "${id}" found!`); 
 

@@ -4,6 +4,7 @@ import { UserDto } from "./dto/user.dto";
 import { UseGuards, } from "@nestjs/common";
 import { User as CurrentUser } from "../decorators/user.decorator";
 import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
+import { UserInput } from "./input/user.input";
 
 
 @UseGuards(GraphqlAuthGuard)
@@ -39,6 +40,13 @@ export class UserResolver {
   @Mutation(() => UserDto, { description: 'Add a new martial art rank to the current user' })
   async addMartialArtRankToUser(@CurrentUser() user: any, @Args('rankId') rankId: string) {
     try{ return this.userService.addMartialArtRank(user.userId, rankId);
+    } catch (error) { return error; }
+  }
+
+  @Mutation(() => UserDto, {description: 'Updates the current user'})
+  async updateUser(@CurrentUser() user: any, @Args('input') input: UserInput) {
+    try{
+      return this.userService.update(user._id, input);
     } catch (error) { return error; }
   }
 

@@ -22,7 +22,7 @@ describe('AppController (e2e)', () => {
     app.setBaseViewsDir(join(__dirname, '/..', '/src/views'));
     app.setViewEngine('hbs');
     await app.init();
-  })
+  });
   
   afterAll(async () => {
     return await app.close();
@@ -116,6 +116,27 @@ describe('AppController (e2e)', () => {
         .expect(({ body }) => {
           console.log('getUser: '+JSON.stringify(body));
           expect(body.errors).toBeTruthy();
+        });
+    });
+    it('updateUser (Mutation)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{updateUser(input:
+            {firstName: "E2E",lastName:"Test"})
+            {_id, firstName, lastName}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          console.log('updateUser: '+JSON.stringify(body));
+          expect(body.data).toBeTruthy();
+          expect(body.data.addUserToClub).toBeTruthy();
+          expect(body.data.addUserToClub._id).toBeTruthy();
+          expect(body.data.addUserToClub.firstName).toBe('E2E');
+          expect(body.data.addUserToClub.lastName).toBe('Test');
         });
     });
     it('addUserToClub (Mutation)', async () => { 
@@ -805,6 +826,27 @@ describe('AppController (e2e)', () => {
           expect(body.errors).toBeTruthy();
           expect(body.errors[0].message).toBe('An umbrella association with this name already exists!');
         });
+    });
+    it('updateUA (Mutation)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{updateUA(
+            input:{
+              name:"E2E Edited Umbrella e.V.",street:"Teststreet 12",
+              zip:"12346",city:"Testcity",
+            }, id: "${uaId}"){_id, name, martialArts{_id},admins{_id}}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).toBeTruthy();
+          expect(body.data.updateUA).toBeTruthy();
+          expect(body.data.updateUA.name).toBe('E2E Edited Umbrella e.V.');
+        });
+
     });
     it('getAllUAs (Query)', async () => { 
       return await request(app.getHttpServer())
