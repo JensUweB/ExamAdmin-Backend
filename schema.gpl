@@ -15,8 +15,14 @@ type ClubDto {
 
   """The name of the club"""
   name: String!
+
+  """You need a description for this?"""
   street: String!
+
+  """You need a description for this?"""
   zip: String!
+
+  """You need a description for this?"""
   city: String!
 
   """Register of associatoins ID, if exists in country of origin"""
@@ -35,10 +41,16 @@ type ClubDto {
 }
 
 input ClubInput {
-  """The name of the club"""
+  """You need a description for this?"""
   name: String
+
+  """You need a description for this?"""
   street: String
+
+  """You need a description for this?"""
   zip: String
+
+  """You need a description for this?"""
   city: String
 
   """Register of associatoins ID, if exists in country of origin"""
@@ -62,8 +74,13 @@ type ClubMemberDto {
 }
 
 input ClubMemberInput {
-  club: String!
-  confirmed: Boolean!
+  """The id of the club the user is member of."""
+  club: String
+
+  """
+  The confirmation status; false by default. Only turns true, if the club admin confirms the membership.
+  """
+  confirmed: Boolean
 }
 
 """
@@ -73,13 +90,29 @@ scalar DateTime
 
 type ExamDto {
   _id: ID!
+
+  """The title of the exam"""
   title: String!
+
+  """Describe what tis exam is all about"""
   description: String!
+
+  """The date and time of the exam"""
   examDate: DateTime!
+
+  """The date and time when registration should close"""
   regEndDate: DateTime!
+
+  """The id of the club who organizes this exam"""
   club: String!
+
+  """The id of the responsible examiner. Usually the current user."""
   examiner: String!
+
+  """The martial art that gets tested"""
   martialArt: String!
+
+  """An array with IDs from users who wants to get tested"""
   participants: [String!]!
 }
 
@@ -90,35 +123,40 @@ type ExaminerDto {
 }
 
 input ExaminerInput {
+  """The user id of the examiner. Just in case we need more information"""
   _id: String
+
+  """The first (and middle) name of the examiner"""
   firstName: String
+
+  """The last name of the examiner"""
   lastName: String
 }
 
 input ExamInput {
   """The title of the exam"""
-  title: String!
+  title: String
 
   """The description of the exam"""
-  description: String!
+  description: String
 
   """The date when the exam should be held"""
-  examDate: DateTime!
+  examDate: DateTime
 
   """The date when registration will be closed"""
-  regEndDate: DateTime!
+  regEndDate: DateTime
 
   """The id of the accompanying association / club"""
-  club: String!
+  club: String
 
   """The user id of the examiner"""
-  examiner: String!
+  examiner: String
 
   """The id of the martial art this exam is for"""
-  martialArt: String!
+  martialArt: String
 
   """An array of ids from users who wants to get examined """
-  participants: [String!]!
+  participants: [String!]
 }
 
 type ExamResultDto {
@@ -134,13 +172,25 @@ type ExamResultDto {
 }
 
 input ExamResultInput {
+  """The id of the user this exam result is all about."""
   user: String
+
+  """The id of the related exam"""
   exam: String
+
+  """The martial art that was testet"""
   martialArt: MartialArtInput
+
+  """The examiner of the exam"""
   examiner: ExaminerInput
+
+  """The name of the rank that the user achieved"""
   rank: String
+
+  """The date string this exam took place"""
   date: String
-  reportUri: String
+
+  """Did the user passed the exam? False, if he failed."""
   passed: Boolean
 }
 
@@ -151,8 +201,15 @@ type MartialArtDto {
 }
 
 input MartialArtInput {
+  """
+  The id of the martial art that the exam was about. Just in case we need more information.
+  """
   _id: String
+
+  """The name of the martial art"""
   name: String
+
+  """The style name of the martial art"""
   styleName: String
 }
 
@@ -185,6 +242,8 @@ input MartialArtsInput {
 type Mutation {
   """Add a new club to the clubs array of a user"""
   addUserToClub(clubId: String!): UserDto!
+
+  """Removes the current user from a club member list"""
   removeUserFromClub(clubId: String!): Boolean!
 
   """Add a new martial art rank to the current user"""
@@ -198,19 +257,33 @@ type Mutation {
 
   """Updates an existing martial art"""
   updateMartialArt(input: MartialArtsInput!, id: String!): MartialArtsDto!
+
+  """Deletes a martial art, if the current user is authorized"""
   deleteMartialArt(id: String!): String!
 
-  """Creates a new User"""
+  """
+  Creates a new temporary user and sends an confirmation link to the given email address.
+  """
   signup(userInput: UserInput!): UserDto!
+
+  """
+  Send a link for password reset, if the email address is in use. No error message whatsoever.
+  """
   forgotPassword(email: String!): Boolean!
+
+  """Changes the password of the current user."""
   changePassword(password: String!): Boolean!
 
   """Create a new club."""
   createClub(input: ClubInput!): ClubDto!
+
+  """Adds a new admin to a club, if the current user is authorized"""
   addClubAdmin(userId: String!, clubId: String!): Boolean!
 
   """Update an existinc club. Just fill out what you want to change!"""
   updateClub(input: ClubInput!, id: String!): ClubDto!
+
+  """Deletes a club, if the current user is authorized"""
   deleteClub(clubId: String!): Boolean!
 
   """Creates a new exam. DOH!"""
@@ -240,6 +313,8 @@ type Mutation {
 
   """Deletes an existing Umbrella Association"""
   deleteUA(uaId: String!): Boolean!
+
+  """Add a new admin to a umbrella association"""
   addUaAdmin(userId: String!, uaId: String!): Boolean!
 }
 
@@ -267,6 +342,10 @@ type Query {
 
   """Returns one club by id"""
   getClubById(id: String!): ClubDto!
+
+  """
+  Returns an array of all club members, if the current user is authorized
+  """
   getAllClubMembers(clubId: String!): [UserDto!]!
 
   """Returns an array of all exams. Including previous ones."""
@@ -300,7 +379,12 @@ type RankDto {
 }
 
 input RankInput {
+  """The name of the martial art rank"""
   name: String!
+
+  """
+  The number of the martial art rank. We are assuming, that number 1 is your grand master (highest rank)!
+  """
   number: Float!
 }
 
@@ -335,10 +419,16 @@ type UmbrellaAssocDto {
 }
 
 input UmbrellaAssocInput {
-  """The name of the club"""
+  """The name of the umbrella association"""
   name: String
+
+  """You need a description for this?"""
   street: String
+
+  """You need a description for this?"""
   zip: String
+
+  """You need a description for this?"""
   city: String
 
   """Register of associatoins ID, if exists in country of origin"""
@@ -380,10 +470,25 @@ type UserDto {
 }
 
 input UserInput {
+  """The users first name"""
   firstName: String
+
+  """The users last name"""
   lastName: String
+
+  """The users email address"""
   email: String
+
+  """
+  The users password. Will be turned into a hash before we write it into the database.
+  """
   password: String
+
+  """
+  An array of martial art rank ids. We look out that you dont insert two ranks of the same martial art.
+  """
   martialArts: [String!]
+
+  """An array of clubs the user is (or wants to be) an member of."""
   clubs: [ClubMemberInput!]
 }

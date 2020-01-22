@@ -660,7 +660,7 @@ describe('AppController (e2e)', () => {
             martialArt: {
               _id: "5e1323f45521bf49046ca85c",name: "Battojutsu"
               styleName:"Shobukan Inyo-Ryu"}
-            rank: "5. Kyu",date: "2020-06-14",reportUri: "",passed: true})
+            rank: "5. Kyu",date: "2020-06-14",passed: true})
         {_id, user, exam, examiner{firstName}
           rank,passed,martialArt{name}}}`,
         })
@@ -690,7 +690,7 @@ describe('AppController (e2e)', () => {
             martialArt: {
               _id: "5e1323f45521bf49046ca85c",name: "Battojutsu"
               styleName:"Shobukan Inyo-Ryu"}
-            rank: "5. Kyu",date: "2020-06-14",reportUri: "",passed: true})
+            rank: "5. Kyu",date: "2020-06-14",passed: true})
         {_id, user, exam, examiner{firstName}
           rank,passed,martialArt{name}}}`,
         })
