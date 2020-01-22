@@ -30,7 +30,7 @@ export class UserResolver {
     } catch (error) { return error; }
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => Boolean, {description: 'Removes the current user from a club member list'})
   async removeUserFromClub(@CurrentUser() user: any, @Args('clubId') clubId: string) {
     try{ return this.userService.removeClub(user.userId, clubId);
     } catch (error) { return error; }

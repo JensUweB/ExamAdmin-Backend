@@ -47,7 +47,7 @@ export class UmbrellaAssocResolver {
         } catch (error) { return error; }
     }
 
-    @Mutation(() => Boolean)
+    @Mutation(() => Boolean, {description: 'Add a new admin to a umbrella association'})
     async addUaAdmin(@CurrentUser() user: any, @Args('uaId') uaId: string , @Args('userId') userId: string) {
         try{ return this.uaService.addAdmin(uaId, userId, user.userId);
         } catch (error) { return error; }

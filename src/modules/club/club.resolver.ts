@@ -29,7 +29,7 @@ export class ClubResolver {
         } catch (error) { return error; }
     }
 
-    @Query(() => [UserDto])
+    @Query(() => [UserDto], {description: 'Returns an array of all club members, if the current user is authorized'})
     async getAllClubMembers(@CurrentUser() user: any, @Args('clubId')clubId: string) {
         try { return this.clubService.getAllMembers(user.userId, clubId);
         } catch (error) { return error; }
@@ -46,7 +46,7 @@ export class ClubResolver {
         } catch (error) { return error; }
     }
 
-    @Mutation(() => Boolean)
+    @Mutation(() => Boolean, {description: 'Adds a new admin to a club, if the current user is authorized'})
     async addClubAdmin(@CurrentUser() user: any, @Args('clubId') clubId: string, @Args('userId') userId: string) {
         try { return this.clubService.addAdmin(clubId, userId, user.userId);
         } catch (error) { return error; }
@@ -58,7 +58,7 @@ export class ClubResolver {
         } catch (error) { return error; }
     }
 
-    @Mutation(() => Boolean)
+    @Mutation(() => Boolean, {description: 'Deletes a club, if the current user is authorized'})
     async deleteClub(@CurrentUser() user: any, @Args('clubId') clubId: string) {
         try { return this.clubService.delete(user.userId, clubId);
         } catch (error) { return error; }

@@ -35,7 +35,7 @@ export class AuthResolver {
   // ===========================================================================
   // Mutations
   // ===========================================================================
-  @Mutation(() => UserDto, { description: 'Creates a new User' })
+  @Mutation(() => UserDto, { description: 'Creates a new temporary user and sends an confirmation link to the given email address.'})
   async signup(@Args('userInput') userInput: UserInput) {
     try{
       await this.userService.findByEmail(userInput.email);          // Throws an NotFoundException, if email address is not found.
@@ -49,14 +49,14 @@ export class AuthResolver {
     }
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => Boolean, {description: 'Send a link for password reset, if the email address is in use. No error message whatsoever.'})
   async forgotPassword(@Args('email') email: string) {
     this.authService.forgotPassword(email);
     return 'We will send a confirmatin email, if this email exists.';
   }
 
   @UseGuards(GraphqlAuthGuard)
-  @Mutation(() => Boolean)
+  @Mutation(() => Boolean, {description: 'Changes the password of the current user.'})
   async changePassword(@CurrentUser() user: any, @Args('password') password: string) {
     try{ return this.authService.changePassword(user.userId, password);
     } catch (error) { return error; }

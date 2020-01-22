@@ -59,7 +59,7 @@ export class MartialArtsResolver {
         } catch (error) { return error; }
     }
 
-    @Mutation(() => String)
+    @Mutation(() => String, {description: 'Deletes a martial art, if the current user is authorized'})
     async deleteMartialArt(@CurrentUser() user: any, @Args('id') id: string) {
         try{ return this.maService.delete(user.userId, id);
         } catch (error) { return error; }
