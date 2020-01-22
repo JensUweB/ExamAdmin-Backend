@@ -26,22 +26,26 @@ export class UserResolver {
   // ===========================================================================
   @Mutation(() => UserDto, { description: 'Add a new club to the clubs array of a user' })
   async addUserToClub(@CurrentUser() user: any, @Args('clubId') clubId: string) {
-    return this.userService.addClub(user.userId, clubId);
+    try{ return this.userService.addClub(user.userId, clubId);
+    } catch (error) { return error; }
   }
 
   @Mutation(() => Boolean)
   async removeUserFromClub(@CurrentUser() user: any, @Args('clubId') clubId: string) {
-    return this.userService.removeClub(user.userId, clubId);
+    try{ return this.userService.removeClub(user.userId, clubId);
+    } catch (error) { return error; }
   }
   
   @Mutation(() => UserDto, { description: 'Add a new martial art rank to the current user' })
   async addMartialArtRankToUser(@CurrentUser() user: any, @Args('rankId') rankId: string) {
-    return this.userService.addMartialArtRank(user.userId, rankId);
+    try{ return this.userService.addMartialArtRank(user.userId, rankId);
+    } catch (error) { return error; }
   }
 
   @Mutation(() => Boolean, {description: 'Deletes the account of the current user'})
   async deleteUser(@CurrentUser() user: any) {
-    return this.userService.deleteUser(user.userId);
+    try{ return this.userService.deleteUser(user.userId);
+    } catch (error) { return error; }
   }
 
   // ===========================================================================

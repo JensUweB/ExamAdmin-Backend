@@ -19,21 +19,20 @@ export class ClubResolver {
    
     @Query(() => [ClubDto], {description: 'Returns an array with all existing clubs'})
     async getAllClubs() {
-        const result = await this.clubService.findAll();
-        if(result) return result;
-        return new Error('No club found. Please create a club first bevore searching.');
+        try { return this.clubService.findAll();
+        } catch (error) { return error; }
     }
 
     @Query(() => ClubDto, {description: 'Returns one club by id'})
     async getClubById(@Args('id') id: string) {
-        const result = await this.clubService.findById(id);
-        if(result) return result;
-        return new NotFoundException('Club not found!');
+        try { return  this.clubService.findById(id);
+        } catch (error) { return error; }
     }
 
     @Query(() => [UserDto])
     async getAllClubMembers(@CurrentUser() user: any, @Args('clubId')clubId: string) {
-        return this.clubService.getAllMembers(user.userId, clubId);
+        try { return this.clubService.getAllMembers(user.userId, clubId);
+        } catch (error) { return error; }
     }
 
 
@@ -43,31 +42,26 @@ export class ClubResolver {
     
     @Mutation(() => ClubDto, {description: 'Create a new club.'})
     async createClub(@Args('input') input: ClubInput) {
-        return this.clubService.create(input);
+        try { return this.clubService.create(input);
+        } catch (error) { return error; }
     }
 
     @Mutation(() => Boolean)
     async addClubAdmin(@CurrentUser() user: any, @Args('clubId') clubId: string, @Args('userId') userId: string) {
-        return this.clubService.addAdmin(clubId, userId, user.userId);
+        try { return this.clubService.addAdmin(clubId, userId, user.userId);
+        } catch (error) { return error; }
     }
 
     @Mutation(() => ClubDto, {description: 'Update an existinc club. Just fill out what you want to change!'})
     async updateClub(@Args('id') id: string, @Args('input') input: ClubInput) {
-        const result = await this.clubService.update(id, input);
-        if(result) return result;
-        return new NotFoundException('Club not found!');
+        try { return  this.clubService.update(id, input);
+        } catch (error) { return error; }
     }
 
-    @Mutation(() => String)
+    @Mutation(() => Boolean)
     async deleteClub(@CurrentUser() user: any, @Args('clubId') clubId: string) {
-        const res = await this.clubService.delete(user.userId, clubId);
-        switch(res){
-            case 1: {return 'Success';}
-            case 0: {return 'Error: delete club failed';}
-            case -1: {return 'Error: club not found';}
-            case -2: {return 'Error: Not authorized to delete this club';}
-            default: {return 'Unexpected Server Error';}
-        }
+        try { return this.clubService.delete(user.userId, clubId);
+        } catch (error) { return error; }
     }
 
 

@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, NotFoundException } from "@nestjs/common";
+import { Injectable, UnauthorizedException, NotFoundException, NotAcceptableException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Exam } from "./interfaces/exam.interface";
@@ -11,20 +11,26 @@ export class ExamService {
     constructor(@InjectModel('Exam') private readonly examModel: Model<Exam>) {}
 
     async findById(id: string): Model<Exam | undefined> {
-        return this.examModel.findOne({_id: id});
+        const result = await this.examModel.findOne({_id: id});
+        if(!result) throw new NotFoundException(`No exam with _id: "${id}" found.`);
+        return result;
     }
     
     async findAll(): Promise<ExamDto[]> {
-        return await this.examModel.find();
+        const result = await this.examModel.find();
+        if(!result) throw new NotFoundException(`No exam found. Please create one first.`);
+        return result;
     }
 
     async create(input: ExamInput): Promise<ExamDto> {
         const exam = new this.examModel(input);
+        if(!exam) throw new NotAcceptableException('If you see this error, your inputs are propably wrong.');
         return exam.save();
     }
 
     async update(id: string, input: ExamInput): Promise<ExamDto> {
         let exam = await this.findById(id);
+        if(!exam) throw new NotFoundException(`No exam with _id: "${id}" found!`);
         if(input.title) exam.title = input.title;
         if(input.description) exam.description = input.description;
         if(input.examDate) exam.examDate = input.examDate;
@@ -36,14 +42,13 @@ export class ExamService {
         return exam.save();
     }
 
-    async deleteExam(userId: string, examId: string): Promise<Number> {
+    async deleteExam(userId: string, examId: string): Promise<Boolean> {
         const exam = await this.examModel.findOne({_id: examId});
-
-        if(!exam) return -1;
-        if(exam.examiner.toString() == userId) {
-            const result = await this.examModel.deleteOne({_id: examId});
-            if(result) return 1;
-            return 0;
-        } else return -2;
+        if(!exam) throw new NotFoundException(`No exam with _id: "${examId}" found!`);
+        if(exam.examiner.toString() != userId) throw new UnauthorizedException('You are not authorized to delete this exam.');
+        
+        const result = await this.examModel.deleteOne({_id: examId});
+        if(result) return true;
+        return false;
     }
 }

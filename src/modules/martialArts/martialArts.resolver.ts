@@ -20,22 +20,26 @@ export class MartialArtsResolver {
 
     @Query(() => [MartialArtsDto], {description: 'Returns an array of martial art objects'})
     async getAllMartialArts() {
-        return this.maService.findAll();
+        try{ return this.maService.findAll();
+        } catch (error) { return error; }
     }
 
     @Query(() => MartialArtsDto, {description: 'Returns one martial art object by id'})
     async getMartialArtById(@Args('id') id: string) {
-        return this.maService.findById(id);
+        try{ return this.maService.findById(id);
+        } catch (error) { return error; }
     }
 
     @Query(() => MartialArtsDto, {description: 'Returns one martial art object by rank id'})
     async getMartialArtByRank(@Args('rankId') rankId: string) {
-        return this.maService.findByRank(rankId);
+        try{ return this.maService.findByRank(rankId);
+        } catch (error) { return error; }
     }
 
     @Query(() => RankDto, {description: 'Returns striped out one rank object by rank id'})
     async getRank(@Args('rankId') rankId: string) {
-        return this.maService.findRank(rankId);
+        try{ return this.maService.findRank(rankId);
+        } catch (error) { return error; }
     }
 
 
@@ -45,24 +49,20 @@ export class MartialArtsResolver {
 
     @Mutation(() => MartialArtsDto, {description: 'Creates a new martial art'})
     async createMartialArt(@Args('input') input: MartialArtsInput) {
-        return this.maService.create(input);
+        try{ return this.maService.create(input);
+        } catch (error) { return error; }
     }
 
     @Mutation(() => MartialArtsDto, {description: 'Updates an existing martial art'})
     async updateMartialArt(@Args('id') id: string, @Args('input') input: MartialArtsInput) {
-        return this.maService.update(id, input);
+        try{ return this.maService.update(id, input);
+        } catch (error) { return error; }
     }
 
     @Mutation(() => String)
     async deleteMartialArt(@CurrentUser() user: any, @Args('id') id: string) {
-        const res = await this.maService.delete(user.userId, id);
-        switch(res){
-            case 1: {return 'Success';}
-            case 0: {return 'Error: delete martial art failed';}
-            case -1: {return 'Error: martial art not found';}
-            case -2: {return 'Error: Not authorized to delete this martial art';}
-            default: {return 'Unexpected Server Error';}
-        }
+        try{ return this.maService.delete(user.userId, id);
+        } catch (error) { return error; }
     }
 
     // ===========================================================================

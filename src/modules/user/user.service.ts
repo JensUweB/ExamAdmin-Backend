@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
+import { Injectable, HttpException, HttpStatus, NotAcceptableException, NotFoundException } from "@nestjs/common";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { User } from './interfaces/user.interface';
@@ -27,7 +27,7 @@ export class UserService {
      * Create a new user. What else?
      * @param userInput All needed fields in one object! :O
      */
-    async create(userInput: UserInput): Promise<UserDto | any> {
+    async create(userInput: UserInput): Promise<UserDto> {
         const id = await this.mailerService.sendVerification(userInput);
         const createdUser = new this.userModel(userInput);
         const tmpuser = new this.tmpUser({user: createdUser, uuid: id, createdAt: new Date(Date.now())}); 
@@ -35,7 +35,9 @@ export class UserService {
     }
 
     async findByConfirmId(uuid: string): Promise<any> {
-        return await this.tmpUser.findOne({ uuid: uuid });
+        const result = await this.tmpUser.findOne({ uuid: uuid });
+        if(!result) throw new NotFoundException(`No temporary user with uuid: "${uuid}" found!`);
+        return result;
     }
 
     /**
@@ -45,17 +47,17 @@ export class UserService {
     async findByEmail(email: string): Promise<UserDto | undefined> {
         const user = await this.userModel.findOne({ email: email }).populate('clubs.club').exec();
         
-        if (user) {
-            if (user.martialArts) {
-                for (let i = 0; i < user.martialArts.length; i++) {
-                    const ma = await this.maService.findByRank(user.martialArts[i]._id);
-                    ma.ranks = ma.ranks.filter((rank) => rank._id.toString() == user.martialArts[i]._id.toString());
-                    if (ma.ranks) {
-                        user.martialArts[i] = ma;
-                    }
+        if (!user) throw new NotFoundException('Could not find any user with given email');
+        if (user.martialArts) {
+            for (let i = 0; i < user.martialArts.length; i++) {
+                const ma = await this.maService.findByRank(user.martialArts[i]._id);
+                ma.ranks = ma.ranks.filter((rank) => rank._id.toString() == user.martialArts[i]._id.toString());
+                if (ma.ranks) {
+                    user.martialArts[i] = ma;
                 }
             }
         }
+        
         return user;
     }
 
@@ -68,7 +70,6 @@ export class UserService {
             clubs: user.clubs,
             martialArts: user.martialArts,
         });
-        console.log(tmpUserId);
         await this.tmpUser.deleteOne({_id: tmpUserId});
         return createdUser.save();
     }
@@ -79,6 +80,7 @@ export class UserService {
      */
     async findById(id: string): Promise<UserDto | any> {
         const user = await this.userModel.findOne({ _id: id }).populate('clubs.club').exec();
+        if(!user) throw new NotFoundException(`No user found with _id: "${id}"`);
 
         for (let i = 0; i < user.martialArts.length; i++) {
             const ma = await this.maService.findByRank(user.martialArts[i]._id);
@@ -87,12 +89,13 @@ export class UserService {
                 user.martialArts[i] = ma;
             }
         }
-        if (user) return user;
-        return new HttpException('User not found', HttpStatus.NOT_FOUND);
+        return user;
     }
 
     async findByClub(clubId: string): Promise<UserDto[]> {
-        return this.userModel.find({'clubs.club': clubId });
+        const result = await this.userModel.find({'clubs.club': clubId });
+        if(!result) throw new NotFoundException(`No user who is member of the club with _id: "${clubId}" found!  `);
+        return result;
     }
 
     /**
@@ -102,16 +105,15 @@ export class UserService {
      */
     async update(id: string, input: UserInput): Promise<UserDto | any> {
         let user = await this.userModel.findOne({ _id: id });
+        if (!user) throw new NotFoundException(`No user with _id: "${id}" found!`); 
 
-        if (user) {
-            if (input.firstName) user.firstName = input.firstName;
-            if (input.lastName) user.lastName = input.lastName;
-            if (input.email) user.email = input.email;
-            if (input.martialArts) user.martialArts = input.martialArts;
-            if (input.clubs) user.clubs = input.clubs;
-            return await user.save();
-        }
-        return new HttpException('User not found', HttpStatus.NOT_FOUND);
+        if (input.firstName) user.firstName = input.firstName;
+        if (input.lastName) user.lastName = input.lastName;
+        if (input.email) user.email = input.email;
+        if (input.martialArts) user.martialArts = input.martialArts;
+        if (input.clubs) user.clubs = input.clubs;
+        return user.save();
+        
     }
 
     /**

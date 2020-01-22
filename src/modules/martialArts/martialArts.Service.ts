@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
+import { Injectable, HttpException, HttpStatus, NotAcceptableException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { MartialArts } from "./interfaces/martialArts.interface";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
@@ -11,63 +11,62 @@ export class MartialArtsService {
 
     constructor(@InjectModel('MartialArt') private readonly maModel: Model<MartialArts>) { }
 
-    async create(maInput: MartialArtsInput): Promise<MartialArts | Error> {
+    async create(maInput: MartialArtsInput): Promise<MartialArts> {
         const exists = await this.maModel.findOne({name: maInput.name, styleName: maInput.styleName});
-        if(exists) return new Error(`An martial art with the name "${maInput.name}" already exists!`);
+        if(exists) throw new NotAcceptableException(`An martial art with the name "${maInput.name}" already exists!`);
 
         const martialArt = await new this.maModel(maInput);
         return martialArt.save();
     }
 
-    async findById(id: string): Model<MartialArts | undefined> {
-        return this.maModel.findOne({ _id: id }).populate('examiners').exec();
+    async findById(id: string): Model<MartialArts> {
+        const result = await this.maModel.findOne({ _id: id }).populate('examiners').exec();
+        if(!result) throw new NotFoundException(`No martial art with _id: "${id}" found.`);
+        return result;
     }
 
-    async findByRank(rankId: string): Promise<MartialArtsDto | any> {
+    async findByRank(rankId: string): Promise<MartialArtsDto> {
         const result = await this.maModel.findOne({ 'ranks._id': rankId });
-
-        if (result) return result;
-        return new HttpException('Martial Art Rank not found', HttpStatus.NOT_FOUND);
+        if(!result) throw new NotFoundException(`No martial art with rankId: "${rankId}" found.`);
+        return result;
     }
 
     async findAll(): Promise<MartialArtsDto[]> {
-        return await this.maModel.find().populate('examiners').exec();
+        const result = await this.maModel.find().populate('examiners').exec();
+        if(!result) throw new NotFoundException(`No martial art found.`);
+        return result;
     }
 
-    async findRank(rankId: string): Promise<RankDto | any> {
+    async findRank(rankId: string): Promise<RankDto> {
         const result = await this.maModel.findOne({ 'ranks._id': rankId });
-        if (result) {
-            const rank = result.ranks.filter(rank => {
-                return rank._id == rankId;
-            });
-            return rank[0];
-        }
-        return new HttpException('Martial Art Rank not found', HttpStatus.NOT_FOUND);
+        if(!result) throw new NotFoundException(`No martial art rank with rankId: "${rankId}" found.`);
+
+        const rank = result.ranks.filter(rank => {
+            return rank._id == rankId;
+        });
+        return rank[0];
     }
 
-    async update(id: string, input: MartialArtsInput): Model<MartialArts | undefined> {
+    async update(id: string, input: MartialArtsInput): Model<MartialArts> {
         const ma = await this.findById(id);
-        if(ma){
-            if (input.name) ma.name = input.name;
-            if (input.styleName) ma.stylename = input.styleName;
-            if (input.ranks) ma.ranks = input.ranks;
-            return ma.save();
-        }
-        return new HttpException('Martial Art not found', HttpStatus.NOT_FOUND);
+        if(!ma) throw new NotFoundException(`No martial art with _id: "${id}" found.`);
+        if (input.name) ma.name = input.name;
+        if (input.styleName) ma.stylename = input.styleName;
+        if (input.ranks) ma.ranks = input.ranks;
+        return ma.save();
     }
 
-    async delete(userId: string, maId): Promise<Number> {
+    async delete(userId: string, maId): Promise<Boolean> {
         const ma = await this.maModel.findOne({ _id: maId });
+        if(!ma) throw new NotFoundException(`No martial art with _id: "${maId}" found.`);
+        if(!ma.examiners.includes(userId)) throw new UnauthorizedException('You are not authorized to delete this martial art!');
 
-        if(!ma) return -1;
-        if(ma.examiners){
-            for(let i = 0; i < ma.examiners.length; i++) {
-                if(ma.examiners[i].toString() == userId){
-                    const res = await this.maModel.deleteOne({_id: maId});
-                    if(res) return 1;
-                    return 0;
-                }
+        for(let i = 0; i < ma.examiners.length; i++) {
+            if(ma.examiners[i].toString() == userId){
+                const res = await this.maModel.deleteOne({_id: maId});
+                if(!res) return false;
+                return true;
             }
-        } else return -2;
+        }
     }
 }

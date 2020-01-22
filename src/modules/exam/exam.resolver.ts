@@ -17,20 +17,24 @@ export class ExamResolver {
     // ===========================================================================
     @Query(() => [ExamDto], {description: 'Returns an array of all exams. Including previous ones.'})
     async getAllExams() {
-        return this.examService.findAll();
+        try{ return this.examService.findAll();
+        } catch (error) { return error; }
     }
 
     @Query(() => ExamDto, {description: 'Returns one exam with the given id'})
     async getExamById(@Args('id') id: string) {
-        return this.examService.findById(id);
+        try{ return this.examService.findById(id);
+        } catch (error) { return error; }
     }
 
     @Query(() => [ExamDto], {description: 'Returns an array of all exams. Only exams with an future starting date included.'})
     async getPlannedExams() {
-        let exams = await this.examService.findAll();
+        try{ 
+            let exams = await this.examService.findAll();
 
-        // Filter exams by date and return
-        return await exams.filter(exam => exam.examDate > new Date(Date.now()));
+            // Filter exams by date and return
+            return await exams.filter(exam => exam.examDate > new Date(Date.now()));
+        } catch (error) { return error; }
     }
 
 
@@ -40,20 +44,14 @@ export class ExamResolver {
 
     @Mutation(() => ExamDto, {description: 'Creates a new exam. DOH!'})
     async createExam(@Args('input') input: ExamInput) {
-        return this.examService.create(input);
+        try{ return this.examService.create(input);
+        } catch (error) { return error; }
     }
 
-    @Mutation(() => String,{description: 'Deletes the exam with given examId, if exam.examiner equals current user'})
+    @Mutation(() => Boolean,{description: 'Deletes the exam with given examId, if exam.examiner equals current user'})
     async deleteExam(@CurrentUser() user: any, @Args('examId') examId: string) {
-        const res = await this.examService.deleteExam(user.userId, examId);
-
-        switch(res){
-            case 1: {return 'Success';}
-            case 0: {return 'Error: delete exam failed';}
-            case -1: {return 'Error: exam not found';}
-            case -2: {return 'Error: Not authorized to delete this exam';}
-            default: {return 'Unexpected Server Error';}
-        }
+        try{ return this.examService.deleteExam(user.userId, examId);
+        } catch (error) { return error; }
     }
 
 

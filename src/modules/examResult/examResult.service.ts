@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotAcceptableException, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { ExamResult } from "./interfaces/examResult.interface";
@@ -12,28 +12,33 @@ export class ExamResultService {
 
     async create(input: ExamResultInput): Promise<ExamResultDto | Error> {
         const existing = await this.erModel.findOne({ user: input.user,  exam: input.exam });
-        if(existing) return new Error('User has already an exam result for the given exam!');
+        if(existing) throw new NotAcceptableException('User has already an exam result for the given exam!');
         const examResult = new this.erModel(input);
         return examResult.save();
     }
 
-    async findById(id: string): Model<ExamResult | undefined> {
-        return this.erModel.findOne({ _id: id });
+    async findById(id: string): Model<ExamResult> {
+        const result = await this.erModel.findOne({ _id: id });
+        if(!result) throw new NotFoundException(`No exam result with _id: "${id}" found.`);
+        return result;
     }
 
     async findAll(userId: string): Promise<ExamResultDto[]> {
-        return await this.erModel.find({ user: userId });
+        const result = await this.erModel.find({ user: userId });
+        if(!result) throw new NotFoundException(`No exam results found.`);
+        return result;
     }
 
     async addReportUri(id: string, uri: string): Promise<ExamResultDto | undefined> {
         const examResult = await this.erModel.findOne({ _id: id });
+        if(!examResult) throw new NotFoundException(`Could not find any exam result with _id: "${id}"`);
         examResult.reportUri = uri;
         return examResult.save();
     }
 
     async update(id: string, input: ExamResultInput): Promise<ExamResultDto | undefined> {
         const examResult = await this.erModel.findOne({ _id: id });
-
+        if(!examResult) throw new NotFoundException(`Could not find any exam result with _id: "${id}"`);
         if(input.user) examResult.user = input.user;
         if(input.exam) examResult.exam = input.exam;
         if(input.martialArt) examResult.martialArt = input.martialArt;
@@ -46,9 +51,9 @@ export class ExamResultService {
         return examResult.save();
     }
 
-    async deleteAllRelated(userId: string): Promise<any>{
+    async deleteAllRelated(userId: string): Promise<Boolean>{
        const result = await this.erModel.deleteMany({'user': userId});
-       if(result) return true;
-       return false;
+       if(!result) throw new NotFoundException('No exam results related to this user found!');
+       return true;
     }
 }

@@ -31,22 +31,26 @@ export class UmbrellaAssocResolver {
     
     @Mutation(() => UmbrellaAssocDto, {description: 'Create a new Umbrella Association'})
     async createUA(@Args('input') input: UmbrellaAssocInput) {
-        return this.uaService.create(input);
+        try{ return this.uaService.create(input);
+        } catch (error) { return error; }
     }
 
     @Mutation(() => UmbrellaAssocDto, {description: 'Updates an existing Umbrella Association'})
     async updateUA(@CurrentUser() user: any, @Args('id') id: string, @Args('input') input: UmbrellaAssocInput) {
-        return this.uaService.update(id, input, user.userId);
+        try{ return this.uaService.update(id, input, user.userId);
+        } catch (error) { return error; }
     }
 
     @Mutation(() => Boolean, {description: 'Deletes an existing Umbrella Association'})
     async deleteUA(@CurrentUser() user: any, @Args('uaId') uaId: string) {
-        return this.uaService.delete(uaId, user.userId);
+        try{ return this.uaService.delete(uaId, user.userId);
+        } catch (error) { return error; }
     }
 
     @Mutation(() => Boolean)
     async addUaAdmin(@CurrentUser() user: any, @Args('uaId') uaId: string , @Args('userId') userId: string) {
-        return this.uaService.addAdmin(uaId, userId, user.userId);
+        try{ return this.uaService.addAdmin(uaId, userId, user.userId);
+        } catch (error) { return error; }
     }
 
     // ===========================================================================

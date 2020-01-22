@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { Injectable, NotFoundException, UnauthorizedException, NotAcceptableException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { UmbrellaAssoc } from "./interfaces/umbrellaAssoc.interface";
 import { UmbrellaAssocInput } from "./inputs/umbrellaAssoc.input";
+import { UmbrellaAssocDto } from "./dto/umbrellaAssoc.dto";
 
 
 @Injectable()
@@ -39,11 +40,10 @@ export class UmbrellaAssocService {
         .populate('singleMembers').exec();
     }
 
-    async update(id: string, input: UmbrellaAssocInput, userId: string): Promise<any> {
+    async update(id: string, input: UmbrellaAssocInput, userId: string): Promise<UmbrellaAssocDto> {
         const ua = await this.uaModel.findOne({_id: id});
-        const isAdmin = ua.admins.includes(userId);
+        if(!ua.admins.includes(userId)) throw new UnauthorizedException();
 
-        if(!isAdmin) return new UnauthorizedException();
         if(input.name) ua.name = input.name;
         if(input.street) ua.street = input.street;
         if(input.zip) ua.zip = input.zip;
@@ -54,12 +54,10 @@ export class UmbrellaAssocService {
         return ua.save();
     }
 
-    async addAdmin(uaId: string, userId: string, currentUser: string): Promise<Boolean | any> {
+    async addAdmin(uaId: string, userId: string, currentUser: string): Promise<Boolean> {
         const ua = await this.uaModel.findOne({_id: uaId});
-        const isAdmin = await ua.admins.includes(currentUser);
-
-        if(!ua) return new NotFoundException('Umbrella Association not found!');
-        if(!isAdmin) return new UnauthorizedException();
+        if(!ua) throw new NotFoundException(`No Umbrella Association with _id: "${uaId}" found!`);
+        if(!ua.admins.includes(currentUser)) throw new UnauthorizedException('You are not authorized to add new admins!');
 
         ua.admins.push({_id: userId});
         const result = ua.save();
@@ -69,19 +67,22 @@ export class UmbrellaAssocService {
 
     }
 
-    async addMartialArt(uaId: string, maId: string, userId: string): Promise<any> {
+    async addMartialArt(uaId: string, maId: string, userId: string): Promise<Boolean> {
         const ua = await this.uaModel.findOne({_id: uaId});
-        const isAdmin = await ua.admins.includes(userId);
 
-        if(!isAdmin) return new UnauthorizedException();
-        if(ua.martialArts.includes(maId)) return new Error('This martial art was already added to the umbrella association!');
+        if(!ua.admins.includes(userId)) throw new UnauthorizedException('You are not authorized to add a new martial art to tis association!');
+        if(ua.martialArts.includes(maId)) throw new NotAcceptableException('This martial art was already added to the umbrella association!');
+
+        ua.martialArts.push({_id: maId});
+        const result = await ua.save();
+        if(!result) return false;
+        return true;
     }
 
-    async delete(uaId: string, userId: string): Promise<any> {
+    async delete(uaId: string, userId: string): Promise<Boolean> {
         const ua = await this.uaModel.findOne({_id: uaId});
-        const isAdmin = await ua.admins.includes(userId);
-
-        if(!isAdmin) return new UnauthorizedException();
+        if(!ua.admins.includes(userId)) throw new UnauthorizedException('You are not authorized to delete this umbrella association!');
+        
         const result = await this.uaModel.deleteOne({_id: uaId});
         if(result) return true;
         return false;

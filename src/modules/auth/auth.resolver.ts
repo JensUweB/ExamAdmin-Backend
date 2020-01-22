@@ -5,8 +5,9 @@ import * as bcrypt from 'bcryptjs';
 import { UserInput } from "../user/input/user.input";
 import { UserService } from "../user/user.service";
 import { User as CurrentUser } from "../decorators/user.decorator";
-import { UseGuards } from "@nestjs/common";
+import { UseGuards, NotAcceptableException, InternalServerErrorException } from "@nestjs/common";
 import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
+import { UserDto } from "../user/dto/user.dto";
 
 /**
  * Authentication resolver for the sign in
@@ -24,41 +25,40 @@ export class AuthResolver {
   // ===========================================================================
   @Query(() => AuthModel, { description: 'Logs the user in if email and password are correct' })
   async login(@Args('email') email: string, @Args('password') password: string) {
-    try {
+    try{
       const user = await this.authService.validateUser({ email, password });
-      return await this.authService.login(user);
-    } catch (error) {
-      return error;
-    }
+      return this.authService.login(user);
+    } catch (error) { return error; }
   }
 
 
   // ===========================================================================
   // Mutations
   // ===========================================================================
-  @Mutation(() => String, { description: 'Creates a new User' })
+  @Mutation(() => UserDto, { description: 'Creates a new User' })
   async signup(@Args('userInput') userInput: UserInput) {
-    const emailExists = await this.userService.findByEmail(userInput.email);
-
-    if (emailExists) return Error('Email is already in use');
-
-    const password = await bcrypt.hash(userInput.password, 10);
-    const user = await this.userService.create({
-      ...userInput,
-      password: password
-    });
-
-    return "Success: Confirmation Email sent. Please confirm registration by clicking on the confirmation link provided in the email.";
+    try{
+      await this.userService.findByEmail(userInput.email);          // Throws an NotFoundException, if email address is not found.
+      return new NotAcceptableException('Email is already in use'); // We got no Exception, that means email address is already in use.
+    } catch (error) {                                               // userService has thrown an NotFoundException, so email adress is not yet in use.
+      const password = await bcrypt.hash(userInput.password, 10);
+      return this.userService.create({
+        ...userInput,
+        password: password
+      });
+    }
   }
 
-  @Mutation(() => String)
+  @Mutation(() => Boolean)
   async forgotPassword(@Args('email') email: string) {
-    return this.authService.forgotPassword(email);
+    this.authService.forgotPassword(email);
+    return 'We will send a confirmatin email, if this email exists.';
   }
 
   @UseGuards(GraphqlAuthGuard)
   @Mutation(() => Boolean)
   async changePassword(@CurrentUser() user: any, @Args('password') password: string) {
-    return this.authService.changePassword(user.userId, password);
+    try{ return this.authService.changePassword(user.userId, password);
+    } catch (error) { return error; }
   }
 }
