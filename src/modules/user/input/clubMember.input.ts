@@ -2,8 +2,8 @@ import { Field, InputType } from 'type-graphql';
 
 @InputType()
 export class ClubMemberInput {
-    @Field()
+    @Field({ description: 'The id of the club the user is member of.', nullable: true })
     readonly club: string;
-    @Field()
+    @Field({ description: 'The confirmation status; false by default. Only turns true, if the club admin confirms the membership.', nullable: true })
     readonly confirmed: boolean;
 }

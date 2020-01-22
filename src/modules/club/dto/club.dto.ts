@@ -12,11 +12,11 @@ export class ClubDto {
     _id: string;
     @Field({ description: 'The name of the club', nullable: false })
     readonly name: string;
-    @Field({ description: '', nullable: false })
+    @Field({ description: 'You need a description for this?', nullable: false })
     readonly street: string;
-    @Field({ description: '', nullable: false })
+    @Field({ description: 'You need a description for this?', nullable: false })
     readonly zip: string;
-    @Field({ description: '', nullable: false })
+    @Field({ description: 'You need a description for this?', nullable: false })
     readonly city: string;
     @Field({ description: 'Register of associatoins ID, if exists in country of origin', nullable: false })
     readonly registrationId: string;

@@ -2,20 +2,20 @@ import { InputType, Field } from "type-graphql";
 
 @InputType()
 export class ExamInput {
-    @Field({ description: 'The title of the exam', nullable: false })
+    @Field({ description: 'The title of the exam', nullable: true })
     readonly title: string;
-    @Field({ description: 'The description of the exam', nullable: false })
+    @Field({ description: 'The description of the exam', nullable: true })
     readonly description: string;
-    @Field({ description: 'The date when the exam should be held', nullable: false })
+    @Field({ description: 'The date when the exam should be held', nullable: true })
     readonly  examDate: Date;
-    @Field({ description: 'The date when registration will be closed', nullable: false })
+    @Field({ description: 'The date when registration will be closed', nullable: true })
     readonly  regEndDate: Date;
-    @Field({ description: 'The id of the accompanying association / club', nullable: false })
+    @Field({ description: 'The id of the accompanying association / club', nullable: true })
     readonly  club: string;
-    @Field({ description: 'The user id of the examiner', nullable: false })
+    @Field({ description: 'The user id of the examiner', nullable: true })
     readonly  examiner: string;
-    @Field({ description: 'The id of the martial art this exam is for', nullable: false })
+    @Field({ description: 'The id of the martial art this exam is for', nullable: true })
     readonly  martialArt: string;
-    @Field(type => [String], { description: 'An array of ids from users who wants to get examined ', nullable: false })
+    @Field(type => [String], { description: 'An array of ids from users who wants to get examined ', nullable: true })
     readonly  participants: string[];
 }

@@ -2,13 +2,13 @@ import { Field, InputType } from 'type-graphql';
 
 @InputType()
 export class UmbrellaAssocInput {
-    @Field({ description: 'The name of the club', nullable: true })
+    @Field({ description: 'The name of the umbrella association', nullable: true })
     readonly name: string;
-    @Field({ description: '', nullable: true })
+    @Field({ description: 'You need a description for this?', nullable: true })
     readonly street: string;
-    @Field({ description: '', nullable: true })
+    @Field({ description: 'You need a description for this?', nullable: true })
     readonly zip: string;
-    @Field({ description: '', nullable: true })
+    @Field({ description: 'You need a description for this?', nullable: true })
     readonly city: string;
     @Field({ description: 'Register of associatoins ID, if exists in country of origin', nullable: true })
     readonly registrationId: string;
