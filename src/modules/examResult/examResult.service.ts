@@ -13,7 +13,7 @@ export class ExamResultService {
     async create(input: ExamResultInput): Promise<ExamResultDto | Error> {
         const existing = await this.erModel.findOne({ user: input.user,  exam: input.exam });
         if(existing) throw new NotAcceptableException('User has already an exam result for the given exam!');
-        const examResult = new this.erModel(input);
+        const examResult = new this.erModel({...input, reportUri: ""}); // Setting the reportUri to an empty string, because the file gets uploaded separately
         return examResult.save();
     }
 
@@ -45,7 +45,6 @@ export class ExamResultService {
         if(input.examiner) examResult.examiner = input.examiner;
         if(input.rank) examResult.rank = input.rank;
         if(input.date) examResult.date = input.date;
-        if(input.reportUri) examResult.reportUri = input.reportUri;
         if(input.passed) examResult.passed = input.passed;
 
         return examResult.save();
