@@ -201,8 +201,8 @@ type Mutation {
   deleteMartialArt(id: String!): String!
 
   """Creates a new User"""
-  signup(userInput: UserInput!): String!
-  forgotPassword(email: String!): String!
+  signup(userInput: UserInput!): UserDto!
+  forgotPassword(email: String!): Boolean!
   changePassword(password: String!): Boolean!
 
   """Create a new club."""
@@ -211,7 +211,7 @@ type Mutation {
 
   """Update an existinc club. Just fill out what you want to change!"""
   updateClub(input: ClubInput!, id: String!): ClubDto!
-  deleteClub(clubId: String!): String!
+  deleteClub(clubId: String!): Boolean!
 
   """Creates a new exam. DOH!"""
   createExam(input: ExamInput!): ExamDto!
@@ -219,7 +219,7 @@ type Mutation {
   """
   Deletes the exam with given examId, if exam.examiner equals current user
   """
-  deleteExam(examId: String!): String!
+  deleteExam(examId: String!): Boolean!
 
   """Creates a new exam result"""
   createExamResult(input: ExamResultInput!): ExamResultDto!
