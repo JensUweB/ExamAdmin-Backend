@@ -46,7 +46,7 @@ export class UserResolver {
   @Mutation(() => UserDto, {description: 'Updates the current user'})
   async updateUser(@CurrentUser() user: any, @Args('input') input: UserInput) {
     try{
-      return this.userService.update(user._id, input);
+      return this.userService.update(user.userId, input);
     } catch (error) { return error; }
   }
 

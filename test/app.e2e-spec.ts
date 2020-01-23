@@ -133,10 +133,10 @@ describe('AppController (e2e)', () => {
         .expect(({ body }) => {
           console.log('updateUser: '+JSON.stringify(body));
           expect(body.data).toBeTruthy();
-          expect(body.data.addUserToClub).toBeTruthy();
-          expect(body.data.addUserToClub._id).toBeTruthy();
-          expect(body.data.addUserToClub.firstName).toBe('E2E');
-          expect(body.data.addUserToClub.lastName).toBe('Test');
+          expect(body.data.updateUser).toBeTruthy();
+          expect(body.data.updateUser._id).toBeTruthy();
+          expect(body.data.updateUser.firstName).toBe('E2E');
+          expect(body.data.updateUser.lastName).toBe('Test');
         });
     });
     it('addUserToClub (Mutation)', async () => { 
