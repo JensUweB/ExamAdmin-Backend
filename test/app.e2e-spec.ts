@@ -561,24 +561,6 @@ describe('AppController (e2e)', () => {
 
   // Testing Exam Module
   describe('Exam Module', () => {
-    it('getAllExams (Query)', async () => { 
-      return await request(app.getHttpServer())
-        .post('/graphql')
-        .set('Authorization', 'Bearer ' + token)
-        .send({
-          operationName: null,
-          variables: {},
-          query: `{getAllExams{_id, title, examiner, participants}}`,
-        })
-        .expect(HttpStatus.OK)
-        .expect(({ body }) => {
-          expect(body.data).toBeTruthy();
-          expect(body.data.getAllExams).toBeTruthy();
-          expect(body.data.getAllExams[0].title).toBeTruthy();
-          expect(body.data.getAllExams[0].examiner).toBeTruthy();
-          expect(body.data.getAllExams[0].participants).toBeDefined();
-        });
-    });
     let examId: string;
     it('createExam (Mutation)', async () => { 
       return await request(app.getHttpServer())
@@ -592,7 +574,8 @@ describe('AppController (e2e)', () => {
             description: "Lorem Ipsum"
             examDate: "2020-06-14"
             regEndDate: "2020-06-13"
-            club: "5e1306132002aa4ff88620a1"
+            isPublic: false
+            club: "5e207ca41aa0f630b099c1fd"
             examiner: "${user._id}"
             martialArt: "5e1323f45521bf49046ca85c"
             participants: ["${user._id}"]}){
@@ -620,11 +603,46 @@ describe('AppController (e2e)', () => {
         })
         .expect(HttpStatus.OK)
         .expect(({ body }) => {
+          console.log('getExamById !!: '+JSON.stringify(body));
           expect(body.data).toBeTruthy();
           expect(body.data.getExamById).toBeTruthy();
           expect(body.data.getExamById.title).toBeTruthy();
           expect(body.data.getExamById.examiner).toBeTruthy();
           expect(body.data.getExamById.participants).toBeDefined();
+        });
+    });
+    it('getExamById (Query | Unauthorized)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `{getExamById(id: "5e2af8eb21e83205e0863fcd"){_id, title, examiner, participants}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).not.toBeTruthy();
+          expect(body.errors).toBeTruthy();
+        });
+    });
+    it('getAllExams (Query)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `{getAllExams{_id, title, isPublic, club}}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          console.log('getAllExams: '+JSON.stringify(body));
+          expect(body.data).toBeTruthy();
+          expect(body.data.getAllExams).toBeTruthy();
+          expect(body.data.getAllExams[0]).toBeTruthy();
+          expect(body.data.getAllExams[1]).toBeTruthy();
+          expect(body.data.getAllExams[2]).not.toBeTruthy();
         });
     });
     it('getPlannedExams (Query)', async () => { 
@@ -634,15 +652,14 @@ describe('AppController (e2e)', () => {
         .send({
           operationName: null,
           variables: {},
-          query: `{getPlannedExams{_id, title, examiner, participants}}`,
+          query: `{getPlannedExams{_id, title, isPublic, club}}`,
         })
         .expect(HttpStatus.OK)
         .expect(({ body }) => {
+          console.log('getPlannedExams: '+JSON.stringify(body));
           expect(body.data).toBeTruthy();
           expect(body.data.getPlannedExams).toBeTruthy();
           expect(body.data.getPlannedExams[0].title).toBeTruthy();
-          expect(body.data.getPlannedExams[0].examiner).toBeTruthy();
-          expect(body.data.getPlannedExams[0].participants).toBeDefined();
         });
     });
     it('deleteExam (Mutation)', async () => { 
