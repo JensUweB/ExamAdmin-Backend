@@ -103,6 +103,9 @@ type ExamDto {
   """The date and time when registration should close"""
   regEndDate: DateTime!
 
+  """Is this exam public, or only for club members?"""
+  isPublic: Boolean!
+
   """The id of the club who organizes this exam"""
   club: String!
 
@@ -145,6 +148,9 @@ input ExamInput {
 
   """The date when registration will be closed"""
   regEndDate: DateTime
+
+  """Is this exam open for public registration?"""
+  isPublic: Boolean
 
   """The id of the accompanying association / club"""
   club: String

@@ -16,6 +16,8 @@ export class ExamDto {
     examDate: Date;
     @Field({ description: 'The date and time when registration should close', nullable: false })
     regEndDate: Date;
+    @Field({ description: 'Is this exam public, or only for club members?', nullable: false })
+    isPublic: boolean;
     @Field({ description: 'The id of the club who organizes this exam', nullable: false })
     club: string;
     @Field({ description: 'The id of the responsible examiner. Usually the current user.', nullable: false })

@@ -10,6 +10,8 @@ export class ExamInput {
     readonly  examDate: Date;
     @Field({ description: 'The date when registration will be closed', nullable: true })
     readonly  regEndDate: Date;
+    @Field({ description: 'Is this exam open for public registration?', nullable: true })
+    readonly  isPublic: boolean;
     @Field({ description: 'The id of the accompanying association / club', nullable: true })
     readonly  club: string;
     @Field({ description: 'The user id of the examiner', nullable: true })
