@@ -4,22 +4,36 @@ import { Model } from "mongoose";
 import { Exam } from "./interfaces/exam.interface";
 import { ExamDto } from "./dto/exam.dto";
 import { ExamInput } from "./inputs/exam.input";
+import { UserService } from "../user/user.service";
 
 @Injectable()
 export class ExamService {
 
-    constructor(@InjectModel('Exam') private readonly examModel: Model<Exam>) {}
+    constructor(@InjectModel('Exam') private readonly examModel: Model<Exam>, private readonly userService: UserService) {}
 
-    async findById(id: string): Model<Exam | undefined> {
-        const result = await this.examModel.findOne({_id: id});
-        if(!result) throw new NotFoundException(`No exam with _id: "${id}" found.`);
-        return result;
+    async findById(id: string, userId: string): Promise<ExamDto> {
+        const exam = await this.examModel.findOne({_id: id});
+        const user = await this.userService.findById(userId);
+        let isAllowed = false;
+        
+        if(user.clubs.some(item => item.club._id == exam.club.toString()) || exam.isPublic) isAllowed = true;
+
+        if(!exam) throw new NotFoundException(`No exam with _id: "${id}" found.`);
+        if(!isAllowed) throw new UnauthorizedException('You are not authorized to view this exam!');
+        return exam;
     }
     
-    async findAll(): Promise<ExamDto[]> {
-        const result = await this.examModel.find();
-        if(!result) throw new NotFoundException(`No exam found. Please create one first.`);
-        return result;
+    async findAll(userId): Promise<ExamDto[]> {
+        const exams = await this.examModel.find();
+        const user = await this.userService.findById(userId);
+        if(!exams) throw new NotFoundException(`No exam found. Please create one first.`);
+        
+        const array = await exams.filter(exam => {
+            return exam.isPublic == true || user.clubs.some(item => item.club._id == exam.club.toString()); 
+        });
+
+        if(!array.length) throw new NotFoundException('No exams from your clubs or public ones found.');
+        return array;
     }
 
     async create(input: ExamInput): Promise<ExamDto> {
@@ -29,7 +43,7 @@ export class ExamService {
     }
 
     async update(id: string, input: ExamInput): Promise<ExamDto> {
-        let exam = await this.findById(id);
+        let exam = await this.examModel.findOne({_id: id});
         if(!exam) throw new NotFoundException(`No exam with _id: "${id}" found!`);
         if(input.title) exam.title = input.title;
         if(input.description) exam.description = input.description;

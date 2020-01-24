@@ -66,7 +66,7 @@ export class ExamResultResolver {
         try{
             if(!erId) return false;
             const examResult = await this.erService.findById( erId);        // Throws an error, when nothing is found and jumps to the catch block
-            const exam = await this.examService.findById(examResult.exam);  // Throws an error, when nothing is found and jumps to the catch block
+            const exam = await this.examService.findById(examResult.exam, user.userId);  // Throws an error, when nothing is found and jumps to the catch block
             if(exam.examiner.toString() != user.userId) return false;
 
             // Deletes file if some already exist

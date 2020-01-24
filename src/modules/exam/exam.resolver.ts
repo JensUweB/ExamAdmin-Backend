@@ -16,21 +16,21 @@ export class ExamResolver {
     // Queries
     // ===========================================================================
     @Query(() => [ExamDto], {description: 'Returns an array of all exams. Including previous ones.'})
-    async getAllExams() {
-        try{ return this.examService.findAll();
+    async getAllExams(@CurrentUser() user: any) {
+        try{ return this.examService.findAll(user.userId);
         } catch (error) { return error; }
     }
 
     @Query(() => ExamDto, {description: 'Returns one exam with the given id'})
-    async getExamById(@Args('id') id: string) {
-        try{ return this.examService.findById(id);
+    async getExamById(@CurrentUser() user: any, @Args('id') id: string) {
+        try{ return this.examService.findById(id, user.userId);
         } catch (error) { return error; }
     }
 
     @Query(() => [ExamDto], {description: 'Returns an array of all exams. Only exams with an future starting date included.'})
-    async getPlannedExams() {
+    async getPlannedExams(@CurrentUser() user: any) {
         try{ 
-            let exams = await this.examService.findAll();
+            let exams = await this.examService.findAll(user.userId);
 
             // Filter exams by date and return
             return await exams.filter(exam => exam.examDate > new Date(Date.now()));
