@@ -2,7 +2,7 @@ import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { ClubService } from "./club.service";
 import { ClubDto } from "./dto/club.dto";
 import { ClubInput } from "./inputs/club.input";
-import { NotFoundException, UseGuards } from "@nestjs/common";
+import { UseGuards } from "@nestjs/common";
 import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
 import { User as CurrentUser } from "../decorators/user.decorator";
 import { UserDto } from "../user/dto/user.dto";
