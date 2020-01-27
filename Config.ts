@@ -16,5 +16,5 @@ export class Config {
     7Gl49f7GcLpZ40zxBYefuoRB1qC4PEH7ew2GGdOBAhEA/fu1sPvBYEE965VfIdKM2QIRAMCRKm2b8JnHCMt1298da
     7kCEBiY5wjD6P90chW9up/g70kCEFfOGXWPRF8qJTV40T/kD2kCEQCgk8BL1FMeyjD6Nbl7IJX7`;
     static JWT_EXPIRE = 7200; // Token expiration in seconds. Longer than 4 hours (14400 seconds) is NOT RECOMMENDED. Does affect password reset token too!
-    static MAX_FILESIZE = 10485760; // The maximum upload file size in bytes. Default: 10MiB
+    static MAX_FILESIZE = 5242880; // The maximum upload file size in bytes. Default: 5MiB
 }
