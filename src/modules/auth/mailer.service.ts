@@ -1,4 +1,3 @@
-var Redis = require("ioredis");
 import * as nodemailer from 'nodemailer';
 import * as hbs from 'nodemailer-express-handlebars';
 import { UserInput } from '../user/input/user.input';

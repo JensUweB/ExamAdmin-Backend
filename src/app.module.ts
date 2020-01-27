@@ -10,9 +10,10 @@ import { MartialArtsModule } from './modules/martialArts/martialArts.module';
 import { ClubModule } from './modules/club/club.module';
 import { ExamModule } from './modules/exam/exam.module';
 import { ExamResultModule } from './modules/examResult/examResult.module';
-import { Config } from '../Config';
 import { UmbrellaAssocModule } from './modules/umbrellaAssoc/umbrellaAssoc.module';
+import { Config } from '../Config';
 
+//dotenv.config();
 @Module({
   imports: [
     UserModule,
@@ -28,11 +29,15 @@ import { UmbrellaAssocModule } from './modules/umbrellaAssoc/umbrellaAssoc.modul
         installSubscriptionHandlers: true,
         context: ({req}) => ({req}),
         uploads: {
-          maxFileSize: Config.MAX_FILESIZE, // 10 MiB
+          maxFileSize:  Config.MAX_FILESIZE, // Default 5 MiB
           maxFiles: 5
         }
       }),
     MongooseModule.forRoot(Config.MONGO_CONN_STR),
+    Config
+    /* ConfigModule.forRoot({
+      isGlobal: true,
+    })  */ 
     ], 
   controllers: [AppController],
   providers: [
@@ -40,7 +45,8 @@ import { UmbrellaAssocModule } from './modules/umbrellaAssoc/umbrellaAssoc.modul
     {
       provide: APP_PIPE,
       useClass: ValidationPipe
-    }
+    },
+    Config
   ]
 })
 export class AppModule {}
