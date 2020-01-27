@@ -8,10 +8,10 @@ import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
 import { GraphQLUpload } from 'graphql-upload';
 import { createWriteStream } from "fs";
 import { Upload } from '../types/Upload';
-import { v4 } from 'uuid';
 import { pathToFileURL } from "url";
 import { ExamService } from "../exam/exam.service";
 import * as fs  from 'fs';
+import { normalizeFileUri } from "../helpers/file.helper";
 
 @UseGuards(GraphqlAuthGuard)
 @Resolver('ExamResult')
@@ -72,12 +72,8 @@ export class ExamResultResolver {
             // Deletes file if some already exist
             if(examResult.reportUri) fs.unlinkSync(examResult.reportUri.split('///')[1]);        
 
-            // Create an new unique file name
-            const id = v4();
-            const fileArray = filename.split('.');
-            const fileEnd = fileArray[fileArray.length-1];
-            const newfilename = id + '.' + fileEnd.toLocaleLowerCase();
-            const relativePath = __dirname + `/../../uploads/protocols/${newfilename}`;
+            // Create an new unique file name with absolute uri
+            const relativePath = await normalizeFileUri('protocols', filename);
             
             // Add the file uri to the exam result
             this.erService.addReportUri(erId,pathToFileURL(relativePath).toString());

@@ -10,7 +10,7 @@ export class ExamResultService {
 
     constructor(@InjectModel('ExamResult') private readonly erModel: Model<ExamResult>) { }
 
-    async create(input: ExamResultInput): Promise<ExamResultDto | Error> {
+    async create(input: ExamResultInput): Promise<ExamResultDto> {
         const existing = await this.erModel.findOne({ user: input.user,  exam: input.exam });
         if(existing) throw new NotAcceptableException('User has already an exam result for the given exam!');
         const examResult = new this.erModel({...input, reportUri: ""}); // Setting the reportUri to an empty string, because the file gets uploaded separately
@@ -29,14 +29,14 @@ export class ExamResultService {
         return result;
     }
 
-    async addReportUri(id: string, uri: string): Promise<ExamResultDto | undefined> {
+    async addReportUri(id: string, uri: string): Promise<ExamResultDto> {
         const examResult = await this.erModel.findOne({ _id: id });
         if(!examResult) throw new NotFoundException(`Could not find any exam result with _id: "${id}"`);
         examResult.reportUri = uri;
         return examResult.save();
     }
 
-    async update(id: string, input: ExamResultInput): Promise<ExamResultDto | undefined> {
+    async update(id: string, input: ExamResultInput): Promise<ExamResultDto> {
         const examResult = await this.erModel.findOne({ _id: id });
         if(!examResult) throw new NotFoundException(`Could not find any exam result with _id: "${id}"`);
         if(input.user) examResult.user = input.user;
