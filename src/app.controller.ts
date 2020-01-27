@@ -1,9 +1,11 @@
-import { Controller, Get, Param, Post, Body, Render, Res } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Render, Res, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UserService } from './modules/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
+import { User as CurrentUser } from "./modules/decorators/user.decorator";
+import { GraphqlAuthGuard } from './modules/guards/graphql-auth.guard';
 
 @Controller()
 export class AppController {
@@ -74,5 +76,19 @@ export class AppController {
       if (error.name == "TokenExpiredError") return res.render('index', {body: `<h1>Your password reset token is expired.</h1><b> Please repeat password reset process.</b>`});
       return res.render('index', {body: `<h1>Error: ${error.name}</h1><b>${error.message}</b>`});
     }
+  }
+
+  @Get('avatars/:userId')
+  async getAvatar(@Param('userId') userId: string, @Res() res) {
+    try {
+      const user = await this.userService.findById(userId);
+      return res.sendFile(user.avatarUri.split('///')[1]);
+    } catch (error) { return error; }
+  }
+
+  @UseGuards(GraphqlAuthGuard)
+  @Get('protocols/:examResultId')
+  async getExamResultProtocol(@CurrentUser() user: any, @Param('examResultId') erId: string) {
+
   }
 }

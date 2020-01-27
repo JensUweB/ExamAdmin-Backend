@@ -261,6 +261,11 @@ type Mutation {
   """Deletes the account of the current user"""
   deleteUser: Boolean!
 
+  """
+  Examiners can upload an exam protocol to an existing exam result. Use cURL request to send required data.
+  """
+  uploadAvatar(protocol: Upload!): Boolean!
+
   """Creates a new martial art"""
   createMartialArt(input: MartialArtsInput!): MartialArtsDto!
 
@@ -328,7 +333,9 @@ type Mutation {
 }
 
 type Query {
-  """Returns an user object representing the current logged in user"""
+  """
+  Returns an user object representing the current logged in user including avatar file
+  """
   getUser: UserDto!
 
   """Returns an array of martial art objects"""
@@ -476,6 +483,8 @@ type UserDto {
   """
   martialArts: [MartialArtsDto!]!
   clubs: [ClubMemberDto!]!
+  avatarUri: String!
+  avatar: String!
 }
 
 input UserInput {

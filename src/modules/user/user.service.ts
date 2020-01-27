@@ -78,7 +78,7 @@ export class UserService {
      * Returns an user object with populated clubs and martialArts (the user ranks) fields. 
      * @param id the user id you want to search for
      */
-    async findById(id: string): Promise<UserDto | any> {
+    async findById(id: string): Promise<UserDto> {
         const user = await this.userModel.findOne({ _id: id }).populate('clubs.club').exec();
         if(!user) throw new NotFoundException(`No user found with _id: "${id}"`);
 
@@ -114,6 +114,13 @@ export class UserService {
         if (input.clubs) user.clubs = input.clubs;
         return user.save();
         
+    }
+
+    async addReportUri(id: string, uri: string): Promise<UserDto> {
+        const user = await this.userModel.findOne({ _id: id });
+        if(!user) throw new NotFoundException(`Could not find any user with _id: "${id}"`);
+        user.avatarUri = uri;
+        return user.save();
     }
 
     /**

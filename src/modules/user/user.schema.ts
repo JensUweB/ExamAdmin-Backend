@@ -13,5 +13,6 @@ export const UserSchema = new mongoose.Schema({
     clubs: [{
         club: {type: Schema.Types.ObjectId, ref: 'Club', required: true},
         confirmed: {type: Boolean, required: true}
-    }]
+    }],
+    avatarUri: {type: String, required: false}
 });

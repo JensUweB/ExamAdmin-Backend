@@ -1,6 +1,7 @@
 import { ObjectType, Field, ID } from 'type-graphql';
 import { MartialArtsDto } from '../../martialArts/dto/martialArts.dto';
 import { ClubMemberDto } from './clubMember.dto';
+import { ReadStream } from 'fs';
 
 @ObjectType()
 export class UserDto {
@@ -18,4 +19,6 @@ export class UserDto {
      martialArts: MartialArtsDto[];
     @Field(() => [ClubMemberDto])
      clubs: ClubMemberDto[];
+    @Field()
+    avatarUri: string;
 }
