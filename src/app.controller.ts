@@ -1,17 +1,19 @@
-import { Controller, Get, Param, Post, Body, Render, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Render, Res, UseGuards, Request } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UserService } from './modules/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
+import { ExamResultService } from './modules/examResult/examResult.service';
+import { AuthGuard } from '@nestjs/passport';
 import { User as CurrentUser } from "./modules/decorators/user.decorator";
-import { GraphqlAuthGuard } from './modules/guards/graphql-auth.guard';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly userService: UserService,
+    private readonly erService: ExamResultService,
     private readonly jwtService: JwtService
   ) { }
 
@@ -86,9 +88,21 @@ export class AppController {
     } catch (error) { return error; }
   }
 
-  @UseGuards(GraphqlAuthGuard)
+ 
+  @UseGuards(AuthGuard('jwt'))
   @Get('protocols/:examResultId')
-  async getExamResultProtocol(@CurrentUser() user: any, @Param('examResultId') erId: string) {
+  async getExamResultProtocol(@Param('examResultId') erId: string, @Res() res, @Request() req) {
+    const result = await this.erService.findById(erId);
 
+    //Check if the right user is logged in
+    if(result.user == req.user.userId) {
+      return res.sendFile(result.reportUri.split('///')[1]);
+    }
+    return res.render(
+      'index',
+      {
+        body: `<h2>Not Authorized</h2><br><b>You are not authorized to view this protocol!</b>`
+      }
+    );
   }
 }

@@ -64,6 +64,7 @@ export class UserResolver {
     } catch (error) { return error; }
   }
 
+  // {"query":"mutation uploadAvatar($file: Upload!)\n{\n  uploadAvatar(protocol: $file)\n}"}
   @Mutation(()=> Boolean, {description: 'Examiners can upload an exam protocol to an existing exam result. Use cURL request to send required data.'})
     async uploadAvatar(@CurrentUser() currentUser: any, @Args({name: "protocol", type: () => GraphQLUpload}) 
     { createReadStream, filename }: Upload): Promise<Boolean> {

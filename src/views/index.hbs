@@ -14,19 +14,23 @@
         width: auto;
         max-width: 680px;
         padding: 0 15px;
+        position: relative;
+        left: 5%;
     }
 
     .footer {
         position: absolute;
         bottom: 0;
+        left: 30%;
     }
 </style>
 
 <body>
-    <div class="container">
+    <div class="container mx-auto">
         {{{body}}}
     </div>
-    <footer class="footer container-fluid">
+    <footer class="footer mx-auto">
+        <hr>
         <b>&copy; 2020 Root-ITSolutions | All Rights Reserved</b>
     </footer>
 </body>

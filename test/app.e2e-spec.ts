@@ -96,6 +96,7 @@ describe('AppController (e2e)', () => {
         })
         .expect(HttpStatus.OK)
         .expect(({ body }) => {
+          console.log('getUser: ',JSON.stringify(body));
           expect(body.data).toBeTruthy();
           expect(body.data.getUser).toBeTruthy();
           expect(body.data.getUser.firstName).toBeTruthy();
