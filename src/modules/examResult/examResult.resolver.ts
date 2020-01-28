@@ -59,15 +59,16 @@ export class ExamResultResolver {
         } catch (error) { return error; }
     }
 
-    @Mutation(()=> Boolean, {description: 'Examiners can upload an exam protocol to an existing exam result. Use cURL request to send required data.'})
+    //{"query":"mutation uploadExamProtocol($file: Upload!)\n{\n  uploadExamProtocol\n  (\n    protocol: $file\n    examResultId: \"5e1494b0906e65156c5d906e\"\n  )\n}"}
+    @Mutation(()=> String, {description: 'Examiners can upload an exam protocol to an existing exam result. Use cURL request to send required data.'})
     async uploadExamProtocol(@CurrentUser() user: any, @Args({name: 'examResultId', type: () => String}) erId: string,  @Args({name: "protocol", type: () => GraphQLUpload}) 
-    { createReadStream, filename }: Upload): Promise<Boolean> {
+    { createReadStream, filename }: Upload): Promise<String> {
         // Checks if the sending user is equal to the examiner
         try{
-            if(!erId) return false;
+            if(!erId) return "No exam result id!";
             const examResult = await this.erService.findById( erId);        // Throws an error, when nothing is found and jumps to the catch block
             const exam = await this.examService.findById(examResult.exam, user.userId);  // Throws an error, when nothing is found and jumps to the catch block
-            if(exam.examiner.toString() != user.userId) return false;
+            if(exam.examiner.toString() != user.userId) return "You are not authorized!";
 
             // Deletes file if some already exist
             if(examResult.reportUri) fs.unlinkSync(examResult.reportUri.split('///')[1]);        
@@ -82,9 +83,9 @@ export class ExamResultResolver {
                 createReadStream()
                 .pipe(createWriteStream(relativePath))
                 .on('finish', result => {
-                    resolve(true);
+                    resolve("Success!");
                 })
-                .on('error', () => reject(false))
+                .on('error', () => reject("Unexpected error!"))
             );
         } catch (error) { return error; }
         

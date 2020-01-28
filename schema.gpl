@@ -317,7 +317,7 @@ type Mutation {
   """
   Examiners can upload an exam protocol to an existing exam result. Use cURL request to send required data.
   """
-  uploadExamProtocol(protocol: Upload!, examResultId: String!): Boolean!
+  uploadExamProtocol(protocol: Upload!, examResultId: String!): String!
 
   """Create a new Umbrella Association"""
   createUA(input: UmbrellaAssocInput!): UmbrellaAssocDto!
@@ -484,7 +484,6 @@ type UserDto {
   martialArts: [MartialArtsDto!]!
   clubs: [ClubMemberDto!]!
   avatarUri: String!
-  avatar: String!
 }
 
 input UserInput {
