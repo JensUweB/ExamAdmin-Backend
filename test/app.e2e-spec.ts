@@ -775,6 +775,11 @@ describe('AppController (e2e)', () => {
           expect(body.data.getAllExamResults[0].martialArt).toBeTruthy();
         });
     });
+    it('protocols/ (GET | Unauthorized)', async () => {
+      return await request(app.getHttpServer())
+        .get('/protocols/'+erId)
+        .expect(HttpStatus.UNAUTHORIZED);
+    });
     it('deleteRelatedExamResults (Mutation)', async () => {
       return await request(app.getHttpServer())
         .post('/graphql')
