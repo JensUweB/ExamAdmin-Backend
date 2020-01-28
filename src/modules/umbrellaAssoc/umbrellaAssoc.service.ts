@@ -1,15 +1,21 @@
-import { Injectable, NotFoundException, UnauthorizedException, NotAcceptableException } from "@nestjs/common";
+import { Injectable, NotFoundException, UnauthorizedException, NotAcceptableException, BadRequestException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { UmbrellaAssoc } from "./interfaces/umbrellaAssoc.interface";
 import { UmbrellaAssocInput } from "./inputs/umbrellaAssoc.input";
 import { UmbrellaAssocDto } from "./dto/umbrellaAssoc.dto";
+import { UserService } from "../user/user.service";
+import { ClubService } from "../club/club.service";
 
 
 @Injectable()
 export class UmbrellaAssocService {
 
-    constructor(@InjectModel('UmbrellaAssociation') private readonly uaModel: Model<UmbrellaAssoc>) {}
+    constructor(
+        @InjectModel('UmbrellaAssociation') private readonly uaModel: Model<UmbrellaAssoc>,
+        private readonly userService: UserService,
+        private readonly clubService: ClubService
+    ) {}
 
     async create(uaInput: UmbrellaAssocInput): Promise<any> {
         const exists = await this.uaModel.findOne({name: uaInput.name});
@@ -77,6 +83,28 @@ export class UmbrellaAssocService {
         const result = await ua.save();
         if(!result) return false;
         return true;
+    }
+
+    
+    async joinRequest(userId: string, clubId: string, uaId: string): Promise<Boolean> {
+        if(!uaId) throw new BadRequestException('You need to pass an umbrella association id!');
+        const assoc = await this.uaModel.findOne({_id: uaId});
+        if(!assoc) throw new NotFoundException('No umbrella association with id "'+uaId+'" found!');
+        if(userId){
+            const user = await this.userService.findById(userId);
+            if(!user) throw new NotFoundException('No user with _id "'+userId+'" found!');
+            assoc.joinRequest.push({userId: userId});
+            assoc.save();
+            return true;
+        } else if(clubId) {
+            const club = await this.clubService.findById(clubId);
+            if(!club) throw new NotFoundException('No club with _id "'+clubId+'" found!');
+            assoc.joinRequest.push({clubId: clubId});
+            assoc.save();
+            return true;
+        } else {
+            throw new BadRequestException('You need to pass an user id or a club id!');
+        }
     }
 
     async delete(uaId: string, userId: string): Promise<Boolean> {

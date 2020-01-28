@@ -330,6 +330,12 @@ type Mutation {
 
   """Add a new admin to a umbrella association"""
   addUaAdmin(userId: String!, uaId: String!): Boolean!
+
+  """Send an join request to an given umbrella association"""
+  uaUserJoinRequest(uaId: String!): Boolean!
+
+  """Add a new admin to a umbrella association"""
+  uaClubJoinRequest(uaId: String!, clubId: String!): Boolean!
 }
 
 type Query {

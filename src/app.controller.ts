@@ -6,7 +6,6 @@ import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
 import { ExamResultService } from './modules/examResult/examResult.service';
 import { AuthGuard } from '@nestjs/passport';
-import { User as CurrentUser } from "./modules/decorators/user.decorator";
 
 @Controller()
 export class AppController {
