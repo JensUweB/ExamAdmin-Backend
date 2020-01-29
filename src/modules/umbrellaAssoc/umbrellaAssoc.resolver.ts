@@ -7,6 +7,7 @@ import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
 import { UseGuards, UnauthorizedException } from "@nestjs/common";
 import { ClubService } from "../club/club.service";
 import { UnauthorizedError } from "type-graphql";
+import { userInfo } from "os";
 
 @UseGuards(GraphqlAuthGuard)
 @Resolver('UmbrellaAssociation')
@@ -67,12 +68,15 @@ export class UmbrellaAssocResolver {
 
     @Mutation(() => Boolean, {description: 'Add a new admin to a umbrella association'})
     async uaClubJoinRequest(@CurrentUser() user: any, @Args('clubId') clubId: string, @Args('uaId') uaId: string) {
-        try{ 
-            const club = await this.clubService.findById(clubId);
-            if(club){
-                if(!club.admins.includes(user.userId)) throw new UnauthorizedException('You are not authorized to do this!');
-            }
-            return this.uaService.joinRequest(null, clubId, uaId);
+        try{
+            return this.uaService.joinRequest(user.userId, clubId, uaId);
+        } catch (error) { return error; }
+    }
+
+    @Mutation(() => Boolean, {description: 'Umbrella Association Admins can accept or decline an join request'})
+    async uaSolveJoinRequest(@CurrentUser() user: any, @Args('uaId') uaId: string, @Args('requestId') requestId: string, @Args('accepted') accepted: boolean) {
+        try{
+            return this.uaService.solveJoinRequest(user.userId, uaId, requestId, accepted);
         } catch (error) { return error; }
     }
 

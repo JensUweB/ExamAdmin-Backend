@@ -9,6 +9,7 @@ describe('AppController (e2e)', () => {
   let app: NestExpressApplication;
   let token: string;
   let user;
+  let clubId: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -271,7 +272,6 @@ describe('AppController (e2e)', () => {
 
   // Testing Club Module
   describe('Club Module', () => {
-    let clubId: string;
     it('createClub (Mutation)', async () => { 
       return await request(app.getHttpServer())
         .post('/graphql')
@@ -371,21 +371,6 @@ describe('AppController (e2e)', () => {
         .expect(({ body }) => {
           expect(body.data).toBeDefined();
           expect(body.data.getAllClubs).toBeDefined();
-        });
-    });
-    it('deleteClub (Mutation)', async () => { 
-      return await request(app.getHttpServer())
-        .post('/graphql')
-        .set('Authorization', 'Bearer ' + token)
-        .send({
-          operationName: null,
-          variables: {},
-          query: `mutation{deleteClub(clubId: "${clubId}")}`,
-        })
-        .expect(HttpStatus.OK)
-        .expect(({ body }) => {
-          expect(body.data).toBeTruthy();
-          expect(body.data.deleteClub).toBeTruthy();        
         });
     });
   });
@@ -922,6 +907,67 @@ describe('AppController (e2e)', () => {
           expect(body.data.addUaAdmin).toBeTruthy();
         });
     });
+    let requestId: string;
+    it('uaUserJoinRequest (Mutation)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{uaUserJoinRequest(uaId: "${uaId}")}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).toBeTruthy();
+          expect(body.data.uaUserJoinRequest).toBeTruthy();
+        });
+    });
+    /* it('uaSolveJoinRequest (Mutation)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{uaSolveJoinRequest(uaId: "${uaId}", requestId:"", accepted:true)}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).toBeTruthy();
+          expect(body.data.uaSolveJoinRequest).toBeTruthy();
+        });
+    }); */
+    it('uaClubJoinRequest (Mutation)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{uaClubJoinRequest(uaId: "${uaId}", clubId: "${clubId}")}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).toBeTruthy();
+          expect(body.data.uaClubJoinRequest).toBeTruthy();
+        });
+    });
+    it('uaClubJoinRequest (Mutation | Unauthorized)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{uaClubJoinRequest(uaId: "${uaId}", clubId: "5e1306132002aa4ff88620a1")}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).not.toBeTruthy();
+          expect(body.errors).toBeTruthy();
+        });
+    });
     it('deleteUA (Mutation)', async () => { 
       return await request(app.getHttpServer())
         .post('/graphql')
@@ -935,6 +981,22 @@ describe('AppController (e2e)', () => {
         .expect(({ body }) => {
           expect(body.data).toBeTruthy();
           expect(body.data.deleteUA).toBeTruthy();
+        });
+    });
+    
+    it('deleteClub (Mutation)', async () => { 
+      return await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          operationName: null,
+          variables: {},
+          query: `mutation{deleteClub(clubId: "${clubId}")}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect(({ body }) => {
+          expect(body.data).toBeTruthy();
+          expect(body.data.deleteClub).toBeTruthy();        
         });
     });
   });

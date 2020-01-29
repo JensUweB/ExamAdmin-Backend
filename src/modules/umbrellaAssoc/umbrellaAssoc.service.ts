@@ -90,21 +90,39 @@ export class UmbrellaAssocService {
         if(!uaId) throw new BadRequestException('You need to pass an umbrella association id!');
         const assoc = await this.uaModel.findOne({_id: uaId});
         if(!assoc) throw new NotFoundException('No umbrella association with id "'+uaId+'" found!');
-        if(userId){
+        if(clubId) {
+            const club = await this.clubService.findById(clubId);
+            if(!club) throw new NotFoundException('No club with _id "'+clubId+'" found!');
+            if(!club.admins.some(ele => ele._id == userId)) throw new UnauthorizedException('You are not authorized to do this!');
+            club.admins.find
+            assoc.joinRequest.push({clubId: clubId});
+            assoc.save();
+            return true;
+        } else if(userId){
             const user = await this.userService.findById(userId);
             if(!user) throw new NotFoundException('No user with _id "'+userId+'" found!');
             assoc.joinRequest.push({userId: userId});
             assoc.save();
             return true;
-        } else if(clubId) {
-            const club = await this.clubService.findById(clubId);
-            if(!club) throw new NotFoundException('No club with _id "'+clubId+'" found!');
-            assoc.joinRequest.push({clubId: clubId});
-            assoc.save();
-            return true;
         } else {
             throw new BadRequestException('You need to pass an user id or a club id!');
         }
+    }
+
+    async solveJoinRequest(userId: string, uaId: string, requestId: string, accepted: boolean): Promise<Boolean> {
+        const assoc = await this.uaModel.findOne({_id: uaId});
+        if(!assoc) throw new NotFoundException(`No umbrella association with _id "${+uaId}" found!`);
+        const req = await assoc.joinRequest.find(ele => ele._id == requestId);
+        if(!req) throw new NotFoundException(`No join request with _id "${+requestId}" found!`);
+        if(!assoc.admins.includes(userId)) throw new UnauthorizedException('You are not authorized to accept join requests for this association!');
+
+        if(accepted){
+            if(req.userId) assoc.singleMembers.push(req.userId);
+            if(req.clubId) assoc.clubMembers.push(req.clubId);
+        }
+        assoc.joinRequest = await assoc.joinRequest.filter(ele => ele._id != requestId);
+        assoc.save();
+        return true;
     }
 
     async delete(uaId: string, userId: string): Promise<Boolean> {
