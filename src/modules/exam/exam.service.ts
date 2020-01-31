@@ -24,7 +24,7 @@ export class ExamService {
     }
     
     async findAll(userId): Promise<ExamDto[]> {
-        const exams = await this.examModel.find();
+        const exams = await this.examModel.find().populate('martialArt').populate('club').exec();
         const user = await this.userService.findById(userId);
         if(!exams) throw new NotFoundException(`No exam found. Please create one first.`);
         

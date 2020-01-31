@@ -107,13 +107,13 @@ type ExamDto {
   isPublic: Boolean!
 
   """The id of the club who organizes this exam"""
-  club: String!
+  club: ClubDto!
 
   """The id of the responsible examiner. Usually the current user."""
   examiner: String!
 
   """The martial art that gets tested"""
-  martialArt: String!
+  martialArt: MartialArtDto!
 
   """An array with IDs from users who wants to get tested"""
   participants: [String!]!

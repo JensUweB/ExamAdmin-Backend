@@ -17,7 +17,10 @@ export class ExamResolver {
     // ===========================================================================
     @Query(() => [ExamDto], {description: 'Returns an array of all exams. Including previous ones.'})
     async getAllExams(@CurrentUser() user: any) {
-        try{ return this.examService.findAll(user.userId);
+        try{ 
+            const result = await this.examService.findAll(user.userId);
+            console.log(result);
+            return result;
         } catch (error) { return error; }
     }
 
