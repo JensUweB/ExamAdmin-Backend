@@ -25,7 +25,9 @@ export class ExamResultResolver {
     @Query(() => [ExamResultDto], {description: 'Returns an array with all exam results of the current user'})
     async getAllExamResults(@CurrentUser() user: any) {
         try{ return this.erService.findAll(user.userId);
-        } catch (error) { return error; }
+        } catch (error) { 
+            console.log('ERROR: ',error);
+            return error; }
     }
 
     @Query(() => ExamResultDto, {description: 'Returns one exam result with a given id'})

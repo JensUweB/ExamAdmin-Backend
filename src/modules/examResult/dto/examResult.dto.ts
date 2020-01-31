@@ -17,7 +17,7 @@ export class ExamResultDto {
     @Field()
     rank: string;
     @Field()
-    date: string;
+    date: Date;
     @Field()
     reportUri: string;
     @Field()

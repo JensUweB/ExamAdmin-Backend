@@ -172,7 +172,7 @@ type ExamResultDto {
   martialArt: MartialArtDto!
   examiner: ExaminerDto!
   rank: String!
-  date: String!
+  date: DateTime!
   reportUri: String!
   passed: Boolean!
 }
@@ -336,6 +336,9 @@ type Mutation {
 
   """Add a new admin to a umbrella association"""
   uaClubJoinRequest(uaId: String!, clubId: String!): Boolean!
+
+  """Umbrella Association Admins can accept or decline an join request"""
+  uaSolveJoinRequest(accepted: Boolean!, requestId: String!, uaId: String!): Boolean!
 }
 
 type Query {
