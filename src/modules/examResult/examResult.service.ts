@@ -4,6 +4,7 @@ import { Model } from "mongoose";
 import { ExamResult } from "./interfaces/examResult.interface";
 import { ExamResultDto } from "./dto/examResult.dto";
 import { ExamResultInput } from "./inputs/examResult.input";
+import { Config } from "Config";
 
 @Injectable()
 export class ExamResultService {
@@ -24,9 +25,13 @@ export class ExamResultService {
     }
 
     async findAll(userId: string): Promise<ExamResultDto[]> {
-        const result = await this.erModel.find({ user: userId });
-        if(!result) throw new NotFoundException(`No exam results found.`);
-        return result;
+        const results = await this.erModel.find({ user: userId });
+        if(!results) throw new NotFoundException(`No exam results found.`);
+        results.forEach(result => {
+            console.log('Its working!');
+            result.reportUri = Config.URL+'/protocols/'+result._id;
+        });
+        return results;
     }
 
     async addReportUri(id: string, uri: string): Promise<ExamResultDto> {
