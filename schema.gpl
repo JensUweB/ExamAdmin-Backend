@@ -200,6 +200,23 @@ input ExamResultInput {
   passed: Boolean
 }
 
+type MaRanksDto {
+  _id: ID!
+  rankName: String!
+  rankNumber: String!
+}
+
+input MaRanksInput {
+  """The id of the martial art"""
+  _id: ID!
+
+  """The name of the rank"""
+  rankName: String
+
+  """The number of the rank"""
+  rankNumber: Float
+}
+
 type MartialArtDto {
   _id: ID!
   name: String!
@@ -253,7 +270,7 @@ type Mutation {
   removeUserFromClub(clubId: String!): Boolean!
 
   """Add a new martial art rank to the current user"""
-  addMartialArtRankToUser(rankId: String!): UserDto!
+  addMartialArtRankToUser(maRank: MaRanksInput!): UserDto!
 
   """Updates the current user"""
   updateUser(input: UserInput!): UserDto!
@@ -490,7 +507,7 @@ type UserDto {
   """
   Returns an array of Martial Arts. The child array "ranks" should only contain the current rank (at index 0).
   """
-  martialArts: [MartialArtsDto!]!
+  martialArts: [MaRanksDto!]!
   clubs: [ClubMemberDto!]!
   avatarUri: String!
 }

@@ -11,6 +11,7 @@ import * as fs  from 'fs';
 import { GraphQLUpload } from 'graphql-upload';
 import { createWriteStream } from "fs";
 import { pathToFileURL } from "url";
+import { MaRanksInput } from "./input/maRanks.input";
 
 
 @UseGuards(GraphqlAuthGuard)
@@ -46,8 +47,8 @@ export class UserResolver {
   }
   
   @Mutation(() => UserDto, { description: 'Add a new martial art rank to the current user' })
-  async addMartialArtRankToUser(@CurrentUser() user: any, @Args('rankId') rankId: string) {
-    try{ return this.userService.addMartialArtRank(user.userId, rankId);
+  async addMartialArtRankToUser(@CurrentUser() user: any, @Args('maRank') maRank: MaRanksInput) {
+    try{ return this.userService.addMartialArtRank(user.userId, maRank);
     } catch (error) { return error; }
   }
 

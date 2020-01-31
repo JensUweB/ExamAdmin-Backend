@@ -10,6 +10,7 @@ import { Club } from "../club/interfaces/club.interface";
 import { MartialArts } from "../martialArts/interfaces/martialArts.interface";
 import { MailerService } from "../auth/mailer.service";
 import { TmpUser } from "./interfaces/tmpuser.interface";
+import { MaRanksInput } from "./input/maRanks.input";
 
 @Injectable()
 export class UserService {
@@ -48,16 +49,6 @@ export class UserService {
         const user = await this.userModel.findOne({ email: email }).populate('clubs.club').exec();
         
         if (!user) throw new NotFoundException('Could not find any user with given email');
-        if (user.martialArts) {
-            for (let i = 0; i < user.martialArts.length; i++) {
-                const ma = await this.maService.findByRank(user.martialArts[i]._id);
-                ma.ranks = ma.ranks.filter((rank) => rank._id.toString() == user.martialArts[i]._id.toString());
-                if (ma.ranks) {
-                    user.martialArts[i] = ma;
-                }
-            }
-        }
-        
         return user;
     }
 
@@ -81,14 +72,6 @@ export class UserService {
     async findById(id: string): Promise<UserDto> {
         const user = await this.userModel.findOne({ _id: id }).populate('clubs.club').exec();
         if(!user) throw new NotFoundException(`No user found with _id: "${id}"`);
-
-        for (let i = 0; i < user.martialArts.length; i++) {
-            const ma = await this.maService.findByRank(user.martialArts[i]._id);
-            ma.ranks = ma.ranks.filter((rank) => rank._id.toString() == user.martialArts[i]._id.toString());
-            if (ma.ranks) {
-                user.martialArts[i] = ma;
-            }
-        }
         return user;
     }
 
@@ -170,36 +153,32 @@ export class UserService {
 
     /**
      * You can add a new martial art rank to a user.
-     * Checks if the user already contains this specific rank, or any rank from the connected martial art
+     * Updates the existing rank, if martial art id is found. Adds an new entry otherwise.
      * This will NOT search for an existing rank of the same martial art!
      * @param userId the user to add the new rank to
      * @param rankId the martial art rank to add
      */
-    async addMartialArtRank(userId: string, rankId: string): Promise<UserDto | Error> {
+    async addMartialArtRank(userId: string, input: MaRanksInput): Promise<UserDto | Error> {
         const user = await this.userModel.findOne({ _id: userId });
-        const fullUser = await this.findById(userId);
-        const maByRank = await this.maService.findByRank(rankId);
-        let containsMA: string;
-
         if(!user) return new Error('User not found!');
-        if(!maByRank) return new Error('Rank not found!');
-
+        let containsRank;
         // Checks if the user already contains the specified rankId
-        const containsRank = await user.martialArts.filter(element => element.toString() == rankId);
-        if(containsRank.length) return new Error('User already contains this rank!');
-
-        // Checks if the user already contains any rank of the connected martial art
-        for(let i = 0; i < fullUser.martialArts.length; i++){
-            if(fullUser.martialArts[i]._id.toString() == maByRank._id) containsMA = user.martialArts[i];
-        }
-
-        // Removes the old rank, if exists
-        if(containsMA) {
-            user.martialArts = await user.martialArts.filter(element => element.toString() != containsMA);
+        if(user.martialArts.length) containsRank = await user.martialArts.some(element => element._id.toString() == input._id);
+        if(containsRank){
+            user.martialArts.forEach(element => {
+                if(element._id.toString() == input._id) {
+                    element.rankName = input.rankName;
+                    element.rankNumber = input.rankNumber;
+                }
+            });
+        } else {
+            user.martialArts.push({ 
+                _id: input._id,
+                rankName: input.rankName,
+                rankNumber: input.rankNumber
+            });
         }
         
-        // Saves the new rank
-        user.martialArts.push({ _id: rankId });
         return user.save();
     }
 
