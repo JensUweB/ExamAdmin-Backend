@@ -28,7 +28,6 @@ export class ExamResultService {
         const results = await this.erModel.find({ user: userId });
         if(!results) throw new NotFoundException(`No exam results found.`);
         results.forEach(result => {
-            console.log('Its working!');
             result.reportUri = Config.URL+'/protocols/'+result._id;
         });
         return results;

@@ -110,13 +110,16 @@ type ExamDto {
   club: ClubDto!
 
   """The id of the responsible examiner. Usually the current user."""
-  examiner: String!
+  examiner: UserDto!
+
+  """The adress where the exam will take place"""
+  examPlace: String!
 
   """The martial art that gets tested"""
   martialArt: MartialArtDto!
 
   """An array with IDs from users who wants to get tested"""
-  participants: [String!]!
+  participants: [UserDto!]!
 }
 
 type ExaminerDto {
@@ -201,7 +204,7 @@ input ExamResultInput {
 }
 
 type MaRanksDto {
-  _id: ID!
+  _id: MartialArtDto!
   rankName: String!
   rankNumber: String!
 }
@@ -240,8 +243,9 @@ type MartialArtsDto {
   _id: ID!
   name: String!
   styleName: String!
+  description: String
   ranks: [RankDto!]!
-  examiners: [UserDto!]!
+  examiners: [SimpleUserDto!]!
 }
 
 input MartialArtsInput {
@@ -428,6 +432,27 @@ input RankInput {
   The number of the martial art rank. We are assuming, that number 1 is your grand master (highest rank)!
   """
   number: Float!
+}
+
+type SimpleMaRanksDto {
+  _id: ID!
+  rankName: String!
+  rankNumber: String!
+}
+
+type SimpleUserDto {
+  _id: ID!
+  firstName: String!
+  lastName: String!
+  email: String!
+  password: String!
+
+  """
+  Returns an array of Martial Arts. The child array "ranks" should only contain the current rank (at index 0).
+  """
+  martialArts: [SimpleMaRanksDto!]!
+  clubs: [ClubMemberDto!]!
+  avatarUri: String!
 }
 
 type UmbrellaAssocDto {

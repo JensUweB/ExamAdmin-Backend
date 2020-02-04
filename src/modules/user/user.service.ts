@@ -46,8 +46,7 @@ export class UserService {
      * @param email the user email you want to search for
      */
     async findByEmail(email: string): Promise<UserDto | undefined> {
-        const user = await this.userModel.findOne({ email: email }).populate('clubs.club').exec();
-        
+        const user = await this.userModel.findOne({ email: email }).populate('clubs.club').populate('martialArts._id').exec();
         if (!user) throw new NotFoundException('Could not find any user with given email');
         return user;
     }
@@ -70,7 +69,7 @@ export class UserService {
      * @param id the user id you want to search for
      */
     async findById(id: string): Promise<UserDto> {
-        const user = await this.userModel.findOne({ _id: id }).populate('clubs.club').exec();
+        const user = await this.userModel.findOne({ _id: id }).populate('clubs.club').populate('martialArts._id').exec();
         if(!user) throw new NotFoundException(`No user found with _id: "${id}"`);
         return user;
     }

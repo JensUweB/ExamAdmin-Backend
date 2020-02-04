@@ -20,7 +20,9 @@ export class MartialArtsResolver {
 
     @Query(() => [MartialArtsDto], {description: 'Returns an array of martial art objects'})
     async getAllMartialArts() {
-        try{ return this.maService.findAll();
+        try{ 
+            const result = await this.maService.findAll();
+            return result;
         } catch (error) { return error; }
     }
 

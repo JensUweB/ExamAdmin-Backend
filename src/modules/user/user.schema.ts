@@ -10,7 +10,7 @@ export const UserSchema = new mongoose.Schema({
     email: {type: String, required: true},
     password: {type: String, required: true},
     martialArts: [{
-        _id: {type: Schema.Types.ObjectId, required: true},
+        _id: {type: Schema.Types.ObjectId, ref: 'MartialArt', required: true},
         rankName: {type: String, required: true},
         rankNumber: {type: Number, required: true}
     }],

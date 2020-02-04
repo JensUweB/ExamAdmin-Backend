@@ -14,6 +14,7 @@ export const ExamSchema = new mongoose.Schema({
     isPublic: {type: Boolean, required: true},
     club: {type: Schema.Types.ObjectId, ref: 'Club'},
     examiner: {type: Schema.Types.ObjectId, ref: 'User'},
+    examPlace: {type: String, required: false},
     martialArt: {type: Schema.Types.ObjectId, ref: 'MartialArts'},
     participants: [{type: Schema.Types.ObjectId, ref: 'User'}]
 });

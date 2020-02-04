@@ -1,6 +1,7 @@
 import { ObjectType, Field, ID } from "type-graphql";
 import { MartialArtDto } from "src/modules/examResult/dto/martialArt.dto";
 import { ClubDto } from "src/modules/club/dto/club.dto";
+import { UserDto } from "src/modules/user/dto/user.dto";
 
 /**
  * This DTO (Data transfer object) defines how data will be sent over the network
@@ -23,9 +24,11 @@ export class ExamDto {
     @Field({ description: 'The id of the club who organizes this exam', nullable: false })
     club: ClubDto;
     @Field({ description: 'The id of the responsible examiner. Usually the current user.', nullable: false })
-    examiner: string;
+    examiner: UserDto;
+    @Field({ description: 'The adress where the exam will take place', nullable: false })
+     examPlace: string;
     @Field({ description: 'The martial art that gets tested', nullable: false })
     martialArt: MartialArtDto;
-    @Field(type => [String], { description: 'An array with IDs from users who wants to get tested', nullable: false })
-    participants: string[];
+    @Field(type => [UserDto], { description: 'An array with IDs from users who wants to get tested', nullable: false })
+    participants: UserDto[];
 }
