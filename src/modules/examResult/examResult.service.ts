@@ -4,7 +4,7 @@ import { Model } from "mongoose";
 import { ExamResult } from "./interfaces/examResult.interface";
 import { ExamResultDto } from "./dto/examResult.dto";
 import { ExamResultInput } from "./inputs/examResult.input";
-import { Config } from "Config";
+import { Config } from "../../../Config";
 
 @Injectable()
 export class ExamResultService {

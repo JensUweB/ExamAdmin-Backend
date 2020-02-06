@@ -1,7 +1,7 @@
 import { ObjectType, Field, ID } from "type-graphql";
-import { MartialArtDto } from "src/modules/examResult/dto/martialArt.dto";
-import { ClubDto } from "src/modules/club/dto/club.dto";
-import { UserDto } from "src/modules/user/dto/user.dto";
+import { MartialArtDto } from "../../examResult/dto/martialArt.dto";
+import { ClubDto } from "../../club/dto/club.dto";
+import { UserDto } from "../../user/dto/user.dto";
 
 /**
  * This DTO (Data transfer object) defines how data will be sent over the network
