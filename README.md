@@ -11,7 +11,7 @@ A graphQL api is provided.
 
 ## Requirements
 * A NoSQL Database - mongodb is recommended (A local mongodb instance for development is recommended)
-* A working email account for sending emails to users (I use mailslurper for development)
+* A working email account for sending emails to users (I use <a href="https://mailslurper.com/">mailslurper</a> for development)
 
 ## Installation
 
