@@ -21,6 +21,7 @@ $ npm install
 * Go to the project root folder and open "Config.ts" file
 * Change the values to your needs. 
 * Please change JWT_SECRET in Config.ts bevore production deployment!
+* To get the e2e test to work, you need to create a test user manually first!
 
 ## Running the app
 
