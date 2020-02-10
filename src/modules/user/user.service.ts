@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus, NotAcceptableException, NotFoundException } from "@nestjs/common";
+import { Injectable, HttpException, HttpStatus, NotAcceptableException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { User } from './interfaces/user.interface';
@@ -110,7 +110,7 @@ export class UserService {
      * @param userId the user to add the club to
      * @param clubId the club to add
      */
-    async addClub(userId: string, clubId: string): Promise<UserDto | any> {
+    async addClub(userId: string, clubId: string): Promise<UserDto> {
         const user = await this.userModel.findOne({ _id: userId });
 
         //Check if a user is already member of the given club
@@ -120,7 +120,7 @@ export class UserService {
                 if(user.clubs[i].club._id.toString() == clubId) res = true;
             }
         } 
-        if(res) return new Error('User is already a member of this club!');
+        if(res) throw new NotAcceptableException('User is already a member of this club!');
 
         if (user) {
             user.clubs.push({ club: clubId, confirmed: false });
@@ -128,7 +128,7 @@ export class UserService {
             return await this.userModel.findOne({ _id: user._id }).populate('clubs.club').exec();
         }
 
-        return new HttpException('User not found', HttpStatus.NOT_FOUND);
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     async removeClub(userId: string, clubId: string): Promise<Boolean | Error> {
@@ -157,13 +157,14 @@ export class UserService {
      * @param userId the user to add the new rank to
      * @param rankId the martial art rank to add
      */
-    async addMartialArtRank(userId: string, input: MaRanksInput): Promise<UserDto | Error> {
+    async addMartialArtRank(currentUser: string, userId: string, input: MaRanksInput): Promise<UserDto | Error> {
         const user = await this.userModel.findOne({ _id: userId });
         if(!user) return new Error('User not found!');
         let containsRank;
         // Checks if the user already contains the specified rankId
         if(user.martialArts.length) containsRank = await user.martialArts.some(element => element._id.toString() == input._id);
         if(containsRank){
+            if(userId == currentUser) throw new UnauthorizedException('You need to participate in an exam to get an new rank!');
             user.martialArts.forEach(element => {
                 if(element._id.toString() == input._id) {
                     element.rankName = input.rankName;
