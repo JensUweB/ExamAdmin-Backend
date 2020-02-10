@@ -14,10 +14,10 @@ export class UserDto {
      email: string;
     @Field()
      password: string;
-    @Field(() => [MaRanksDto], { description: 'Returns an array of Martial Arts. The child array "ranks" should only contain the current rank (at index 0).', nullable: false })
+    @Field(() => [MaRanksDto], { description: 'Returns an array of Martial Arts. The child array "ranks" should only contain the current rank (at index 0).', nullable: true })
      martialArts: MaRanksDto[];
-    @Field(() => [ClubMemberDto])
+    @Field(() => [ClubMemberDto], {description: '', nullable: true})
      clubs: ClubMemberDto[];
-    @Field()
+    @Field({description: '', nullable: true})
     avatarUri: string;
 }
