@@ -8,7 +8,7 @@ import { UserService } from "../user/user.service";
 
 @Injectable()
 export class ExamService {
-
+    
     constructor(@InjectModel('Exam') private readonly examModel: Model<Exam>, private readonly userService: UserService) {}
 
     async findById(id: string, userId: string): Promise<ExamDto> {
@@ -30,7 +30,7 @@ export class ExamService {
         if(!exams) throw new NotFoundException(`No exam found. Please create one first.`);
         
         const array = await exams.filter(exam => {
-            return exam.isPublic == true || user.clubs.some(item => item.club._id == exam.club.toString()); 
+            return exam.isPublic == true || user.clubs.some(item => item.club._id.toString() == exam.club._id.toString()); 
         });
 
         if(!array.length) throw new NotFoundException('No exams from your clubs or public ones found.');
@@ -55,6 +55,17 @@ export class ExamService {
         if(input.martialArt) exam.martialArt = input.martialArt;
         if(input.participants) exam.participants = input.participants;
         return exam.save();
+    }
+
+    async registerToExam(userId: any, examId: String): Promise<boolean> {
+        const exam = await this.examModel.findOne({_id: examId});
+        const user = await this.userService.findById(userId);
+
+        if(!user.clubs.some(club => club.club._id == exam.club._id.toString()) && !exam.isPublic) throw new UnauthorizedException('You are not authorized to register for this exam!');
+        if(exam.participants.includes(userId)) throw new NotAcceptableException('You are already listed as participant!');
+        exam.participants.push(userId);
+        exam.save();
+        return true;
     }
 
     async deleteExam(userId: string, examId: string): Promise<Boolean> {
