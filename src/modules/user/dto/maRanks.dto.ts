@@ -1,10 +1,10 @@
 import { ObjectType, Field, ID } from 'type-graphql';
-import { MartialArtDto } from 'src/modules/examResult/dto/martialArt.dto';
+import { MartialArtsDto } from '../../martialArts/dto/martialArts.dto';
 
 @ObjectType()
 export class MaRanksDto {
-    @Field(() => MartialArtDto)
-    _id: MartialArtDto;
+    @Field(() => MartialArtsDto)
+    _id: MartialArtsDto;
     @Field()
      rankName: string;
     @Field()
