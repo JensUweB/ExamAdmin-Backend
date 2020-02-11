@@ -10,7 +10,7 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '/uploads'));
   app.setBaseViewsDir(join(__dirname, '/views'));
   app.setViewEngine('hbs');
-
+  app.enableCors();
   await app.listen(Config.PORT || 3000);
 }
 bootstrap();
