@@ -18,6 +18,6 @@ export class MartialArtsDto {
     description: string;
     @Field(type => [RankDto])
     ranks: RankDto[];
-    @Field(type => [SimpleUserDto])
+    @Field(type => [SimpleUserDto],{description: '', nullable: true})
     examiners: SimpleUserDto[];
 }

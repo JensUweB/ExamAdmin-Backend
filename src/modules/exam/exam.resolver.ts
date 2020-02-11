@@ -51,6 +51,12 @@ export class ExamResolver {
         } catch (error) { return error; }
     }
 
+    @Mutation(() => Boolean, {description: 'The current user can register for an exam as participant'})
+    async registerToExam(@CurrentUser() user, @Args('examId') examId: String) {
+        try{ return this.examService.registerToExam(user.userId, examId);
+        } catch (error) { return error; }
+    }
+
     @Mutation(() => Boolean,{description: 'Deletes the exam with given examId, if exam.examiner equals current user'})
     async deleteExam(@CurrentUser() user: any, @Args('examId') examId: string) {
         try{ return this.examService.deleteExam(user.userId, examId);

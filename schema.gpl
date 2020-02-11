@@ -211,7 +211,7 @@ type MaRanksDto {
 
 input MaRanksInput {
   """The id of the martial art"""
-  _id: ID!
+  _id: String!
 
   """The name of the rank"""
   rankName: String
@@ -245,7 +245,7 @@ type MartialArtsDto {
   styleName: String!
   description: String
   ranks: [RankDto!]!
-  examiners: [SimpleUserDto!]!
+  examiners: [SimpleUserDto!]
 }
 
 input MartialArtsInput {
@@ -274,7 +274,7 @@ type Mutation {
   removeUserFromClub(clubId: String!): Boolean!
 
   """Add a new martial art rank to the current user"""
-  addMartialArtRankToUser(maRank: MaRanksInput!): UserDto!
+  addMartialArtRankToUser(maRank: MaRanksInput!, userId: String!): UserDto!
 
   """Updates the current user"""
   updateUser(input: UserInput!): UserDto!
@@ -323,6 +323,9 @@ type Mutation {
 
   """Creates a new exam. DOH!"""
   createExam(input: ExamInput!): ExamDto!
+
+  """The current user can register for an exam as participant"""
+  registerToExam(examId: String!): Boolean!
 
   """
   Deletes the exam with given examId, if exam.examiner equals current user
@@ -532,9 +535,9 @@ type UserDto {
   """
   Returns an array of Martial Arts. The child array "ranks" should only contain the current rank (at index 0).
   """
-  martialArts: [MaRanksDto!]!
-  clubs: [ClubMemberDto!]!
-  avatarUri: String!
+  martialArts: [MaRanksDto!]
+  clubs: [ClubMemberDto!]
+  avatarUri: String
 }
 
 input UserInput {
