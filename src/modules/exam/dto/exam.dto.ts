@@ -1,5 +1,5 @@
 import { ObjectType, Field, ID } from "type-graphql";
-import { MartialArtDto } from "../../examResult/dto/martialArt.dto";
+import { MartialArtsDto } from "../../martialArts/dto/martialArts.dto";
 import { ClubDto } from "../../club/dto/club.dto";
 import { UserDto } from "../../user/dto/user.dto";
 
@@ -28,7 +28,7 @@ export class ExamDto {
     @Field({ description: 'The adress where the exam will take place', nullable: false })
      examPlace: string;
     @Field({ description: 'The martial art that gets tested', nullable: false })
-    martialArt: MartialArtDto;
+    martialArt: MartialArtsDto;
     @Field(type => [UserDto], { description: 'An array with IDs from users who wants to get tested', nullable: false })
     participants: UserDto[];
 }
