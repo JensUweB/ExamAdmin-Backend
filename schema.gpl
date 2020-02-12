@@ -116,16 +116,10 @@ type ExamDto {
   examPlace: String!
 
   """The martial art that gets tested"""
-  martialArt: MartialArtDto!
+  martialArt: MartialArtsDto!
 
   """An array with IDs from users who wants to get tested"""
   participants: [UserDto!]!
-}
-
-type ExaminerDto {
-  _id: ID!
-  firstName: String!
-  lastName: String!
 }
 
 input ExaminerInput {
@@ -172,8 +166,8 @@ type ExamResultDto {
   _id: ID!
   user: String!
   exam: String!
-  martialArt: MartialArtDto!
-  examiner: ExaminerDto!
+  martialArt: MartialArtsDto!
+  examiner: UserDto!
   rank: String!
   date: DateTime!
   reportUri: String!
@@ -218,12 +212,6 @@ input MaRanksInput {
 
   """The number of the rank"""
   rankNumber: Float
-}
-
-type MartialArtDto {
-  _id: ID!
-  name: String!
-  styleName: String!
 }
 
 input MartialArtInput {
@@ -407,6 +395,11 @@ type Query {
   Returns an array of all exams. Only exams with an future starting date included.
   """
   getPlannedExams: [ExamDto!]!
+
+  """
+  Returns all exams where the user is examiner and exam results are missing
+  """
+  getOpenExams: [ExamDto!]!
 
   """Returns an array with all exam results of the current user"""
   getAllExamResults: [ExamResultDto!]!
