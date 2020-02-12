@@ -24,6 +24,12 @@ export class ExamResultService {
         return result;
     }
 
+    async findByExam(userId: string, examId: string): Promise<ExamResultDto> {
+        const result = await this.erModel.findOne({ exam: examId, user: userId })/* .populate('martialArt').exec() */;
+        if(!result) return null;
+        return result;
+    }
+
     async findAll(userId: string): Promise<ExamResultDto[]> {
         const results = await this.erModel.find({ user: userId });
         if(!results) throw new NotFoundException(`No exam results found.`);
