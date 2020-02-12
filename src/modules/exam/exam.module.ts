@@ -8,6 +8,7 @@ import { UserModule } from "../user/user.module";
 import { MartialArtsModule } from "../martialArts/martialArts.module";
 import { ClubModule } from "../club/club.module";
 import { MartialArtSchema } from "../martialArts/martialArts.schema";
+import { ExamResultModule } from "../examResult/examResult.module";
 
 @Module({
     imports: [
@@ -15,7 +16,8 @@ import { MartialArtSchema } from "../martialArts/martialArts.schema";
         forwardRef(() => AuthModule),
         forwardRef(() => UserModule),
         forwardRef(() => MartialArtsModule),
-        forwardRef(() => ClubModule)
+        forwardRef(() => ClubModule),
+        forwardRef(() => ExamResultModule)
     ],
     providers: [ExamResolver, ExamService],
     exports: [ExamService]

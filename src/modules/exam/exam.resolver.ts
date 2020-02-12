@@ -40,6 +40,12 @@ export class ExamResolver {
         } catch (error) { return error; }
     }
 
+    @Query(() => [ExamDto], {description: 'Returns all exams where the user is examiner and exam results are missing'})
+    async getOpenExams(@CurrentUser() user) {
+        try{
+            return this.examService.getOpenExams(user.userId);
+        } catch (error) { return error; }
+    }
 
     // ===========================================================================
     // Mutations
