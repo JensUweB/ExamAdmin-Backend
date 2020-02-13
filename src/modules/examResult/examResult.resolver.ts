@@ -2,7 +2,7 @@ import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { ExamResultService } from "./examResult.service";
 import { ExamResultDto } from "./dto/examResult.dto";
 import { ExamResultInput } from "./inputs/examResult.input";
-import { UseGuards } from "@nestjs/common";
+import { UseGuards, BadRequestException } from "@nestjs/common";
 import { User as CurrentUser } from "../decorators/user.decorator";
 import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
 import { GraphQLUpload } from 'graphql-upload';
@@ -67,13 +67,20 @@ export class ExamResultResolver {
     { createReadStream, filename }: Upload): Promise<String> {
         // Checks if the sending user is equal to the examiner
         try{
+            if(!filename || filename == '') throw new BadRequestException('Your filename was empty!');
+            console.log('Filename:',filename);
             if(!erId) return "No exam result id!";
             const examResult = await this.erService.findById( erId);        // Throws an error, when nothing is found and jumps to the catch block
             const exam = await this.examService.findById(examResult.exam, user.userId);  // Throws an error, when nothing is found and jumps to the catch block
             if(exam.examiner.toString() != user.userId) return "You are not authorized!";
 
             // Deletes file if some already exist
-            if(examResult.reportUri) fs.unlinkSync(examResult.reportUri.split('///')[1]);        
+            if(examResult.reportUri){ 
+                if(examResult.reportUri.includes('///')){
+                    fs.unlinkSync(examResult.reportUri.split('///')[1]);
+                } 
+                else fs.unlinkSync(examResult.reportUri);
+            }        
 
             // Create an new unique file name with absolute uri
             const relativePath = await normalizeFileUri('protocols', filename);
