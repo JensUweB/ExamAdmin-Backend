@@ -11,6 +11,7 @@ import { MartialArts } from "../martialArts/interfaces/martialArts.interface";
 import { MailerService } from "../auth/mailer.service";
 import { TmpUser } from "./interfaces/tmpuser.interface";
 import { MaRanksInput } from "./input/maRanks.input";
+import { Config } from "Config";
 
 @Injectable()
 export class UserService {
@@ -33,6 +34,10 @@ export class UserService {
         const createdUser = new this.userModel(userInput);
         const tmpuser = new this.tmpUser({user: createdUser, uuid: id, createdAt: new Date(Date.now())}); 
         return tmpuser.save();
+    }
+
+    async findTmpUser(email: string): Promise<TmpUser> {
+        return this.tmpUser.find({'user.email': email});
     }
 
     async findByConfirmId(uuid: string): Promise<any> {
@@ -123,7 +128,7 @@ export class UserService {
         if(res) throw new NotAcceptableException('User is already a member of this club!');
 
         if (user) {
-            user.clubs.push({ club: clubId, confirmed: false });
+            user.clubs.push({ club: clubId, confirmed: !Config.enableClubs }); // If clubs are disabled, set confirmed to true by default 
             await user.save();
             return await this.userModel.findOne({ _id: user._id }).populate('clubs.club').exec();
         }
