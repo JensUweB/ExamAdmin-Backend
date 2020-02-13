@@ -1,10 +1,11 @@
-import { Injectable, Inject, forwardRef, UnauthorizedException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, UnauthorizedException, NotFoundException, InternalServerErrorException, NotAcceptableException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthModel } from './auth.model';
 import { User } from '../user/interfaces/user.interface';
 import * as bcrypt from 'bcryptjs';
 import { MailerService } from './mailer.service';
+import { UserInput } from '../user/input/user.input';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +14,22 @@ export class AuthService {
         private readonly jwtService: JwtService,
         private readonly mailerService: MailerService
     ) { }
+
+    async signUp(input: UserInput): Promise<Number> {
+        const user = await this.userService.findByEmail(input.email);  
+        const tmp = await this.userService.findTmpUser(input.email);
+        console.log('Tmp user: ');
+        if(user) return -1;
+
+        if(tmp) {
+            this.mailerService.resendVerification(tmp);
+            return 1;
+        } else {
+            const password = await bcrypt.hash(input.password, 10);
+            this.userService.create({...input, password: password});
+            return 0;
+        }
+    }
 
     /**
      * Check if email and password are correct

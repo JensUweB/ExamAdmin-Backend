@@ -35,18 +35,10 @@ export class AuthResolver {
   // ===========================================================================
   // Mutations
   // ===========================================================================
-  @Mutation(() => UserDto, { description: 'Creates a new temporary user and sends an confirmation link to the given email address.'})
+  @Mutation(() => Number, { description: 'Creates a new temporary user and sends an confirmation link to the given email address. Returns -1 if account already exists, 1 if you already tried to register and 0 if registration was ok.'})
   async signup(@Args('userInput') userInput: UserInput) {
-    try{
-      await this.userService.findByEmail(userInput.email);          // Throws an NotFoundException, if email address is not found.
-      return new NotAcceptableException('Email is already in use'); // We got no Exception, that means email address is already in use.
-    } catch (error) {                                               // userService has thrown an NotFoundException, so email adress is not yet in use.
-      const password = await bcrypt.hash(userInput.password, 10);
-      return this.userService.create({
-        ...userInput,
-        password: password
-      });
-    }
+    try{ return this.authService.signUp(userInput);
+    } catch (error) { return error; }
   }
 
   @Mutation(() => Boolean, {description: 'Send a link for password reset, if the email address is in use. No error message whatsoever.'})
