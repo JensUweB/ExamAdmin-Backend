@@ -2,9 +2,10 @@ import * as nodemailer from 'nodemailer';
 import * as hbs from 'nodemailer-express-handlebars';
 import { UserInput } from '../user/input/user.input';
 import { v4 } from 'uuid';
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, ServiceUnavailableException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { Config } from '../../../Config';
+import { TmpUser } from '../user/interfaces/tmpuser.interface';
 
 @Injectable()
 export class MailerService {
@@ -20,7 +21,7 @@ export class MailerService {
         let mailOptions = {
             from: Config.SERVER_EMAIL, 
             to: userInput.email,
-            subject: 'Test',                           
+            subject: 'Verification',                           
             text: `Hello ${userInput.firstName} ${userInput.lastName}, welcome to our awesome examAdmin! Please click on the following link, to confirm registration: ${link}"`,
             html: `<b>Hello ${userInput.firstName} ${userInput.lastName}</b>,
                 <br> welcome to our awesome examAdmin!<br>
@@ -31,6 +32,25 @@ export class MailerService {
         //send email
         this.sendMail(mailOptions);
         return id; 
+    }
+
+    async resendVerification(tmpUser: TmpUser) {
+        const link = Config.URL+'/auth/confirm/'+tmpUser.uuid
+        
+        //setup email data
+        let mailOptions = {
+            from: Config.SERVER_EMAIL, 
+            to: tmpUser.user.email,
+            subject: 'Verification (Resend)',                           
+            text: `Hello ${tmpUser.user.firstName} ${tmpUser.user.lastName}, welcome to our awesome examAdmin! Please click on the following link, to confirm registration: ${link}"`,
+            html: `<b>Hello ${tmpUser.user.firstName} ${tmpUser.user.lastName}</b>,
+                <br> welcome to our awesome examAdmin!<br>
+                Please click on the following link, to confirm registration: <a href="${link}">Confirm</a><br>
+                This was not you? No worries. This link expires within 24 hours.<br>
+                Maybe you should change your email account password, just to be safe.<br>`
+        }
+        //send email
+        this.sendMail(mailOptions);
     }
 
     async forgotPassword(email: string, token) {
@@ -103,8 +123,8 @@ export class MailerService {
         transporter.sendMail(mailOptions, function(error, info) {
             if(error) {
                 console.log('[Nodemailer] '+error);
-                return error;
-            } else return null;
+                throw new ServiceUnavailableException(error);
+            } else return true;
         });
     }
 }
