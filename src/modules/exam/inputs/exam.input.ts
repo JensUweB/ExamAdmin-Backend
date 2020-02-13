@@ -6,6 +6,8 @@ export class ExamInput {
     readonly title: string;
     @Field({ description: 'The description of the exam', nullable: true })
     readonly description: string;
+    @Field({ description: 'The description of the exam', nullable: true })
+    readonly examPlace: string;
     @Field({ description: 'The date when the exam should be held', nullable: true })
     readonly  examDate: Date;
     @Field({ description: 'The date when registration will be closed', nullable: true })

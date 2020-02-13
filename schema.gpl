@@ -140,6 +140,9 @@ input ExamInput {
   """The description of the exam"""
   description: String
 
+  """The description of the exam"""
+  examPlace: String
+
   """The date when the exam should be held"""
   examDate: DateTime
 
@@ -285,9 +288,11 @@ type Mutation {
   deleteMartialArt(id: String!): String!
 
   """
-  Creates a new temporary user and sends an confirmation link to the given email address.
+  Creates a new temporary user and sends an confirmation link to the given email
+  address. Returns -1 if account already exists, 1 if you already tried to
+  register and 0 if registration was ok.
   """
-  signup(userInput: UserInput!): UserDto!
+  signup(userInput: UserInput!): Float!
 
   """
   Send a link for password reset, if the email address is in use. No error message whatsoever.
@@ -314,6 +319,9 @@ type Mutation {
 
   """The current user can register for an exam as participant"""
   registerToExam(examId: String!): Boolean!
+
+  """Removes the current user as participant from the given exam"""
+  unregisterFromExam(examId: String!): Boolean!
 
   """
   Deletes the exam with given examId, if exam.examiner equals current user
