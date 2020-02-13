@@ -101,6 +101,20 @@ export class ExamService {
         return true;
     }
 
+    async unregisterFromExam(userId: any, examId: String): Promise<boolean> {
+        const exam = await this.examModel.findOne({ _id: examId });
+        const user = await this.userService.findById(userId);
+
+        if(!user) throw new NotFoundException('User not found!');
+        if(!exam) throw new NotFoundException('Exam not found!');
+        if(!exam.participants.includes(userId)){ return false;}
+        else { 
+            exam.participants = exam.participants.filter(user => user._id != userId); 
+            exam.save();
+            return true;
+        }
+    }
+
     async deleteExam(userId: string, examId: string): Promise<Boolean> {
         const exam = await this.examModel.findOne({ _id: examId });
         if (!exam) throw new NotFoundException(`No exam with _id: "${examId}" found!`);
