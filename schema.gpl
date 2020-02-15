@@ -97,6 +97,9 @@ type ExamDto {
   """Describe what tis exam is all about"""
   description: String!
 
+  """The price - how much this exam will cost."""
+  price: Float!
+
   """The date and time of the exam"""
   examDate: DateTime!
 
@@ -139,6 +142,9 @@ input ExamInput {
 
   """The description of the exam"""
   description: String
+
+  """The price - how much this exam will cost."""
+  price: Float
 
   """The description of the exam"""
   examPlace: String
@@ -316,6 +322,9 @@ type Mutation {
 
   """Creates a new exam. DOH!"""
   createExam(input: ExamInput!): ExamDto!
+
+  """You can update any exam, that was created by you!"""
+  updateExam(input: ExamInput!, examId: String!): ExamDto!
 
   """The current user can register for an exam as participant"""
   registerToExam(examId: String!): Boolean!

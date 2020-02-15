@@ -76,11 +76,12 @@ export class ExamService {
         return exams;
     }
 
-    async update(id: string, input: ExamInput): Promise<ExamDto> {
+    async update(userId, id: string, input: ExamInput): Promise<ExamDto> {
         let exam = await this.examModel.findOne({ _id: id });
         if (!exam) throw new NotFoundException(`No exam with _id: "${id}" found!`);
         if (input.title) exam.title = input.title;
         if (input.description) exam.description = input.description;
+        if (input.price) exam.price = input.price;
         if (input.examDate) exam.examDate = input.examDate;
         if (input.regEndDate) exam.regEndDate = input.regEndDate;
         if (input.club) exam.club = input.club;

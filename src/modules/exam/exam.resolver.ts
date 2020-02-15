@@ -57,6 +57,13 @@ export class ExamResolver {
         } catch (error) { return error; }
     }
 
+    @Mutation(() => ExamDto, {description: 'You can update any exam, that was created by you!'})
+    async updateExam(@CurrentUser() user, @Args('examId') examId: string, @Args('input') input: ExamInput) {
+        try {
+            return this.examService.update(user.userId, examId, input);
+        } catch (error) { return error; }
+    }
+
     @Mutation(() => Boolean, {description: 'The current user can register for an exam as participant'})
     async registerToExam(@CurrentUser() user, @Args('examId') examId: String) {
         try{ return this.examService.registerToExam(user.userId, examId);
