@@ -4,14 +4,19 @@
   "description": "",
   "author": "Jens Uwe Becker",
   "license": "MIT",
+  "main": "dist/src/main.js",
+  "engine": {
+    "node": ">12.0.0"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
+    "gcp-build": "npm run build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nodemon",
+    "start": "npm run start:prod",
     "start:dev": "nodemon",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/src/main",
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "test": "jest",
     "test:watch": "jest --watch",
