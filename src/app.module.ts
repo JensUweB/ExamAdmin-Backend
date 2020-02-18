@@ -44,7 +44,6 @@ import { UmbrellaAssocModule } from './modules/umbrellaAssoc/umbrellaAssoc.modul
       provide: APP_PIPE,
       useClass: ValidationPipe
     },
-    Config
   ]
 })
 export class AppModule {}
