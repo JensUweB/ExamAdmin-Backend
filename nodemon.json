@@ -1,6 +1,24 @@
 {
-    "watch": ["src"],
+    "watch": [
+        "src"
+    ],
     "ext": "ts",
-    "ignore": ["src/**/*.spec.ts"],
-    "exec": "ts-node -r tsconfig-paths/register src/main.ts"
+    "ignore": [
+        "src/**/*.spec.ts"
+    ],
+    "exec": "ts-node -r tsconfig-paths/register src/main.ts",
+    "env": {
+        "PORT": 3000,
+        "SMTP_HOST": "localhost",
+        "SMTP_PORT": 25,
+        "SMTP_SSL": false,
+        "URL": "http://localhost:3000",
+        "SERVER_EMAIL": "postmaster@localhost",
+        "EMAIL_PASS": "123456@localhost",
+        "MONGO_CONN_STR": "mongodb://admin:admin%40p8x@127.0.0.1:27017/examadmin?authSource=admin&compressors=zlib&readPreference=primary&gssapiServiceName=mongodb&appname=MongoDB%20Compass%20Community&ssl=false",
+        "JWT_SECRET": "MIGrAgEAAiEAvwzN7rDBIe7D2kk3xIA6cKcDmLIc4uW3onudEG2be9ECAwEAAQIhALVc7Gl49f7GcLpZ40zxBYefuoRB1qC4PEH7ew2GGdOBAhEA/fu1sPvBYEE965VfIdKM2QIRAMCRKm2b8JnHCMt1298da7kCEBiY5wjD6P90chW9up/g70kCEFfOGXWPRF8qJTV40T/kD2kCEQCgk8BL1FMeyjD6Nbl7IJX7",
+        "JWT_EXPIRE": 7200,
+        "MAX_FILESIZE": 5242880,
+        "enableClubs": false
+    }
 }

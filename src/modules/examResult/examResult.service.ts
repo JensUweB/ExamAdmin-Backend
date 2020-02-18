@@ -4,7 +4,6 @@ import { Model } from "mongoose";
 import { ExamResult } from "./interfaces/examResult.interface";
 import { ExamResultDto } from "./dto/examResult.dto";
 import { ExamResultInput } from "./inputs/examResult.input";
-import { Config } from "../../../Config";
 
 @Injectable()
 export class ExamResultService {
@@ -34,7 +33,7 @@ export class ExamResultService {
         const results = await this.erModel.find({ user: userId });
         if(!results) throw new NotFoundException(`No exam results found.`);
         results.forEach(result => {
-            result.reportUri = Config.URL+'/protocols/'+result._id;
+            result.reportUri =  process.env.URL+'/protocols/'+result._id;
         });
         return results;
     }

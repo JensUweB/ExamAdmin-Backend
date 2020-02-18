@@ -11,7 +11,6 @@ import { ClubModule } from './modules/club/club.module';
 import { ExamModule } from './modules/exam/exam.module';
 import { ExamResultModule } from './modules/examResult/examResult.module';
 import { UmbrellaAssocModule } from './modules/umbrellaAssoc/umbrellaAssoc.module';
-import { Config } from '../Config';
 
 //dotenv.config();
 @Module({
@@ -29,12 +28,11 @@ import { Config } from '../Config';
         installSubscriptionHandlers: true,
         context: ({req}) => ({req}),
         uploads: {
-          maxFileSize:  Config.MAX_FILESIZE, // Default 5 MiB
+          maxFileSize: +process.env.MAX_FILESIZE, // Default 5 MiB
           maxFiles: 5
         }
       }),
-    MongooseModule.forRoot(Config.MONGO_CONN_STR),
-    Config
+    MongooseModule.forRoot( process.env.MONGO_CONN_STR),
     /* ConfigModule.forRoot({
       isGlobal: true,
     })  */ 

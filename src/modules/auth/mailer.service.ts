@@ -4,7 +4,6 @@ import { UserInput } from '../user/input/user.input';
 import { v4 } from 'uuid';
 import { Injectable, Inject, forwardRef, ServiceUnavailableException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { Config } from '../../../Config';
 import { TmpUser } from '../user/interfaces/tmpuser.interface';
 
 @Injectable()
@@ -15,11 +14,11 @@ export class MailerService {
     async sendVerification(userInput: UserInput) {
         //setup unique verification link with uuid and ioredis
         const id = v4();
-        const link = Config.URL+'/auth/confirm/'+id
+        const link =  process.env.URL+'/auth/confirm/'+id
         
         //setup email data
         let mailOptions = {
-            from: Config.SERVER_EMAIL, 
+            from:  process.env.SERVER_EMAIL, 
             to: userInput.email,
             subject: 'Verification',                           
             text: `Hello ${userInput.firstName} ${userInput.lastName}, welcome to our awesome examAdmin! Please click on the following link, to confirm registration: ${link}"`,
@@ -35,11 +34,11 @@ export class MailerService {
     }
 
     async resendVerification(tmpUser: TmpUser) {
-        const link = Config.URL+'/auth/confirm/'+tmpUser.uuid
+        const link =  process.env.URL+'/auth/confirm/'+tmpUser.uuid
         
         //setup email data
         let mailOptions = {
-            from: Config.SERVER_EMAIL, 
+            from:  process.env.SERVER_EMAIL, 
             to: tmpUser.user.email,
             subject: 'Verification (Resend)',                           
             text: `Hello ${tmpUser.user.firstName} ${tmpUser.user.lastName}, welcome to our awesome examAdmin! Please click on the following link, to confirm registration: ${link}"`,
@@ -56,11 +55,11 @@ export class MailerService {
     async forgotPassword(email: string, token) {
         const user = await this.userService.findByEmail(email);
         if(!user) return false;
-        const url: string = Config.URL+'/auth/forgot-password/'+token;
+        const url: string =  process.env.URL+'/auth/forgot-password/'+token;
 
         //setup email data
         let mailOptions = {
-            from: Config.SERVER_EMAIL, 
+            from:  process.env.SERVER_EMAIL, 
             to: email,
             subject: 'Password help has arived!',  
             text: 'Sorry, seems you disabled html view... Your password reset help is here! If you want to reset your password, klick on this Link: '+url,
@@ -80,7 +79,7 @@ export class MailerService {
 
         //setup email data
         let mailOptions = {
-            from: Config.SERVER_EMAIL, 
+            from:  process.env.SERVER_EMAIL, 
             to: email,
             subject: 'Password Reset Confirmation',           
             text: 'You have reset your password. Good for you!',                
@@ -96,12 +95,12 @@ export class MailerService {
     async sendMail(mailOptions) {
         //setup smtp config
         var smtpConfig = {
-            host: Config.SMTP_HOST,
-            port: Config.SMTP_PORT,
-            secure: Config.SMTP_SSL, // use SSL
+            host:  process.env.SMTP_HOST,
+            port:  process.env.SMTP_PORT,
+            secure:  process.env.SMTP_SSL, // use SSL
             auth: {
-                user: Config.SERVER_EMAIL,
-                pass: Config.EMAIL_PASS
+                user:  process.env.SERVER_EMAIL,
+                pass:  process.env.EMAIL_PASS
             }
         };
 

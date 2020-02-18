@@ -7,7 +7,6 @@ import { JwtModule } from "@nestjs/jwt";
 import { AuthResolver } from "./auth.resolver";
 import { MailerService } from "./mailer.service";
 import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
-import { Config } from "../../../Config";
 
 @Module({
     imports: [
@@ -16,8 +15,8 @@ import { Config } from "../../../Config";
             defaultStrategy: 'jwt'
         }), 
         JwtModule.register({
-            secret: Config.JWT_SECRET,
-            signOptions: {expiresIn: Config.JWT_EXPIRE}
+            secret: process.env.JWT_SECRET,
+            signOptions: {expiresIn: process.env.JWT_EXPIRE}
         }),
     ],
     providers: [AuthService, MailerService, JwtStrategy, AuthResolver, GraphqlAuthGuard],
