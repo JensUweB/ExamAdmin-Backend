@@ -15,29 +15,37 @@ export class AuthService {
         private readonly mailerService: MailerService
     ) { }
 
-    async signUp(input: UserInput): Promise<Number> {
-        const user = await this.userService.findByEmail(input.email);  
-        const tmp = await this.userService.findTmpUser(input.email);
-        console.log('Tmp user: ');
-        if(user) return -1;
+    async signUp(input: UserInput): Promise<Boolean> {
+        try {
+            const user = await this.userService.findByEmail(input.email);  
+            const tmp = await this.userService.findTmpUser(input.email);
 
-        if(tmp) {
-            this.mailerService.resendVerification(tmp);
-            return 1;
-        } else {
+            if(user) return true;
+            if(tmp) {
+                this.mailerService.resendVerification(tmp);
+                return true;
+            }
+        } catch (error) {
             const password = await bcrypt.hash(input.password, 10);
             this.userService.create({...input, password: password});
-            return 0;
-        }
+            return true;
+         }
+        return false;
+            
     }
 
     /**
      * Check if email and password are correct
      */
     async validateUser({email, password}): Promise<User> {
-        const user = await this.userService.findByEmail(email);
-        if(!user) throw new UnauthorizedException('Email or Password incorrect');
-        const valid = await bcrypt.compare(password, user.password);
+        let user;
+        let valid;
+        try{
+            user = await this.userService.findByEmail(email);
+            valid = await bcrypt.compare(password, user.password);
+        } catch (error) {
+            if(!user) throw new UnauthorizedException('Email or Password incorrect');
+        }                
         if(!valid) throw new UnauthorizedException('Email or Password incorrect');
         return user;
     }
