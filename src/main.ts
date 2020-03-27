@@ -5,15 +5,7 @@ import { join } from 'path';
 import * as Express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
 
-/**
- * Code for google cloud deployment
- */
 const server = Express();
-
-// Routes for google to check server health
-server.get('/', (req, res) => res.send('ok'));
-server.get('/_ah/health', (req, res) => res.send('ok'));    
-
 
 /**
  * Normal server startup
@@ -27,7 +19,4 @@ async function bootstrap() {
   app.enableCors();
   await app.listen( process.env.PORT || 3000);
 }
-
-
-
 bootstrap();
