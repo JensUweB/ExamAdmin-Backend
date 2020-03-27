@@ -11,10 +11,12 @@ import { ClubModule } from './modules/club/club.module';
 import { ExamModule } from './modules/exam/exam.module';
 import { ExamResultModule } from './modules/examResult/examResult.module';
 import { UmbrellaAssocModule } from './modules/umbrellaAssoc/umbrellaAssoc.module';
+import { EasyconfigModule } from 'nestjs-easyconfig';
 
 //dotenv.config();
 @Module({
   imports: [
+    EasyconfigModule.register({ path: './.env' }),
     UserModule,
     AuthModule,
     MartialArtsModule,
@@ -43,8 +45,7 @@ import { UmbrellaAssocModule } from './modules/umbrellaAssoc/umbrellaAssoc.modul
     {
       provide: APP_PIPE,
       useClass: ValidationPipe
-    },
-    Config
+    }
   ]
 })
 export class AppModule {}
