@@ -16,7 +16,7 @@ import { EasyconfigModule } from 'nestjs-easyconfig';
 //dotenv.config();
 @Module({
   imports: [
-    EasyconfigModule.register({ path: './.env.dev' }),
+    EasyconfigModule.register({ path: './.env' }),
     UserModule,
     AuthModule,
     MartialArtsModule,
@@ -45,7 +45,7 @@ import { EasyconfigModule } from 'nestjs-easyconfig';
     {
       provide: APP_PIPE,
       useClass: ValidationPipe
-    },
+    }
   ]
 })
 export class AppModule {}
