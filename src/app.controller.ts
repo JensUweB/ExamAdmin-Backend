@@ -16,6 +16,18 @@ export class AppController {
     private readonly jwtService: JwtService
   ) { }
 
+  // Route for Google Cloud to check server health
+  @Get('/')
+  async getOk() {
+    return "ok";
+  }
+  
+  // Route for Google Cloud to check server health
+  @Get('/_ah/health')
+  async getHealth() {
+    return "ok";
+  }
+
   @Get('auth/confirm/:uuid')
   async getUserConfirm(@Param('uuid') uuid: string) {
     const user = await this.userService.findByConfirmId(uuid);

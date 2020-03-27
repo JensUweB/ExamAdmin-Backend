@@ -1,7 +1,6 @@
 import { ObjectType, Field, ID } from "type-graphql";
 import { MartialArtsDto } from "../../martialArts/dto/martialArts.dto";
-import { ExaminerDto } from "./examiner.dto";
-import { UserDto } from "src/modules/user/dto/user.dto";
+import { UserDto } from "./../../user/dto/user.dto";
 
 @ObjectType()
 export class ExamResultDto {
