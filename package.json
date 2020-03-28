@@ -43,7 +43,7 @@
     "ioredis": "^4.15.1",
     "mongoose": "^5.8.10",
     "nestjs-easyconfig": "^1.8.9",
-    "nodemailer": "^6.4.2",
+    "nodemailer": "^6.4.4",
     "nodemailer-express-handlebars": "^3.1.0",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
