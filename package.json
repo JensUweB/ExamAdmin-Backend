@@ -40,7 +40,7 @@
     "graphql": "^14.6.0",
     "graphql-tools": "^4.0.7",
     "hbs": "^4.1.0",
-    "ioredis": "^4.15.1",
+    "ioredis": "^4.16.0",
     "mongoose": "^5.8.10",
     "nestjs-easyconfig": "^1.8.9",
     "nodemailer": "^6.4.2",
