@@ -11,12 +11,11 @@ import { ClubModule } from './modules/club/club.module';
 import { ExamModule } from './modules/exam/exam.module';
 import { ExamResultModule } from './modules/examResult/examResult.module';
 import { UmbrellaAssocModule } from './modules/umbrellaAssoc/umbrellaAssoc.module';
-import { EasyconfigModule } from 'nestjs-easyconfig';
+import { environment } from 'environment';
 
 //dotenv.config();
 @Module({
   imports: [
-    EasyconfigModule.register({ path: './.env' }),
     UserModule,
     AuthModule,
     MartialArtsModule,
@@ -30,11 +29,11 @@ import { EasyconfigModule } from 'nestjs-easyconfig';
         installSubscriptionHandlers: true,
         context: ({req}) => ({req}),
         uploads: {
-          maxFileSize: +process.env.MAX_FILESIZE, // Default 5 MiB
+          maxFileSize: +environment.MAX_FILESIZE, // Default 5 MiB
           maxFiles: 5
         }
       }),
-    MongooseModule.forRoot( process.env.MONGO_CONN_STR),
+    MongooseModule.forRoot( environment.MONGO_CONN_STR),
     /* ConfigModule.forRoot({
       isGlobal: true,
     })  */ 
@@ -48,4 +47,5 @@ import { EasyconfigModule } from 'nestjs-easyconfig';
     }
   ]
 })
-export class AppModule {}
+export class AppModule {
+}

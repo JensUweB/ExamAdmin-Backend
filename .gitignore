@@ -39,5 +39,4 @@ lerna-debug.log*
 /src/uploads/*.* 
 /src/uploads/avatars/*.*
 /src/uploads/protocols/*.*
-.env
-Config.ts
+environment.ts

@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { join } from 'path';
 import * as Express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
+import { environment } from 'environment';
 
 const server = Express();
 
@@ -17,6 +18,6 @@ async function bootstrap() {
   app.setBaseViewsDir(join(__dirname, '/views'));
   app.setViewEngine('hbs');
   app.enableCors();
-  await app.listen( process.env.PORT || 3000);
+  await app.listen( environment.PORT || 3000);
 }
 bootstrap();
