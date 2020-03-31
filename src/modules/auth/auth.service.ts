@@ -6,6 +6,8 @@ import { User } from '../user/interfaces/user.interface';
 import * as bcrypt from 'bcryptjs';
 import { MailerService } from './mailer.service';
 import { UserInput } from '../user/input/user.input';
+import { UserDto } from '../user/dto/user.dto';
+import { TmpUser } from '../user/interfaces/tmpuser.interface';
 
 @Injectable()
 export class AuthService {
@@ -15,23 +17,27 @@ export class AuthService {
         private readonly mailerService: MailerService
     ) { }
 
-    async signUp(input: UserInput): Promise<Boolean> {
+    async signUp(input: UserInput): Promise<UserDto | User> {
+        let error;
         try {
             const user = await this.userService.findByEmail(input.email);  
             const tmp = await this.userService.findTmpUser(input.email);
 
-            if(user) return true;
+            if(user) {
+                error = new NotAcceptableException('E-Mail Adress already in use!');
+                throw error;
+            }
             if(tmp) {
                 this.mailerService.resendVerification(tmp);
-                return true;
+                return tmp.user;
             }
-        } catch (error) {
+        } catch (err) {
+            if(error) { throw error; }
             const password = await bcrypt.hash(input.password, 10);
-            this.userService.create({...input, password: password});
-            return true;
-         }
-        return false;
-            
+            try {
+                return this.userService.create({...input, password: password});
+            } catch (err) { return err; }
+         }            
     }
 
     /**
@@ -57,6 +63,7 @@ export class AuthService {
         if(!user) throw new UnauthorizedException('Email or password incorrect');
 
         const payload = { firstName: user.firstName, userId: user._id };
+        
         const result = this.jwtService.sign(payload);
         if(!result) throw new InternalServerErrorException('Token creation failed');
 
