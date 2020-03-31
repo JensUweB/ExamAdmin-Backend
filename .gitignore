@@ -41,3 +41,4 @@ lerna-debug.log*
 /src/uploads/protocols/*.*
 .env
 Config.ts
+old-package.json
