@@ -34,9 +34,9 @@ export class MailerService {
         return id; 
     }
 
-    async resendVerification(tmpUser: TmpUser) {
+    async resendVerification(tmpUser: TmpUser): Promise<Boolean | any> {
+        console.log('[MailerService] Trying to resend verification mail...');
         const link =  environment.URL+'/auth/confirm/'+tmpUser.uuid
-        
         //setup email data
         let mailOptions = {
             from:  environment.SERVER_EMAIL, 
@@ -50,7 +50,7 @@ export class MailerService {
                 Maybe you should change your email account password, just to be safe.<br>`
         }
         //send email
-        this.sendMail(mailOptions);
+        return await this.sendMail(mailOptions);
     }
 
     async forgotPassword(email: string, token) {
@@ -120,11 +120,8 @@ export class MailerService {
         }));
     
 
-        transporter.sendMail(mailOptions, function(error, info) {
-            if(error) {
-                console.log('[Nodemailer] '+error);
-                throw new ServiceUnavailableException(error);
-            } else return true;
-        });
+        const result = await transporter.sendMail(mailOptions);
+        if(result) console.log('[MailerService] Sending email was successful!');
+        return result;
     }
 }
