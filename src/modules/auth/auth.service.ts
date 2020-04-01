@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef, UnauthorizedException, NotFoundException, InternalServerErrorException, NotAcceptableException } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, UnauthorizedException, NotFoundException, InternalServerErrorException, NotAcceptableException, ServiceUnavailableException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthModel } from './auth.model';
@@ -17,27 +17,30 @@ export class AuthService {
         private readonly mailerService: MailerService
     ) { }
 
-    async signUp(input: UserInput): Promise<UserDto | User> {
-        let error;
-        try {
-            const user = await this.userService.findByEmail(input.email);  
-            const tmp = await this.userService.findTmpUser(input.email);
+    async signUp(input: UserInput): Promise<UserDto | any> {
+        const user = await this.userService.findByEmail(input.email);  
+        const tmp = await this.userService.findTmpUser(input.email);
 
-            if(user) {
-                error = new NotAcceptableException('E-Mail Adress already in use!');
-                throw error;
-            }
-            if(tmp) {
-                this.mailerService.resendVerification(tmp);
-                return tmp.user;
-            }
-        } catch (err) {
-            if(error) { throw error; }
-            const password = await bcrypt.hash(input.password, 10);
+        if(user) {
+           throw new NotAcceptableException('E-Mail Adress already in use!');
+        } else if(tmp) {
             try {
-                return this.userService.create({...input, password: password});
-            } catch (err) { return err; }
-         }            
+                const sent = await this.mailerService.resendVerification(tmp);
+                if(sent) { return tmp.user; }
+                else { 
+                    const error = new ServiceUnavailableException('Error: Sending confirmation email failed!'); 
+                    console.log(error);
+                    return error;
+                }                
+            } catch (error) { 
+                console.log('An Error occured: ',error);
+                return error; 
+            }
+        } else {
+            console.log('Creating new user...');
+            const password = await bcrypt.hash(input.password, 10);
+            return this.userService.create({...input, password: password});
+        }      
     }
 
     /**
