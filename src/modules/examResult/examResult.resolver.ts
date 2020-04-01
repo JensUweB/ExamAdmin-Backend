@@ -2,7 +2,7 @@ import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { ExamResultService } from "./examResult.service";
 import { ExamResultDto } from "./dto/examResult.dto";
 import { ExamResultInput } from "./inputs/examResult.input";
-import { UseGuards, BadRequestException } from "@nestjs/common";
+import { UseGuards, BadRequestException, UnauthorizedException } from "@nestjs/common";
 import { User as CurrentUser } from "../decorators/user.decorator";
 import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
 import { GraphQLUpload } from 'graphql-upload';
@@ -41,7 +41,10 @@ export class ExamResultResolver {
     // ===========================================================================
     
     @Mutation(() => ExamResultDto, {description: 'Creates a new exam result'})
-    async createExamResult(@Args('input') input: ExamResultInput) {
+    async createExamResult(@CurrentUser() user, @Args('input') input: ExamResultInput) {
+        if(input.user === user.userId){
+            throw new UnauthorizedException('Unauthorized Exception: You are not allowed to examine yourself!');
+        }
         try{ return this.erService.create(input);
         } catch (error) { return error; }
     }
