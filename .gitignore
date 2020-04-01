@@ -36,7 +36,10 @@ lerna-debug.log*
 
 # Custom Paths
 /src/modules/createNestModule.bat
-/src/uploads/*.* 
-/src/uploads/avatars/*.*
-/src/uploads/protocols/*.*
+/src/uploads/*.pdf
+/src/uploads/*.jpg
+/src/uploads/avatars/*.pdf
+/src/uploads/avatars/*.jpg
+/src/uploads/protocols/*.pdf
+/src/uploads/protocols/*.jpg
 environment.ts
