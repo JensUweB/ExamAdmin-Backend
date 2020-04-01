@@ -96,12 +96,12 @@ export class MailerService {
     async sendMail(mailOptions) {
         //setup smtp config
         var smtpConfig = {
-            host:  environment.SMTP_HOST,
-            port:  environment.SMTP_PORT,
-            secure:  environment.SMTP_SSL, // use SSL
+            host:  environment.SMTP.HOST,
+            port:  environment.SMTP.PORT,
+            secure:  environment.SMTP.SSL, // use SSL
             auth: {
-                user:  environment.SERVER_EMAIL,
-                pass:  environment.EMAIL_PASS
+                user:  environment.SMTP.USER,
+                pass:  environment.SMTP.PASS
             }
         };
 
