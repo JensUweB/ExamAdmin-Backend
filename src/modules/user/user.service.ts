@@ -37,7 +37,7 @@ export class UserService {
     }
 
     async findTmpUser(email: string): Promise<TmpUser> {
-        return this.tmpUser.find({'user.email': email});
+        return this.tmpUser.findOne({'user.email': email});
     }
 
     async findByConfirmId(uuid: string): Promise<any> {
@@ -51,9 +51,7 @@ export class UserService {
      * @param email the user email you want to search for
      */
     async findByEmail(email: string): Promise<UserDto | undefined> {
-        const user = await this.userModel.findOne({ email: email }).populate('clubs.club').populate('martialArts._id').exec();
-        if (!user) throw new NotFoundException('Could not find any user with given email');
-        return user;
+       return this.userModel.findOne({ email: email }).populate('clubs.club').populate('martialArts._id').exec();
     }
 
     async addUser(user: any, tmpUserId: string): Promise<any> {
