@@ -252,6 +252,9 @@ input MartialArtsInput {
   """The style name the martial art belongs to"""
   styleName: String
 
+  """The description of the martial art"""
+  description: String
+
   """
   An array of all ranks available in this martial art. The lower the rank number the higher the rank.
   """
