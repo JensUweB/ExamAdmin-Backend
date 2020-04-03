@@ -1,15 +1,20 @@
-import { Injectable, HttpException, HttpStatus, NotAcceptableException, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { Injectable, HttpException, HttpStatus, NotAcceptableException, NotFoundException, UnauthorizedException, Inject, forwardRef } from "@nestjs/common";
 import { MartialArts } from "./interfaces/martialArts.interface";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { MartialArtsInput } from "./inputs/martialArts.input";
 import { MartialArtsDto } from "./dto/martialArts.dto";
 import { RankDto } from "./dto/rank.dto";
+import { UserService } from "../user/user.service";
 
 @Injectable()
 export class MartialArtsService {
+    
 
-    constructor(@InjectModel('MartialArt') private readonly maModel: Model<MartialArts>) { }
+    constructor(
+        @InjectModel('MartialArt') private readonly maModel: Model<MartialArts>,
+        @Inject(forwardRef(() => UserService)) private readonly userService: UserService
+    ) { }
 
     async create(maInput: MartialArtsInput): Promise<MartialArts> {
         const exists = await this.maModel.findOne({name: maInput.name, styleName: maInput.styleName});
@@ -17,6 +22,32 @@ export class MartialArtsService {
 
         const martialArt = await new this.maModel(maInput);
         return martialArt.save();
+    }
+
+    async addExaminer(userId: any, email: string, maId: string) {
+        const ma = await this.maModel.findOne({ _id: maId });
+        const user = await this.userService.findByEmail(email);
+
+        // Some security checks
+        if(!ma) { throw new NotFoundException('Martial Art not found!'); }
+        if(!user) { throw new NotFoundException('User not found! Are you sure the email adress is correct?'); }
+        if(!ma.examiners.includes(userId)) { throw new UnauthorizedException('You are not authorized to add examiners to this martial art!'); }
+
+        ma.examiners.push(user._id);
+        return ma.save();
+    }
+
+    async removeExaminer(currentUser: string, userId: string, maId: string) {
+        const ma = await this.maModel.findOne({ _id: maId });
+        const user = await this.userService.findById(userId);
+
+        // Some security checks
+        if(!ma) { throw new NotFoundException('Martial Art not found!'); }
+        if(!user) { throw new NotFoundException('User not found! Are you sure the email adress is correct?'); }
+        if(!ma.examiners.includes(userId)) { throw new UnauthorizedException('You are not authorized to remove examiners from this martial art!'); }
+
+        ma.examiners = ma.examiners.filter(user => user._id != userId);
+        return ma.save();
     }
 
     async findById(id: string): Model<MartialArts> {
@@ -47,11 +78,13 @@ export class MartialArtsService {
         return rank[0];
     }
 
-    async update(id: string, input: MartialArtsInput): Model<MartialArts> {
-        const ma = await this.findById(id);
-        if(!ma) throw new NotFoundException(`No martial art with _id: "${id}" found.`);
+    async update(id: string, input: MartialArtsInput, userId: string): Model<MartialArts> {
+        const ma = await this.maModel.findOne({ _id: id });
+        if(!ma) { throw new NotFoundException(`No martial art with _id: "${id}" found.`); }
+        if(!ma.examiners.includes(userId)) { throw new UnauthorizedException('You are not authorized to update this martial art!'); }
         if (input.name) ma.name = input.name;
         if (input.styleName) ma.stylename = input.styleName;
+        if (input.description) ma.description = input.description;
         if (input.ranks) ma.ranks = input.ranks;
         return ma.save();
     }

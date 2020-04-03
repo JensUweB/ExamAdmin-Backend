@@ -6,6 +6,7 @@ import { RankDto } from "./dto/rank.dto";
 import { UseGuards } from "@nestjs/common";
 import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
 import { User as CurrentUser } from "../decorators/user.decorator";
+import { updateSourceFileNode } from "typescript";
 
 
 @UseGuards(GraphqlAuthGuard)
@@ -56,8 +57,20 @@ export class MartialArtsResolver {
     }
 
     @Mutation(() => MartialArtsDto, {description: 'Updates an existing martial art'})
-    async updateMartialArt(@Args('id') id: string, @Args('input') input: MartialArtsInput) {
-        try{ return this.maService.update(id, input);
+    async updateMartialArt(@CurrentUser() user,  @Args('id') id: string, @Args('input') input: MartialArtsInput) {
+        try{ return this.maService.update(id, input, user.userId);
+        } catch (error) { return error; }
+    }
+
+    @Mutation(() => MartialArtsDto, {description: 'Adds an user as examiner'})
+    async addExaminer(@CurrentUser() user, @Args('email') email: string, @Args('maId') maId: string ) {
+        try{ return this.maService.addExaminer(user.userId, email, maId);
+        } catch (error) { return error; }
+    }
+
+    @Mutation(() => MartialArtsDto, {description: 'Removes an user from the examiners list'})
+    async removeExaminer(@CurrentUser() user, @Args('userId') userId: string, @Args('maId') maId: string ) {
+        try{ return this.maService.removeExaminer(user.userId, userId, maId);
         } catch (error) { return error; }
     }
 
