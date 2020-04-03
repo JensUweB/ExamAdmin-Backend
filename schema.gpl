@@ -293,6 +293,12 @@ type Mutation {
   """Updates an existing martial art"""
   updateMartialArt(input: MartialArtsInput!, id: String!): MartialArtsDto!
 
+  """Adds an user as examiner"""
+  addExaminer(maId: String!, email: String!): MartialArtsDto!
+
+  """Removes an user from the examiners list"""
+  removeExaminer(maId: String!, userId: String!): MartialArtsDto!
+
   """Deletes a martial art, if the current user is authorized"""
   deleteMartialArt(id: String!): String!
 
