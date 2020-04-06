@@ -35,7 +35,7 @@ export class AuthResolver {
   // ===========================================================================
   // Mutations
   // ===========================================================================
-  @Mutation(() => Number, { description: 'Creates a new temporary user and sends an confirmation link to the given email address. Returns -1 if account already exists, 1 if you already tried to register and 0 if registration was ok.'})
+  @Mutation(() => Boolean, { description: 'Creates a new temporary user and sends an confirmation link to the given email address. Returns -1 if account already exists, 1 if you already tried to register and 0 if registration was ok.'})
   async signup(@Args('userInput') userInput: UserInput) {
     try{ return this.authService.signUp(userInput);
     } catch (error) { return error; }
