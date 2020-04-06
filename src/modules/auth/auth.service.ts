@@ -17,7 +17,7 @@ export class AuthService {
         private readonly mailerService: MailerService
     ) { }
 
-    async signUp(input: UserInput): Promise<UserDto | any> {
+    async signUp(input: UserInput): Promise<any> {
         const user = await this.userService.findByEmail(input.email);  
         const tmp = await this.userService.findTmpUser(input.email);
 
@@ -25,21 +25,25 @@ export class AuthService {
            throw new NotAcceptableException('E-Mail Adress already in use!');
         } else if(tmp) {
             try {
-                const sent = await this.mailerService.resendVerification(tmp);
-                if(sent) { return tmp.user; }
+                const result = await this.mailerService.resendVerification(tmp);
+                if(result.response) { 
+                    return true; 
+                }
                 else { 
                     const error = new ServiceUnavailableException('Error: Sending confirmation email failed!'); 
-                    console.log(error);
+                    console.log('An Error occured: ',error);
                     return error;
                 }                
             } catch (error) { 
                 console.log('An Error occured: ',error);
-                return error; 
+                return new InternalServerErrorException('Internal Server Error: Email could not be sent. Please report this to the administrator!'); 
             }
         } else {
             console.log('Creating new user...');
             const password = await bcrypt.hash(input.password, 10);
-            return this.userService.create({...input, password: password});
+            const result = await this.userService.create({...input, password: password});
+            if(result) return true;
+            return new InternalServerErrorException('Internal Server Error. Please try again later!');
         }      
     }
 

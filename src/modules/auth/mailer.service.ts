@@ -30,8 +30,9 @@ export class MailerService {
                 Maybe you should change your email account password, just to be safe.<br>`
         }
         //send email
-        this.sendMail(mailOptions);
-        return id; 
+        const result = await this.sendMail(mailOptions);
+        console.log('[MailerService] Verification Return: ', result);
+        return id;
     }
 
     async resendVerification(tmpUser: TmpUser): Promise<Boolean | any> {
@@ -50,7 +51,8 @@ export class MailerService {
                 Maybe you should change your email account password, just to be safe.<br>`
         }
         //send email
-        return await this.sendMail(mailOptions);
+        const result = await this.sendMail(mailOptions);
+        return result;
     }
 
     async forgotPassword(email: string, token) {
@@ -119,9 +121,14 @@ export class MailerService {
                 extName: '.hbs',
         }));
     
-
-        const result = await transporter.sendMail(mailOptions);
-        if(result) console.log('[MailerService] Sending email was successful!');
-        return result;
+        try {
+            const result = await transporter.sendMail(mailOptions);
+            if(result) console.log('[MailerService] Sending email was successful!');
+            return result;
+        } catch (error) {
+            console.log('[MailerService] Unexpected Server Error: ',error);
+            throw error;
+        }
+        
     }
 }
