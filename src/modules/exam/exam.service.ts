@@ -78,7 +78,11 @@ export class ExamService {
 
     async update(userId, id: string, input: ExamInput): Promise<ExamDto> {
         let exam = await this.examModel.findOne({ _id: id });
+        const user = await this.userService.findById(userId);
+
+        if(exam.examiner._id.toString() != user._id.toString()) throw new UnauthorizedException('You are not authorized to update this exam!');
         if (!exam) throw new NotFoundException(`No exam with _id: "${id}" found!`);
+
         if (input.title) exam.title = input.title;
         if (input.description) exam.description = input.description;
         if (input.price) exam.price = input.price;
@@ -88,6 +92,7 @@ export class ExamService {
         if (input.examiner) exam.examiner = input.examiner;
         if (input.martialArt) exam.martialArt = input.martialArt;
         if (input.participants) exam.participants = input.participants;
+        if (input.examPlace) exam.examPlace = input.examPlace;
         return exam.save();
     }
 
