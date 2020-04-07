@@ -31,7 +31,6 @@ export class MailerService {
         }
         //send email
         const result = await this.sendMail(mailOptions);
-        console.log('[MailerService] Verification Return: ', result);
         return id;
     }
 
@@ -122,9 +121,7 @@ export class MailerService {
         }));
     
         try {
-            const result = await transporter.sendMail(mailOptions);
-            if(result) console.log('[MailerService] Sending email was successful!');
-            return result;
+            return transporter.sendMail(mailOptions);
         } catch (error) {
             console.log('[MailerService] Unexpected Server Error: ',error);
             throw error;
