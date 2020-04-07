@@ -208,19 +208,15 @@ input ExamResultInput {
 
 type MaRanksDto {
   _id: MartialArtsDto!
-  rankName: String!
-  rankNumber: String!
+  rankId: String!
 }
 
 input MaRanksInput {
   """The id of the martial art"""
   _id: String!
 
-  """The name of the rank"""
-  rankName: String
-
-  """The number of the rank"""
-  rankNumber: Float
+  """The id of the rank"""
+  rankId: String
 }
 
 input MartialArtInput {
@@ -241,7 +237,7 @@ type MartialArtsDto {
   name: String!
   styleName: String!
   description: String
-  ranks: [RankDto!]!
+  ranks: [RankDto!]
   examiners: [SimpleUserDto!]
 }
 
@@ -447,6 +443,8 @@ type RankDto {
 }
 
 input RankInput {
+  _id: String
+
   """The name of the martial art rank"""
   name: String!
 
@@ -454,12 +452,6 @@ input RankInput {
   The number of the martial art rank. We are assuming, that number 1 is your grand master (highest rank)!
   """
   number: Float!
-}
-
-type SimpleMaRanksDto {
-  _id: ID!
-  rankName: String!
-  rankNumber: String!
 }
 
 type SimpleUserDto {
@@ -472,7 +464,7 @@ type SimpleUserDto {
   """
   Returns an array of Martial Arts. The child array "ranks" should only contain the current rank (at index 0).
   """
-  martialArts: [SimpleMaRanksDto!]!
+  martialArts: [MaRanksDto!]!
   clubs: [ClubMemberDto!]!
   avatarUri: String!
 }

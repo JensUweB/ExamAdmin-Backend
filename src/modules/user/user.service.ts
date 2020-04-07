@@ -50,8 +50,9 @@ export class UserService {
      * Returns an user object with populated clubs and martialArts (the user ranks) fields. 
      * @param email the user email you want to search for
      */
-    async findByEmail(email: string): Promise<UserDto | undefined> {
-       return this.userModel.findOne({ email: email }).populate('clubs.club').populate('martialArts._id').exec();
+    async findByEmail(email: string): Promise<UserDto> {
+        const user = await this.userModel.findOne({ email: email }).populate('clubs.club').populate('martialArts._id').exec();
+       return this.populateRanks(user);
     }
 
     async addUser(user: any, tmpUserId: string): Promise<any> {
@@ -74,7 +75,7 @@ export class UserService {
     async findById(id: string): Promise<UserDto> {
         const user = await this.userModel.findOne({ _id: id }).populate('clubs.club').populate('martialArts._id').exec();
         if(!user) throw new NotFoundException(`No user found with _id: "${id}"`);
-        return user;
+        return await this.populateRanks(user);
     }
 
     async findByClub(clubId: string): Promise<UserDto[]> {
@@ -160,9 +161,10 @@ export class UserService {
      * @param userId the user to add the new rank to
      * @param rankId the martial art rank to add
      */
-    async addMartialArtRank(currentUser: string, userId: string, input: MaRanksInput): Promise<UserDto | Error> {
+    async addMartialArtRank(currentUser: string, userId: string, input: MaRanksInput): Promise<UserDto> {
+        if(!userId) userId = currentUser;
         const user = await this.userModel.findOne({ _id: userId });
-        if(!user) return new Error('User not found!');
+        if(!user) throw new NotFoundException('User not found!');
         let containsRank;
         // Checks if the user already contains the specified rankId
         if(user.martialArts.length) containsRank = await user.martialArts.some(element => element._id.toString() == input._id);
@@ -170,15 +172,13 @@ export class UserService {
             if(userId == currentUser) throw new UnauthorizedException('You need to participate in an exam to get an new rank!');
             user.martialArts.forEach(element => {
                 if(element._id.toString() == input._id) {
-                    element.rankName = input.rankName;
-                    element.rankNumber = input.rankNumber;
+                    element.rankId = input.rankId;
                 }
             });
         } else {
             user.martialArts.push({ 
                 _id: input._id,
-                rankName: input.rankName,
-                rankNumber: input.rankNumber
+                rankId: input.rankId,
             });
         }
         
@@ -229,5 +229,20 @@ export class UserService {
         user.password = hashedPw;
         this.mailerService.passwordReset(user.email);
         return user.save();
+    }
+
+    async populateRanks(user): Promise<UserDto> {
+        if(!user) return undefined;
+        // We don't know if we get a populated user object, so we're doing it here just to be save
+        user = await this.userModel.findOne({ _id: user._id }).populate('clubs.club').populate('martialArts._id').exec();
+        
+        if(user.martialArts.length > 0) {
+            await user.martialArts.forEach(item => {
+                if(item._id) item._id.ranks = item._id.ranks.filter(rank => rank._id == item.rankId);
+            });
+            return user;
+        } else {
+            return user;
+        }
     }
 }

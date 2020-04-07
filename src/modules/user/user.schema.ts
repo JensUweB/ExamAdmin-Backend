@@ -11,8 +11,7 @@ export const UserSchema = new mongoose.Schema({
     password: {type: String, required: true},
     martialArts: [{
         _id: {type: Schema.Types.ObjectId, ref: 'MartialArt', required: true},
-        rankName: {type: String, required: true},
-        rankNumber: {type: Number, required: true}
+        rankId: {type: String, required: true},
     }],
     clubs: [{
         club: {type: Schema.Types.ObjectId, ref: 'Club', required: true},

@@ -16,7 +16,7 @@ export class MartialArtsDto {
     styleName: string;
     @Field({ description: '', nullable: true })
     description: string;
-    @Field(type => [RankDto])
+    @Field(type => [RankDto],{ description: '', nullable: true })
     ranks: RankDto[];
     @Field(type => [SimpleUserDto],{description: '', nullable: true})
     examiners: SimpleUserDto[];
