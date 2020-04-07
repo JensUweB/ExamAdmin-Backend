@@ -29,17 +29,18 @@ export class ExamService {
     }
 
     async findAll(userId): Promise<ExamDto[]> {
-        const exams = await this.examModel.find()
+        let exams = await this.examModel.find()
             .populate('martialArt').populate('club').populate('examiner').populate('participants').exec();
         const user = await this.userService.findById(userId);
         if (!exams) throw new NotFoundException(`No exam found. Please create one first.`);
 
-        const array = await exams.filter(exam => {
+        // Check if exam is visible or not
+        exams = await exams.filter(exam => {
             return exam.isPublic == true || user.clubs.some(item => item.club._id.toString() == exam.club._id.toString());
         });
 
-        if (!array.length) throw new NotFoundException('No exams from your clubs or public ones found.');
-        return array;
+        if (!exams.length) throw new NotFoundException('No exams from your clubs or public ones found.');
+        return exams;
     }
 
     async create(input: ExamInput): Promise<ExamDto> {
