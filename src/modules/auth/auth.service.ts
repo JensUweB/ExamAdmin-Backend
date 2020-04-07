@@ -39,7 +39,6 @@ export class AuthService {
                 return new InternalServerErrorException('Internal Server Error: Email could not be sent. Please report this to the administrator!'); 
             }
         } else {
-            console.log('Creating new user...');
             const password = await bcrypt.hash(input.password, 10);
             const result = await this.userService.create({...input, password: password});
             if(result) return true;
@@ -51,14 +50,9 @@ export class AuthService {
      * Check if email and password are correct
      */
     async validateUser({email, password}): Promise<User> {
-        let user;
-        let valid;
-        try{
-            user = await this.userService.findByEmail(email);
-            valid = await bcrypt.compare(password, user.password);
-        } catch (error) {
-            if(!user) throw new UnauthorizedException('Email or Password incorrect');
-        }                
+        const user = await this.userService.findByEmail(email);
+        if(!user) throw new UnauthorizedException('Email or Password incorrect');
+        const valid = await bcrypt.compare(password, user.password);               
         if(!valid) throw new UnauthorizedException('Email or Password incorrect');
         return user;
     }
@@ -70,7 +64,6 @@ export class AuthService {
         if(!user) throw new UnauthorizedException('Email or password incorrect');
 
         const payload = { firstName: user.firstName, userId: user._id };
-        
         const result = this.jwtService.sign(payload);
         if(!result) throw new InternalServerErrorException('Token creation failed');
 
