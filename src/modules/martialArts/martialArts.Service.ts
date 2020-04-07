@@ -65,6 +65,11 @@ export class MartialArtsService {
     async findAll(): Promise<MartialArtsDto[]> {
         const result = await this.maModel.find().populate('examiners').exec();
         if(!result) throw new NotFoundException(`No martial art found.`);
+        /* result.forEach(ma => {
+            return ma.examiners.forEach(user => {
+                return user = this.userService.populateRanks(user);
+            });
+        }); */
         return result;
     }
 
@@ -86,6 +91,7 @@ export class MartialArtsService {
         if (input.styleName) ma.stylename = input.styleName;
         if (input.description) ma.description = input.description;
         if (input.ranks) ma.ranks = input.ranks;
+        
         return ma.save();
     }
 
