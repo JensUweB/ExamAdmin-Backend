@@ -49,7 +49,6 @@ export class UserResolver {
   @Mutation(() => UserDto, { description: 'Add a new martial art rank to the current user' })
   async addMartialArtRankToUser(@CurrentUser() user: any, @Args('userId') userId: string, @Args('maRank') maRank: MaRanksInput) {
     try{ 
-      if(!userId) userId = user.userId;
       return this.userService.addMartialArtRank(user.userId, userId, maRank);
     } catch (error) { return error; }
   }
