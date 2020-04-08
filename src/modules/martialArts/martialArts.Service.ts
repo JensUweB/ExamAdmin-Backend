@@ -65,11 +65,12 @@ export class MartialArtsService {
     async findAll(): Promise<MartialArtsDto[]> {
         const result = await this.maModel.find().populate('examiners').exec();
         if(!result) throw new NotFoundException(`No martial art found.`);
+        // The below code does not work for some reason
         /* result.forEach(ma => {
-            return ma.examiners.forEach(user => {
-                return user = this.userService.populateRanks(user);
+            return ma.examiners.forEach(async user => {
+                return user = await this.userService.populateRanks(user);
             });
-        }); */
+        }); */ 
         return result;
     }
 
