@@ -16,7 +16,7 @@ export class ExamDto {
     @Field({ description: 'Describe what tis exam is all about', nullable: false })
     description: string;
     @Field({ description: 'The price - how much this exam will cost.', nullable: false })
-    price: number;
+    price: string;
     @Field({ description: 'The date and time of the exam', nullable: false })
     examDate: Date;
     @Field({ description: 'The date and time when registration should close', nullable: false })

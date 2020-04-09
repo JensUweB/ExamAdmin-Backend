@@ -7,7 +7,7 @@ export class ExamInput {
     @Field({ description: 'The description of the exam', nullable: true })
     readonly description: string;
     @Field({ description: 'The price - how much this exam will cost.', nullable: true })
-    readonly price: number;
+    readonly price: string;
     @Field({ description: 'The description of the exam', nullable: true })
     readonly examPlace: string;
     @Field({ description: 'The date when the exam should be held', nullable: true })
@@ -18,6 +18,8 @@ export class ExamInput {
     readonly  isPublic: boolean;
     @Field({ description: 'The id of the accompanying association / club', nullable: true })
     readonly  club: string;
+    @Field({nullable: true})
+    readonly minRank: string;
     @Field({ description: 'The user id of the examiner', nullable: true })
     readonly  examiner: string;
     @Field({ description: 'The id of the martial art this exam is for', nullable: true })

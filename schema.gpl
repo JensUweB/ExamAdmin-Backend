@@ -98,7 +98,7 @@ type ExamDto {
   description: String!
 
   """The price - how much this exam will cost."""
-  price: Float!
+  price: String!
 
   """The date and time of the exam"""
   examDate: DateTime!
@@ -144,7 +144,7 @@ input ExamInput {
   description: String
 
   """The price - how much this exam will cost."""
-  price: Float
+  price: String
 
   """The description of the exam"""
   examPlace: String
@@ -160,6 +160,7 @@ input ExamInput {
 
   """The id of the accompanying association / club"""
   club: String
+  minRank: String
 
   """The user id of the examiner"""
   examiner: String
@@ -273,7 +274,7 @@ type Mutation {
   addMartialArtRankToUser(maRank: MaRanksInput!, userId: String!): UserDto!
 
   """Updates the current user"""
-  updateUser(input: UserInput!): UserDto!
+  updateUser(newPassword: String!, input: UserInput!): UserDto!
 
   """Deletes the account of the current user"""
   deleteUser: Boolean!
