@@ -6,6 +6,7 @@ import { ExamDto } from "./dto/exam.dto";
 import { ExamInput } from "./inputs/exam.input";
 import { UserService } from "../user/user.service";
 import { ExamResultService } from "../examResult/examResult.service";
+import { MartialArtsService } from "../martialArts/martialArts.Service";
 
 @Injectable()
 export class ExamService {
@@ -13,6 +14,7 @@ export class ExamService {
     constructor(
         @InjectModel('Exam') private readonly examModel: Model<Exam>,
         private readonly userService: UserService,
+        private readonly maService: MartialArtsService,
         private erService: ExamResultService
     ) { }
 
@@ -101,8 +103,20 @@ export class ExamService {
         const exam = await this.examModel.findOne({ _id: examId });
         const user = await this.userService.findById(userId);
 
-        if (!user.clubs.some(club => club.club._id == exam.club._id.toString()) && !exam.isPublic) throw new UnauthorizedException('You are not authorized to register for this exam!');
-        if (exam.participants.includes(userId)) throw new NotAcceptableException('You are already listed as participant!');
+        if (!user.clubs.some(club => club.club._id == exam.club._id.toString()) && !exam.isPublic) {throw new UnauthorizedException('You are not authorized to register for this exam!');}
+        if (exam.participants.includes(userId)) {throw new NotAcceptableException('You are already listed as participant!');}
+        
+        // Check if the user has the required min rank
+        if(exam.minRank) {
+            let ma = await this.maService.findByRank(exam.minRank);
+            let userMa = user.martialArts.filter(item => item._id._id == ma._id);
+            
+            if(ma) {
+                let examRank = await this.maService.findRank(exam.minRank);
+                if(userMa[0]._id.ranks[0].number > examRank.number || !userMa.length) { throw new UnauthorizedException('Your rank is too low, sorry!');}
+            }
+            
+        }
         exam.participants.push(userId);
         exam.save();
         return true;
