@@ -209,7 +209,7 @@ input ExamResultInput {
 
 type MaRanksDto {
   _id: MartialArtsDto!
-  rankId: String!
+  rankId: String
 }
 
 input MaRanksInput {
