@@ -12,6 +12,7 @@ import { MailerService } from "../auth/mailer.service";
 import { TmpUser } from "./interfaces/tmpuser.interface";
 import { MaRanksInput } from "./input/maRanks.input";
 import { environment } from 'environment';
+import { AuthService } from "../auth/auth.service";
 
 @Injectable()
 export class UserService {
@@ -21,7 +22,8 @@ export class UserService {
         @InjectModel('TmpUser') private readonly tmpUser: Model<TmpUser>,
         readonly maService: MartialArtsService,
         readonly clubService: ClubService,
-        private readonly mailerService: MailerService
+        private readonly mailerService: MailerService,
+        private authService: AuthService
     ) { }
 
 
@@ -89,17 +91,17 @@ export class UserService {
      * @param id the user id to update
      * @param input the user input. Just fill fields you wish to update!
      */
-    async update(id: string, input: UserInput): Promise<UserDto> {
-        let user = await this.userModel.findOne({ _id: id });
-        if (!user) throw new NotFoundException(`No user with _id: "${id}" found!`); 
-
+    async update(id: string, input: UserInput, newPassword: string): Promise<UserDto> {
+        const validate = await this.authService.validateUser({email: input.email, password: input.password}); // Throws an error if validation fails
+        let user = await this.userModel.findOne({_id: id});               
+        
+        if (newPassword && newPassword != '') this.authService.changePassword(id, newPassword);
         if (input.firstName) user.firstName = input.firstName;
         if (input.lastName) user.lastName = input.lastName;
         if (input.email) user.email = input.email;
         if (input.martialArts) user.martialArts = input.martialArts;
         if (input.clubs) user.clubs = input.clubs;
         return user.save();
-        
     }
 
     async addReportUri(id: string, uri: string): Promise<UserDto> {
