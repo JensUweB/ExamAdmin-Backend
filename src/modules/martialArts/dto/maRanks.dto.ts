@@ -1,5 +1,4 @@
 import { ObjectType, Field, ID } from 'type-graphql';
-import { RankPopDto } from 'src/modules/user/dto/rank.pop.dto';
 
 @ObjectType()
 export class SimpleMaRanksDto {
