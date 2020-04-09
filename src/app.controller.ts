@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Body, Render, Res, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Render, Res, UseGuards, Request, Req } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UserService } from './modules/user/user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -6,6 +6,7 @@ import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
 import { ExamResultService } from './modules/examResult/examResult.service';
 import { AuthGuard } from '@nestjs/passport';
+import { environment } from 'environment';
 
 @Controller()
 export class AppController {
@@ -31,9 +32,13 @@ export class AppController {
   @Get('auth/confirm/:uuid')
   async getUserConfirm(@Param('uuid') uuid: string) {
     const user = await this.userService.findByConfirmId(uuid);
-    if (!user) return "<h2>Confirmation Failed!</h2><br>Sorry, could not find an user with the given uuid.<br>Maybe you clicked an expired link!";
+    if (!user) {
+      return "<h2>Confirmation Failed!</h2><br>Sorry, could not find an user with the given uuid.<br>Maybe you clicked an expired link!";
+    }
     const result = await this.userService.addUser(user.user, user._id);
-    if (result) return "<h2>Confirmation successfull!</h2><br>Welcome, " + result.firstName + "!";
+    if (result) {
+      return "<h2>Confirmation successfull!</h2><br>Welcome, " + result.firstName + "!<p>Click on this link, to go to the app: <a href='"+environment.frontendUrl+"'>"+environment.frontendUrl+"</a></p>";
+    }
     return "<h2>Sorry, some unexpected error occured!</h2>";
   }
 
