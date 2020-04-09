@@ -5,6 +5,6 @@ import { MartialArtsDto } from '../../martialArts/dto/martialArts.dto';
 export class MaRanksDto {
     @Field(() => MartialArtsDto)
     _id: MartialArtsDto;
-    @Field()
+    @Field({nullable: true})
      rankId: string;
 }
