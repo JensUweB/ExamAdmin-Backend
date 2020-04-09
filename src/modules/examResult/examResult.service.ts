@@ -35,6 +35,7 @@ export class ExamResultService {
         if(!results) throw new NotFoundException(`No exam results found.`);
         results.forEach(result => {
             result.reportUri =  environment.URL+'/protocols/'+result._id;
+            result.date = new Date(result.date);
         });
         return results;
     }
