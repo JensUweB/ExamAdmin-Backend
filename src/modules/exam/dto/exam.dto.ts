@@ -17,6 +17,8 @@ export class ExamDto {
     description: string;
     @Field({ description: 'The price - how much this exam will cost.', nullable: false })
     price: string;
+    @Field({nullable: true})
+    minRank: string;
     @Field({ description: 'The date and time of the exam', nullable: false })
     examDate: Date;
     @Field({ description: 'The date and time when registration should close', nullable: false })
@@ -28,7 +30,7 @@ export class ExamDto {
     @Field({ description: 'The id of the responsible examiner. Usually the current user.', nullable: false })
     examiner: UserDto;
     @Field({ description: 'The adress where the exam will take place', nullable: false })
-     examPlace: string;
+    examPlace: string;
     @Field({ description: 'The martial art that gets tested', nullable: false })
     martialArt: MartialArtsDto;
     @Field(type => [UserDto], { description: 'An array with IDs from users who wants to get tested', nullable: false })
