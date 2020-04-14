@@ -71,6 +71,17 @@ export class MartialArtsService {
                 return user = await this.userService.populateRanks(user);
             });
         }); */ 
+        var mongoose = require('mongoose');
+        console.log('[MAService] Regenerating rank ids...');
+        result.forEach(ma => {
+            ma.ranks.forEach(rank => {
+                if(rank._id === undefined || rank._id === null) {
+                    rank._id = mongoose.Types.ObjectId();
+                }
+            });
+        });
+        console.log('[MAService] Done.');
+
         return result;
     }
 
@@ -88,10 +99,21 @@ export class MartialArtsService {
         const ma = await this.maModel.findOne({ _id: id });
         if(!ma) { throw new NotFoundException(`No martial art with _id: "${id}" found.`); }
         if(!ma.examiners.includes(userId)) { throw new UnauthorizedException('You are not authorized to update this martial art!'); }
+
+        // Validate input ranks and update rank name and number
+        ma.ranks.forEach(rank => {
+            let inputRanks: any[] = input.ranks.filter(item => item._id == rank._id);
+            if(inputRanks.length > 0) {
+                if(rank._id == inputRanks[0]._id) {
+                    rank.name = inputRanks[0].name;
+                    rank.number = inputRanks[0].number;
+                }
+            }
+        });
+
         if (input.name) ma.name = input.name;
         if (input.styleName) ma.stylename = input.styleName;
         if (input.description) ma.description = input.description;
-        if (input.ranks) ma.ranks = input.ranks;
         
         return ma.save();
     }
