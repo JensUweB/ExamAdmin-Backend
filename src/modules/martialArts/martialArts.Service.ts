@@ -43,8 +43,8 @@ export class MartialArtsService {
 
         // Some security checks
         if(!ma) { throw new NotFoundException('Martial Art not found!'); }
-        if(!user) { throw new NotFoundException('User not found! Are you sure the email adress is correct?'); }
-        if(!ma.examiners.includes(userId)) { throw new UnauthorizedException('You are not authorized to remove examiners from this martial art!'); }
+        if(!user) { throw new NotFoundException('User not found!'); }
+        if(!ma.examiners.includes(currentUser)) { throw new UnauthorizedException('You are not authorized to remove examiners from this martial art!'); }
 
         ma.examiners = ma.examiners.filter(user => user._id != userId);
         return ma.save();
@@ -71,8 +71,9 @@ export class MartialArtsService {
                 return user = await this.userService.populateRanks(user);
             });
         }); */ 
+
+        // Searching for rank._ids equal to null and creating a new object id
         var mongoose = require('mongoose');
-        console.log('[MAService] Regenerating rank ids...');
         await result.forEach(ma => {
             ma.ranks.forEach(rank => {
                 if(rank._id === undefined || rank._id === null) {
@@ -81,7 +82,6 @@ export class MartialArtsService {
             });
             ma.save();
         });
-        console.log('[MAService] Done.');
 
         return result;
     }
