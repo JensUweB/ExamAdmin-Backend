@@ -61,21 +61,22 @@ export class ExamService {
         for (let i = 0; i < exams.length; i++) {
             if (exams[i].participants.length) {
                 for (let j = 0; j < exams[i].participants.length; j++) {
-                    try {
                         // Tries to find an exam result for this exam for the current user
-                        const result = this.erService.findByExam(exams[i].participants[j]._id, exams[i]._id);
-                        // No exception thrown, so we found something. We remove every user, who already has an exam result.
-                        exams[i].participants.splice(j, 1);
-                    } catch (error) {
-                        // We got an exception, so the user has no result for this exam yet. Nothing to do in this case.
-                    }
+                        const result = await this.erService.findByExam(exams[i].participants[j]._id, exams[i]._id);
+                        // Removes participant from list if an result already exists
+                        if(result !== null && result !== undefined) {
+                            console.log('Found exam result: ',result);
+                            exams[i].participants = exams[i].participants.filter(item => item._id != exams[i].participants[j]._id);
+                        } 
                 }
             }
             // If we had to remove all participants previously, we can remove the exam too.
-            if (exams[i].participants == []) exams.splice(i, 1);
+            if (exams[i].participants === undefined || exams[i].participants === null || exams[i].participants.length == 0) {
+                exams = exams.filter(item => item._id != exams[i]._id);
+            }
         }
 
-        if (exams == []) throw new NotFoundException('No exams with missing exam results found!');
+        if (exams.length == 0) throw new NotFoundException('No exams with missing exam results found!');
         return exams;
     }
 

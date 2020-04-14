@@ -104,6 +104,25 @@ export class UserService {
         return user.save();
     }
 
+    async updateRank(userId: string,maId: string , rank: string): Promise<UserDto> {
+        const user = await this.userModel.findOne({ _id: userId });
+        const ma = await this.maService.findById(maId);
+        let rankId = ma.ranks.filter(item => item.name == rank)[0]._id;
+        
+        // Check if user has already any rank of the given martial art
+        if(user.martialArts.some(ma => ma._id == maId)) {
+            // Martial Art found. Change user rank
+            user.martialArts.forEach(ma => {
+                if(ma._id == maId) { ma.rankId = rankId; }
+            });
+        } else {
+            // Martial Art not found. Push new Object to array
+            user.martialArts.push({_id: maId, rankId: rankId});
+        }
+
+        return user.save();
+    }
+
     async addReportUri(id: string, uri: string): Promise<UserDto> {
         const user = await this.userModel.findOne({ _id: id });
         if(!user) throw new NotFoundException(`Could not find any user with _id: "${id}"`);

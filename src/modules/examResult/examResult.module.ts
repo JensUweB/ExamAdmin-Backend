@@ -6,11 +6,13 @@ import { ExamResultService } from "./examResult.service";
 import { AuthModule } from "../auth/auth.module";
 import { ExamModule } from "../exam/exam.module";
 import { MartialArtsModule } from "../martialArts/martialArts.module";
+import { UserModule } from "../user/user.module";
 
 @Module({
     imports: [
         MongooseModule.forFeature([{name: 'ExamResult', schema: ExamResultSchema}]),
         forwardRef(() => AuthModule),
+        forwardRef(() => UserModule),
         forwardRef(() => ExamModule),
         forwardRef(() => MartialArtsModule)
     ],
