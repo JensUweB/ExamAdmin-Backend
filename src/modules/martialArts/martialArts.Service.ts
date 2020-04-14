@@ -73,12 +73,13 @@ export class MartialArtsService {
         }); */ 
         var mongoose = require('mongoose');
         console.log('[MAService] Regenerating rank ids...');
-        result.forEach(ma => {
+        await result.forEach(ma => {
             ma.ranks.forEach(rank => {
                 if(rank._id === undefined || rank._id === null) {
                     rank._id = mongoose.Types.ObjectId();
                 }
             });
+            ma.save();
         });
         console.log('[MAService] Done.');
 
