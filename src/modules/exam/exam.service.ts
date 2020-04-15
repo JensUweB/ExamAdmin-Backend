@@ -104,7 +104,9 @@ export class ExamService {
         const exam = await this.examModel.findOne({ _id: examId });
         const user = await this.userService.findById(userId);
 
-        if (!user.clubs.some(club => club.club._id == exam.club._id.toString()) && !exam.isPublic) {throw new UnauthorizedException('You are not authorized to register for this exam!');}
+        if(user.clubs.length > 0 && !exam.isPublic) {
+            if (!user.clubs.some(club => club.club._id == exam.club._id.toString())) {throw new UnauthorizedException('You are not authorized to register for this exam!');}
+        }
         if (exam.participants.includes(userId)) {throw new NotAcceptableException('You are already listed as participant!');}
         
         // Check if the user has the required min rank
@@ -114,7 +116,11 @@ export class ExamService {
             
             if(ma) {
                 let examRank = await this.maService.findRank(exam.minRank);
-                if(userMa[0]._id.ranks[0].number > examRank.number || !userMa.length) { throw new UnauthorizedException('Your rank is too low, sorry!');}
+                if(examRank && userMa.length) {
+                    if(userMa.length > 0) {
+                        if(userMa[0]._id.ranks[0].number > examRank.number) { throw new UnauthorizedException('You are not allowed to register to this exam!');}
+                    } else { throw new UnauthorizedException('You are not allowed to register to this exam!');}
+                }
             }
             
         }
@@ -129,9 +135,10 @@ export class ExamService {
 
         if(!user) throw new NotFoundException('User not found!');
         if(!exam) throw new NotFoundException('Exam not found!');
-        if(!exam.participants.includes(userId)){ return false;}
+        if(!exam.participants.some(user => user._id == userId)){ return false;}
         else { 
             exam.participants = exam.participants.filter(user => user._id != userId); 
+            if(exam.minRank === undefined) {exam.minRank = null;}
             exam.save();
             return true;
         }
