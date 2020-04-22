@@ -99,6 +99,7 @@ type ExamDto {
 
   """The price - how much this exam will cost."""
   price: String!
+  minRank: String
 
   """The date and time of the exam"""
   examDate: DateTime!
@@ -209,7 +210,7 @@ input ExamResultInput {
 
 type MaRanksDto {
   _id: MartialArtsDto!
-  rankId: String!
+  rankId: String
 }
 
 input MaRanksInput {
