@@ -65,7 +65,6 @@ export class ExamService {
                         const result = await this.erService.findByExam(exams[i].participants[j]._id, exams[i]._id);
                         // Removes participant from list if an result already exists
                         if(result !== null && result !== undefined) {
-                            console.log('Found exam result: ',result);
                             exams[i].participants = exams[i].participants.filter(item => item._id != exams[i].participants[j]._id);
                         } 
                 }
