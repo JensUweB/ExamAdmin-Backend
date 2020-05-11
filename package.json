@@ -39,7 +39,7 @@
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.2.3",
     "graphql": "^14.6.0",
-    "graphql-tools": "^4.0.6",
+    "graphql-tools": "^4.0.8",
     "hbs": "^4.1.1",
     "ioredis": "^4.16.2",
     "mongoose": "^5.9.9",
