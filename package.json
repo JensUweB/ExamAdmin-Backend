@@ -52,7 +52,7 @@
     "rxjs": "^6.5.5",
     "type-graphql": "^0.17.6",
     "uuid": "^3.4.0",
-    "snyk": "^1.316.1"
+    "snyk": "^1.316.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^6.14.1",
