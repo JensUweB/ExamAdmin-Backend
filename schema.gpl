@@ -277,6 +277,9 @@ type Mutation {
   """Updates the current user"""
   updateUser(newPassword: String!, input: UserInput!): UserDto!
 
+  """Sets a new password for the currently logged in user"""
+  setUserPassword(newPassword: String!): UserDto!
+
   """Deletes the account of the current user"""
   deleteUser: Boolean!
 

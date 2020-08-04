@@ -64,7 +64,7 @@ export class MailerService {
   async forgotPassword(email: string, token) {
     const user = await this.userService.findByEmail(email);
     if (!user) return false;
-    const url: string = environment.URL + '/auth/forgot-password/' + token;
+    const url: string = environment.frontendUrl + '/auth/password-reset/' + token;
 
     //setup email data
     let mailOptions = {

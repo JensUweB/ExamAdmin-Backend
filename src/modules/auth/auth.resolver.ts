@@ -43,8 +43,8 @@ export class AuthResolver {
 
   @Mutation(() => Boolean, {description: 'Send a link for password reset, if the email address is in use. No error message whatsoever.'})
   async forgotPassword(@Args('email') email: string) {
-    this.authService.forgotPassword(email);
-    return 'We will send a confirmatin email, if this email exists.';
+    try{ this.authService.forgotPassword(email); 
+    } catch (error) { return error; }
   }
 
   @UseGuards(GraphqlAuthGuard)
