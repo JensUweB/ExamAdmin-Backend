@@ -22,7 +22,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "@nestjs/common": "^6.11.4",
@@ -33,23 +35,24 @@
     "@nestjs/passport": "^6.1.1",
     "@nestjs/platform-express": "^6.11.4",
     "@nestjs/serve-static": "^1.0.2",
-    "apollo-server-express": "^2.9.16",
+    "apollo-server-express": "^2.14.2",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.2.3",
     "graphql": "^14.6.0",
-    "graphql-tools": "^4.0.6",
+    "graphql-tools": "^4.0.8",
     "hbs": "^4.1.1",
-    "ioredis": "^4.16.0",
-    "mongoose": "^5.9.3",
-    "nodemailer": "^6.4.4",
+    "ioredis": "^4.16.2",
+    "mongoose": "^5.9.9",
+    "nodemailer": "^6.4.8",
     "nodemailer-express-handlebars": "^3.1.0",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.1",
-    "rxjs": "^6.5.4",
+    "rxjs": "^6.5.5",
     "type-graphql": "^0.17.6",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.1.5",
@@ -84,5 +87,6 @@
     },
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  }
+  },
+  "snyk": true
 }
