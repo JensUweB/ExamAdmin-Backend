@@ -6,8 +6,6 @@ import { User } from '../user/interfaces/user.interface';
 import * as bcrypt from 'bcryptjs';
 import { MailerService } from './mailer.service';
 import { UserInput } from '../user/input/user.input';
-import { UserDto } from '../user/dto/user.dto';
-import { TmpUser } from '../user/interfaces/tmpuser.interface';
 
 @Injectable()
 export class AuthService {
@@ -87,10 +85,15 @@ export class AuthService {
     }
 
     async forgotPassword(email: string): Promise<Boolean> {
+        console.log('Searching for email...');
         const user = await this.userService.findByEmail(email);
-        if(!user) return false;
-        const result = this.mailerService.forgotPassword(email, this.jwtService.sign({email: email}));
-        if(!result) return false;
+        if(!user){ 
+            console.log('Email not found!');
+            return false;
+        }
+        const payload = { firstName: user.firstName, userId: user._id };
+        const result = this.mailerService.forgotPassword(email, this.jwtService.sign(payload));
+        if(!result){ return false; }
         return true;
     }
 }

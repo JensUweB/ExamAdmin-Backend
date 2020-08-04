@@ -92,15 +92,17 @@ export class UserService {
      * @param input the user input. Just fill fields you wish to update!
      */
     async update(id: string, input: UserInput, newPassword: string): Promise<UserDto> {
-        const validate = await this.authService.validateUser({email: input.email, password: input.password}); // Throws an error if validation fails
-        let user = await this.userModel.findOne({_id: id});               
+        // const validate = await this.authService.validateUser({email: input.email, password: input.password}); // Throws an error if validation fails
+        let user = await this.userModel.findOne({_id: id});
         
         if (newPassword && newPassword != '') this.authService.changePassword(id, newPassword);
-        if (input.firstName) user.firstName = input.firstName;
-        if (input.lastName) user.lastName = input.lastName;
-        if (input.email) user.email = input.email;
-        if (input.martialArts) user.martialArts = input.martialArts;
-        if (input.clubs) user.clubs = input.clubs;
+        if (input) {
+            if (input.firstName) user.firstName = input.firstName;
+            if (input.lastName) user.lastName = input.lastName;
+            if (input.email) user.email = input.email;
+            if (input.martialArts) user.martialArts = input.martialArts;
+            if (input.clubs) user.clubs = input.clubs;
+        }
         return user.save();
     }
 

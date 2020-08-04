@@ -60,6 +60,13 @@ export class UserResolver {
     } catch (error) { return error; }
   }
 
+  @Mutation(() => UserDto, {description: 'Sets a new password for the currently logged in user'})
+  async setUserPassword(@CurrentUser() user, @Args('newPassword') newPassword: string) {
+    try {
+      return this.userService.update(user.userId, null, newPassword);
+    } catch (error) { return error; }
+  }
+
   @Mutation(() => Boolean, {description: 'Deletes the account of the current user'})
   async deleteUser(@CurrentUser() user: any) {
     try{ return this.userService.deleteUser(user.userId);
