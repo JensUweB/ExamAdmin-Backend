@@ -275,10 +275,7 @@ type Mutation {
   addMartialArtRankToUser(maRank: MaRanksInput!, userId: String!): UserDto!
 
   """Updates the current user"""
-  updateUser(newPassword: String!, input: UserInput!): UserDto!
-
-  """Sets a new password for the currently logged in user"""
-  setUserPassword(newPassword: String!): UserDto!
+  updateUser(input: UserInput!): UserDto!
 
   """Deletes the account of the current user"""
   deleteUser: Boolean!
@@ -570,6 +567,9 @@ input UserInput {
   The users password. Will be turned into a hash before we write it into the database.
   """
   password: String
+
+  """The new password, that replaces the old one"""
+  newPassword: String
 
   """
   An array of martial art rank ids. We look out that you dont insert two ranks of the same martial art.

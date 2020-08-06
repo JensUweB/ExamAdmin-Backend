@@ -1,5 +1,5 @@
-import * as nodemailer from 'nodemailer';
-import * as hbs from 'nodemailer-express-handlebars';
+import nodemailer from 'nodemailer';
+import hbs from 'nodemailer-express-handlebars';
 import { UserInput } from '../user/input/user.input';
 import { v4 } from 'uuid';
 import {

@@ -13,6 +13,7 @@ import { TmpUser } from "./interfaces/tmpuser.interface";
 import { MaRanksInput } from "./input/maRanks.input";
 import { environment } from 'environment';
 import { AuthService } from "../auth/auth.service";
+import { Helper } from "../helpers/helper.class";
 
 @Injectable()
 export class UserService {
@@ -91,17 +92,17 @@ export class UserService {
      * @param id the user id to update
      * @param input the user input. Just fill fields you wish to update!
      */
-    async update(id: string, input: UserInput, newPassword: string): Promise<UserDto> {
+    async update(id: string, input: UserInput): Promise<UserDto> {
         // const validate = await this.authService.validateUser({email: input.email, password: input.password}); // Throws an error if validation fails
         let user = await this.userModel.findOne({_id: id});
         
-        if (newPassword && newPassword != '') this.authService.changePassword(id, newPassword);
         if (input) {
-            if (input.firstName) user.firstName = input.firstName;
-            if (input.lastName) user.lastName = input.lastName;
-            if (input.email) user.email = input.email;
-            if (input.martialArts) user.martialArts = input.martialArts;
-            if (input.clubs) user.clubs = input.clubs;
+            if (Helper.falsify(input.firstName)) { user.firstName = input.firstName; }
+            if (Helper.falsify(input.lastName)) { user.lastName = input.lastName; }
+            if (Helper.falsify(input.email)) { user.email = input.email; }
+            if (Helper.falsify(input.newPassword)) { this.authService.changePassword(id, input.newPassword); }
+            if (Helper.falsify(input.martialArts)) { user.martialArts = input.martialArts; }
+            if (Helper.falsify(input.clubs)) { user.clubs = input.clubs; }
         }
         return user.save();
     }
