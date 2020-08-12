@@ -5,6 +5,8 @@ import { ExamInput } from "./inputs/exam.input";
 import { UseGuards } from "@nestjs/common";
 import { GraphqlAuthGuard } from "../guards/graphql-auth.guard";
 import { User as CurrentUser } from "../decorators/user.decorator";
+import { Filter } from "../types/Filter";
+
 
 @UseGuards(GraphqlAuthGuard)
 @Resolver('Exam')
@@ -16,11 +18,9 @@ export class ExamResolver {
     // Queries
     // ===========================================================================
     @Query(() => [ExamDto], {description: 'Returns an array of all exams. Including previous ones.'})
-    async getAllExams(@CurrentUser() user: any) {
+    async getAllExams(@CurrentUser() user: any, @Args('minDate') minDate?: Date) {
         try{ 
-            const result = await this.examService.findAll(user.userId);
-            console.log(result);
-            return result;
+            return this.examService.findAll(user.userId, minDate);
         } catch (error) { return error; }
     }
 
@@ -33,7 +33,7 @@ export class ExamResolver {
     @Query(() => [ExamDto], {description: 'Returns an array of all exams. Only exams with an future starting date included.'})
     async getPlannedExams(@CurrentUser() user: any) {
         try{ 
-            let exams = await this.examService.findAll(user.userId);
+            let exams = await this.examService.findAll(user.userId, null);
 
             // Filter exams by date and return
             return await exams.filter(exam => exam.examDate > new Date(Date.now()));
@@ -44,6 +44,13 @@ export class ExamResolver {
     async getOpenExams(@CurrentUser() user) {
         try{
             return this.examService.getOpenExams(user.userId);
+        } catch (error) { return error; }
+    }
+
+    @Query(() => [ExamDto], {description: 'Returns all exams where the user participated or examined'})
+    async getUserExams(@CurrentUser() user: any, @Args('minDate') minDate?: Date) {
+        try {
+            return this.examService.getUserExams(user.userId, minDate);
         } catch (error) { return error; }
     }
 

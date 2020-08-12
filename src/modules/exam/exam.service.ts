@@ -30,18 +30,13 @@ export class ExamService {
         return exam;
     }
 
-    async findAll(userId): Promise<ExamDto[]> {
+    async findAll(userId, minDate): Promise<ExamDto[]> {
         let exams = await this.examModel.find()
-            .populate('martialArt').populate('club').populate('examiner').populate('participants').exec();
-        const user = await this.userService.findById(userId);
-        if (!exams) throw new NotFoundException(`No exam found. Please create one first.`);
-
-        // Check if exam is visible or not
-        exams = await exams.filter(exam => {
-            return exam.isPublic == true || user.clubs.some(item => item.club._id.toString() == exam.club._id.toString());
-        });
-
-        if (!exams.length) throw new NotFoundException('No exams from your clubs or public ones found.');
+            .populate('martialArt').populate('examiner').populate('participants').exec();
+        if (!exams || exams.length === 0) throw new NotFoundException(`No exam found. Please create one first.`);
+        if (minDate) {
+                exams = exams.filter(item => item.examDate >= minDate);
+        }
         return exams;
     }
 
@@ -78,6 +73,28 @@ export class ExamService {
         if (exams.length == 0) throw new NotFoundException('No exams with missing exam results found!');
         return exams;
     }
+
+    async getUserExams(userId: any, minDate: Date): Promise<ExamDto[]> {
+        const user = await this.userService.findById(userId);
+        if (!user) { throw new UnauthorizedException('You are not authorized!'); }
+
+        let exams = await this.examModel.find().populate('martialArt').populate('examiner')
+        .populate('participants').exec();
+        if (!exams && !exams.length) { throw new NotFoundException('No exams found!'); }
+
+        // Search for exams where user is examiner or participant and where examDate is greater than minDate
+        exams = exams.filter((exam) => {
+            if (exam.examiner._id.toString() === userId) { 
+                if (exam.examDate >= minDate) { return true; }
+             }
+            if (exam.participants.some((item) => item._id.toString() === userId)) { 
+                if (exam.examDate >= minDate) { return true; }
+             }
+        });
+        if (!exams && !exams.length) { throw new NotFoundException('No exams found!'); }
+
+        return exams;
+    } 
 
     async update(userId, id: string, input: ExamInput): Promise<ExamDto> {
         let exam = await this.examModel.findOne({ _id: id });

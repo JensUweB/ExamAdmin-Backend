@@ -410,7 +410,7 @@ type Query {
   getAllClubMembers(clubId: String!): [UserDto!]!
 
   """Returns an array of all exams. Including previous ones."""
-  getAllExams: [ExamDto!]!
+  getAllExams(minDate: DateTime!): [ExamDto!]!
 
   """Returns one exam with the given id"""
   getExamById(id: String!): ExamDto!
@@ -424,6 +424,9 @@ type Query {
   Returns all exams where the user is examiner and exam results are missing
   """
   getOpenExams: [ExamDto!]!
+
+  """Returns all exams where the user participated or examined"""
+  getUserExams(minDate: DateTime!): [ExamDto!]!
 
   """Returns an array with all exam results of the current user"""
   getAllExamResults: [ExamResultDto!]!
