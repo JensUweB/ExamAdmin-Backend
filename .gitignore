@@ -43,5 +43,4 @@ lerna-debug.log*
 !/src/uploads/avatars/index.html
 /src/uploads/protocols/*.*
 !/src/uploads/protocols/index.html
-environment.ts
 package-lock.json
