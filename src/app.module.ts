@@ -25,12 +25,18 @@ import { environment } from 'environment';
     UmbrellaAssocModule,
     GraphQLModule.forRoot(
       {
+        debug: !environment.PRODUCTION, // disable debug mode on production
+        playground: !environment.PRODUCTION, // disable playground on production
         autoSchemaFile: 'schema.gpl',
         installSubscriptionHandlers: true,
         context: ({req}) => ({req}),
         uploads: {
           maxFileSize: +environment.MAX_FILESIZE, // Default 5 MiB
           maxFiles: 5
+        },
+        cors: {
+          origin: environment.frontendUrl,
+          credentials: true,
         }
       }),
     MongooseModule.forRoot( environment.MONGO_CONN_STR),
