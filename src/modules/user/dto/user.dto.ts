@@ -1,10 +1,12 @@
-import { ObjectType, Field, ID } from 'type-graphql';
 import { ClubMemberDto } from './clubMember.dto';
 import { MaRanksDto } from './maRanks.dto';
+import { ObjectType, Field } from 'type-graphql/dist/decorators';
+import { ID } from 'type-graphql/dist/scalars';
 
 @ObjectType()
 export class UserDto {
     @Field(() => ID)
+      // tslint:disable-next-line:variable-name
     _id: string;
     @Field()
      firstName: string;

@@ -10,10 +10,9 @@ import { MartialArtsModule } from './modules/martialArts/martialArts.module';
 import { ClubModule } from './modules/club/club.module';
 import { ExamModule } from './modules/exam/exam.module';
 import { ExamResultModule } from './modules/examResult/examResult.module';
-import { UmbrellaAssocModule } from './modules/umbrellaAssoc/umbrellaAssoc.module';
 import { environment } from 'environment';
 
-//dotenv.config();
+// dotenv.config();
 @Module({
   imports: [
     UserModule,
@@ -22,7 +21,6 @@ import { environment } from 'environment';
     ClubModule,
     ExamModule,
     ExamResultModule,
-    UmbrellaAssocModule,
     GraphQLModule.forRoot(
       {
         debug: !environment.PRODUCTION, // disable debug mode on production
@@ -32,26 +30,26 @@ import { environment } from 'environment';
         context: ({req}) => ({req}),
         uploads: {
           maxFileSize: +environment.MAX_FILESIZE, // Default 5 MiB
-          maxFiles: 5
+          maxFiles: 5,
         },
         cors: {
           origin: environment.frontendUrl,
           credentials: true,
-        }
+        },
       }),
     MongooseModule.forRoot( environment.MONGO_CONN_STR),
     /* ConfigModule.forRoot({
       isGlobal: true,
-    })  */ 
-    ], 
+    })  */
+    ],
   controllers: [AppController],
   providers: [
     AppService,
     {
       provide: APP_PIPE,
-      useClass: ValidationPipe
-    }
-  ]
+      useClass: ValidationPipe,
+    },
+  ],
 })
 export class AppModule {
 }

@@ -20,12 +20,12 @@ export class MailerService {
   ) {}
 
   async sendVerification(userInput: UserInput) {
-    //setup unique verification link with uuid and ioredis
+    // setup unique verification link with uuid and ioredis
     const id = v4();
     const link = environment.URL + '/auth/confirm/' + id;
 
-    //setup email data
-    let mailOptions = {
+    // setup email data
+    const mailOptions = {
       from: environment.SERVER_EMAIL,
       to: userInput.email,
       subject: 'Verification',
@@ -36,7 +36,7 @@ export class MailerService {
                 This was not you? No worries. This link expires within 24 hours.<br>
                 Maybe you should change your email account password, just to be safe.<br>`,
     };
-    //send email
+    // send email
     const result = await this.sendMail(mailOptions);
     return id;
   }
@@ -44,8 +44,8 @@ export class MailerService {
   async resendVerification(tmpUser: TmpUser): Promise<Boolean | any> {
     console.log('[MailerService] Trying to resend verification mail...');
     const link = environment.URL + '/auth/confirm/' + tmpUser.uuid;
-    //setup email data
-    let mailOptions = {
+    // setup email data
+    const mailOptions = {
       from: environment.SERVER_EMAIL,
       to: tmpUser.user.email,
       subject: 'Verification (Resend)',
@@ -56,7 +56,7 @@ export class MailerService {
                 This was not you? No worries. This link expires within 24 hours.<br>
                 Maybe you should change your email account password, just to be safe.<br>`,
     };
-    //send email
+    // send email
     const result = await this.sendMail(mailOptions);
     return result;
   }
@@ -66,8 +66,8 @@ export class MailerService {
     if (!user) return false;
     const url: string = environment.frontendUrl + '/auth/password-reset/' + token;
 
-    //setup email data
-    let mailOptions = {
+    // setup email data
+    const mailOptions = {
       from: environment.SERVER_EMAIL,
       to: email,
       subject: 'Password help has arived!',
@@ -77,10 +77,10 @@ export class MailerService {
       template: 'forgot-password',
       context: {
         name: user.firstName + ' ' + user.lastName,
-        url: url,
+        url,
       },
     };
-    //send email
+    // send email
     this.sendMail(mailOptions);
   }
 
@@ -88,8 +88,8 @@ export class MailerService {
     const user = await this.userService.findByEmail(email);
     if (!user) return false;
 
-    //setup email data
-    let mailOptions = {
+    // setup email data
+    const mailOptions = {
       from: environment.SERVER_EMAIL,
       to: email,
       subject: 'Password Reset Confirmation',
@@ -99,13 +99,13 @@ export class MailerService {
         name: user.firstName + ' ' + user.lastName,
       },
     };
-    //send email
+    // send email
     this.sendMail(mailOptions);
   }
 
   async sendMail(mailOptions) {
-    //setup smtp config
-    var smtpConfig = {
+    // setup smtp config
+    const smtpConfig = {
       host: environment.SMTP.HOST,
       port: environment.SMTP.PORT,
       secure: environment.SMTP.SSL, // use SSL
@@ -115,8 +115,8 @@ export class MailerService {
       },
     };
 
-    //create transporter object
-    let transporter = nodemailer.createTransport(smtpConfig);
+    // create transporter object
+    const transporter = nodemailer.createTransport(smtpConfig);
 
     transporter.use(
       'compile',
