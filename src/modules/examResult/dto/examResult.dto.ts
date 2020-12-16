@@ -1,6 +1,6 @@
-import { ObjectType, Field, ID } from "type-graphql";
-import { MartialArtsDto } from "../../martialArts/dto/martialArts.dto";
-import { UserDto } from "./../../user/dto/user.dto";
+import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { MartialArtsDto } from '../../martialArts/dto/martialArts.dto';
+import { UserDto } from './../../user/dto/user.dto';
 
 @ObjectType()
 export class ExamResultDto {

@@ -7,7 +7,7 @@ import { GraphqlAuthGuard } from '../guards/graphql-auth.guard';
 import { UserInput } from './input/user.input';
 import { Upload } from '../types/Upload';
 import { normalizeFileUri } from '../helpers/file.helper';
-import * as fs  from 'fs';
+import * as fs from 'fs';
 import { GraphQLUpload } from 'graphql-upload';
 import { createWriteStream } from 'fs';
 import { pathToFileURL } from 'url';
@@ -68,7 +68,7 @@ export class UserResolver {
   // {"query":"mutation uploadAvatar($file: Upload!)\n{\n  uploadAvatar(protocol: $file)\n}"}
   @Mutation(() => Boolean, {description: 'Examiners can upload an exam protocol to an existing exam result. Use cURL request to send required data.'})
     async uploadAvatar(@CurrentUser() currentUser: any, @Args({name: 'protocol', type: () => GraphQLUpload})
-    { createReadStream, filename }: Upload): Promise<Boolean> {
+    { createReadStream, filename }: Upload): Promise<boolean> {
         // Checks if the sending user is equal to the examiner
         try {
             const user = await this.userService.findById(currentUser.userId);

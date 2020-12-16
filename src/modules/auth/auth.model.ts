@@ -1,5 +1,5 @@
+import { Field, ObjectType } from '@nestjs/graphql';
 import { UserDto } from '../user/dto/user.dto';
-import { Field, ObjectType } from 'type-graphql';
 
 /**
  * CoreAuthModel model for the response after the sign in

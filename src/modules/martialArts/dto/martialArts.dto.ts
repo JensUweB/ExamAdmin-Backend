@@ -1,4 +1,4 @@
-import { ObjectType, Field, ID } from 'type-graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { RankDto } from './rank.dto';
 import { SimpleUserDto } from './user.dto';
 

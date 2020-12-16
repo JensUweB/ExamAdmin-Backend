@@ -1,6 +1,6 @@
-import { Field,InputType } from "type-graphql";
-import { MartialArtInput } from "./martialArt.input";
-import { ExaminerInput } from "./examiner.input";
+import { Field, InputType } from '@nestjs/graphql';
+import { MartialArtInput } from './martialArt.input';
+import { ExaminerInput } from './examiner.input';
 
 @InputType()
 export class ExamResultInput {

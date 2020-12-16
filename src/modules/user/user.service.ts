@@ -13,8 +13,6 @@ import { UserInput } from './input/user.input';
 import { UserDto } from './dto/user.dto';
 import { MartialArtsService } from '../martialArts/martialArts.Service';
 import { ClubService } from '../club/club.service';
-import { Club } from '../club/interfaces/club.interface';
-import { MartialArts } from '../martialArts/interfaces/martialArts.interface';
 import { MailerService } from '../auth/mailer.service';
 import { TmpUser } from './interfaces/tmpuser.interface';
 import { MaRanksInput } from './input/maRanks.input';
