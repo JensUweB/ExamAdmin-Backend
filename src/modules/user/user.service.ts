@@ -39,10 +39,16 @@ export class UserService {
      * @param userInput All needed fields in one object! :O
      */
     async create(userInput: UserInput): Promise<UserDto> {
-        const id = await this.mailerService.sendVerification(userInput);
-        const createdUser = new this.userModel(userInput);
-        const tmpUser: any = new this.tmpUser({user: createdUser, uuid: id, createdAt: new Date(Date.now())});
-        return tmpUser.save();
+        const createdUser: any = new this.userModel(userInput);
+
+        // If env.userConfirmation is set, the user will need to confirm its email address.
+        if (environment.userConfirmation) {
+            const id = await this.mailerService.sendVerification(userInput);
+            const tmpUser: any = new this.tmpUser({user: createdUser, uuid: id, createdAt: new Date(Date.now())});
+            return tmpUser.save();
+        } else {
+            return createdUser.save();
+        }
     }
 
     async findTmpUser(email: string): Promise<TmpUser> {
