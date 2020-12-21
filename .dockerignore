@@ -1,7 +1,6 @@
 # compiled output
 /dist
 /node_modules
-package-lock.json
 
 # Logs
 logs
@@ -34,13 +33,7 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-
 # Custom Paths
-/src/modules/createNestModule.bat
-/src/uploads/*.*
-!/src/uploads/index.html
-/src/uploads/avatars/*.*
-!/src/uploads/avatars/index.html
-/src/uploads/protocols/*.*
-!/src/uploads/protocols/index.html
-package-lock.json
+environment.example.ts
+.env
+.env.sample

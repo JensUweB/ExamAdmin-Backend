@@ -1,6 +1,5 @@
-import { ObjectType, Field, ID } from 'type-graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { ClubMemberDto } from '../../user/dto/clubMember.dto';
-import { SimpleMaRanksDto } from './maRanks.dto';
 import { MaRanksDto } from '../../user/dto/maRanks.dto';
 
 @ObjectType()

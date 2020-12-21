@@ -1,4 +1,4 @@
-import { ObjectType, Field, ID } from 'type-graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { UserDto } from '../../user/dto/user.dto';
 import { MartialArtsDto } from '../../martialArts/dto/martialArts.dto';
 
@@ -24,6 +24,9 @@ export class ClubDto {
     readonly country: string;
     @Field(type => [MartialArtsDto], { description: 'An array(ids) of provided martial arts in this club', nullable: false })
     readonly martialArts: MartialArtsDto[];
-    @Field(type => [UserDto], { description: 'An array(ids) of users who administrate this club. Default: The creator of the club.', nullable: false })
+    @Field(type => [UserDto], {
+        description: 'An array(ids) of users who administrate this club. Default: The creator of the club.',
+        nullable: false,
+    })
     readonly admins: UserDto[];
 }

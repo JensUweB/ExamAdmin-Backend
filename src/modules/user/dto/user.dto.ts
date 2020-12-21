@@ -1,10 +1,11 @@
-import { ObjectType, Field, ID } from 'type-graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { ClubMemberDto } from './clubMember.dto';
 import { MaRanksDto } from './maRanks.dto';
 
 @ObjectType()
 export class UserDto {
     @Field(() => ID)
+      // tslint:disable-next-line:variable-name
     _id: string;
     @Field()
      firstName: string;
