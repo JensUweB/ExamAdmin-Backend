@@ -15,6 +15,7 @@ import { User } from '../user/interfaces/user.interface';
 import * as bcrypt from 'bcryptjs';
 import { MailerService } from './mailer.service';
 import { UserInput } from '../user/input/user.input';
+import { environment } from 'environment';
 
 @Injectable()
 export class AuthService {
@@ -49,8 +50,13 @@ export class AuthService {
         } else {
             const password = await bcrypt.hash(input.password, 10);
             const result = await this.userService.create({...input, password});
-            if (result) { return true; }
-            return new InternalServerErrorException('Internal Server Error. Please try again later!');
+            if (result) {
+                if (environment.userConfirmation) {
+                    return 'ACCOUNT_CONFIRM';
+                } else {
+                    return 'ACCOUNT_CREATED';
+                }
+            }
         }
     }
 
